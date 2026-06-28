@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trọng Hiếu – Timebox</title>
+    <meta name="description"
+        content="Timebox – Nơi lưu giữ kỷ niệm của Trọng Hiếu. Gia đình, bạn bè, sinh viên và những khoảnh khắc đáng nhớ.">
+    <link rel="canonical" href="https://tronghieu1201.github.io/bio_itme/">
+    <link rel="icon" type="image/webp"
+        href="https://res.cloudinary.com/dtpw5htqs/image/upload/v1782284174/4eae1994-3eea-4630-bc8e-10974bcad260_vvwupz.webp">
+    <link rel="apple-touch-icon"
+        href="https://res.cloudinary.com/dtpw5htqs/image/upload/v1782284174/4eae1994-3eea-4630-bc8e-10974bcad260_vvwupz.webp">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="life.css">
+</head>
+
+<body>
+    <!-- Background blobs -->
+    <div class="blob blob--1" aria-hidden="true"></div>
+    <div class="blob blob--2" aria-hidden="true"></div>
+    <div class="blob blob--3" aria-hidden="true"></div>
+
+    <main class="bio-card life-page archive-page">
+        <header class="life-header">
+            <h1 class="life-title">Kho lưu trữ</h1>
+        </header>
+
+        <section class="life-grid" id="link-hub" aria-label="Danh mục kỷ niệm">
+            <!-- Gia đình (locked) -->
+            <button type="button" class="life-card life-card--button life-card--family" data-locked-href="./family.html"
+                data-key="13ca9fd1b27606cd386c3e4dfbdb7a615173bf1e04eefdab5b43a89c0a13391e" data-key-placeholder=""
+                data-key-error="Chỉ có gia đình Hiếu mới mở được">
+                <div class="life-card__icon"><i class="fas fa-house-user" aria-hidden="true"></i></div>
+                <div class="life-card__body">
+                    <h2 class="life-card__title">Gia đình</h2>
+                    <p class="life-card__desc">Gia đình của Hiếu</p>
+                </div>
+                <i class="fas fa-chevron-right life-card__arrow" aria-hidden="true"></i>
+            </button>
+
+            <!-- Góc riêng -->
+            <button type="button" class="life-card life-card--button" onclick="window.location.href='./life.html'">
+                <div class="life-card__icon"><i class="fas fa-compass" aria-hidden="true"></i></div>
+                <div class="life-card__body">
+                    <h2 class="life-card__title">Góc riêng</h2>
+                    <p class="life-card__desc">Lăng kính, upload & feedback</p>
+                </div>
+                <i class="fas fa-chevron-right life-card__arrow" aria-hidden="true"></i>
+            </button>
+
+            <!-- Upload -->
+            <button type="button" class="life-card life-card--button" id="btn-upload-open">
+                <div class="life-card__icon"><i class="fas fa-upload" aria-hidden="true"></i></div>
+                <div class="life-card__body">
+                    <h2 class="life-card__title">Upload</h2>
+                    <p class="life-card__desc">Ném ảnh tại đây.</p>
+                </div>
+                <i class="fas fa-chevron-right life-card__arrow" aria-hidden="true"></i>
+            </button>
+        </section>
+    </main>
+
+    <!-- Key modal -->
+    <div class="key-modal" id="key-modal" role="dialog" aria-label="Nhap key" aria-hidden="true">
+        <div class="key-modal__backdrop"></div>
+        <article class="key-modal__card">
+            <button type="button" class="key-modal__close" id="key-close" aria-label="Dong">&times;</button>
+            <h2 class="key-modal__title">Xác nhận</h2>
+            <form class="key-form" id="key-form">
+                <input type="password" id="key-input" autocomplete="off" placeholder="">
+                <button type="submit">Mở</button>
+                <p class="key-modal__error" id="key-error" aria-live="polite"></p>
+            </form>
+        </article>
+    </div>
+
+    <!-- Upload Modal -->
+    <div class="upload-modal" id="upload-modal" role="dialog" aria-label="Upload ảnh" aria-hidden="true">
+        <div class="upload-modal__backdrop" id="upload-modal-backdrop"></div>
+        <article class="upload-modal__card">
+            <div class="upload-modal__header">
+                <button type="button" class="upload-modal__close" id="upload-modal-close"
+                    aria-label="Đóng">&times;</button>
+            </div>
+
+            <!-- Hint / drop zone -->
+            <div class="upload-modal__dropzone" id="upload-dropzone">
+                <i class="fas fa-camera upload-modal__dropzone-icon" aria-hidden="true"></i>
+                <span class="upload-modal__dropzone-label">Chọn ảnh để gửi</span>
+            </div>
+
+            <!-- Preview grid -->
+            <div class="upload-modal__preview" id="upload-preview" hidden></div>
+
+            <!-- Send button -->
+            <button type="button" class="upload-modal__send" id="upload-send-btn" hidden>
+                <i class="fas fa-paper-plane" aria-hidden="true"></i> Gửi ảnh
+            </button>
+
+            <!-- Status -->
+            <p class="upload-modal__status" id="upload-status" aria-live="polite"></p>
+
+            <input type="file" id="upload-input" accept="image/jpeg,image/png,image/webp,image/gif" multiple hidden>
+        </article>
+    </div>
+
+    <!-- Toast notification -->
+    <div class="toast" id="toast" aria-live="polite"></div>
+
+    <script src="theme.js"></script>
+    <script>
+        /* ── Upload Modal ── */
+        (function () {
+            var modal = document.getElementById('upload-modal');
+            var backdrop = document.getElementById('upload-modal-backdrop');
+            var closeBtn = document.getElementById('upload-modal-close');
+            var dropzone = document.getElementById('upload-dropzone');
+            var preview = document.getElementById('upload-preview');
+            var sendBtn = document.getElementById('upload-send-btn');
+            var statusEl = document.getElementById('upload-status');
+            var fileInput = document.getElementById('upload-input');
+            var openBtn = document.getElementById('btn-upload-open');
+
+            var CLOUD_NAME = 'dtpw5htqs';
+            var UPLOAD_PRESET = 'Upload_img';
+            var MAX_FILES = 10;
+            var MAX_SIZE = 20 * 1024 * 1024;
+            var selected = [];
+            var uploading = false;
+            var statusTimer = null;
+
+            function openModal() {
+                document.body.classList.add('is-modal-open');
+                modal.classList.add('is-open');
+                modal.setAttribute('aria-hidden', 'false');
+            }
+
+            function closeModal() {
+                if (uploading) return;
+                document.body.classList.remove('is-modal-open');
+                modal.classList.remove('is-open');
+                modal.setAttribute('aria-hidden', 'true');
+            }
+
+            function setStatus(msg, duration, cb) {
+                clearTimeout(statusTimer);
+                statusEl.textContent = msg || '';
+                statusEl.classList.toggle('upload-modal__status--visible', Boolean(msg));
+                if (msg && duration) {
+                    statusTimer = setTimeout(function () {
+                        statusEl.classList.remove('upload-modal__status--visible');
+                        if (cb) cb();
+                    }, duration);
+                }
+            }
+
+            function renderPreview() {
+                preview.innerHTML = '';
+                if (!selected.length) {
+                    preview.hidden = true;
+                    dropzone.hidden = false;
+                    sendBtn.hidden = true;
+                    return;
+                }
+                selected.forEach(function (file, i) {
+                    var wrap = document.createElement('div');
+                    wrap.className = 'upload-modal__preview-item';
+                    var img = document.createElement('img');
+                    img.alt = file.name;
+                    img.src = URL.createObjectURL(file);
+                    img.onload = function () { URL.revokeObjectURL(img.src); };
+                    var rm = document.createElement('button');
+                    rm.type = 'button';
+                    rm.className = 'upload-modal__preview-remove';
+                    rm.setAttribute('aria-label', 'Xóa');
+                    rm.innerHTML = '&times;';
+                    rm.addEventListener('click', function () {
+                        selected.splice(i, 1);
+                        renderPreview();
+                    });
+                    wrap.appendChild(img);
+                    wrap.appendChild(rm);
+                    preview.appendChild(wrap);
+                });
+                dropzone.hidden = true;
+                preview.hidden = false;
+                sendBtn.hidden = false;
+            }
+
+            function addFiles(files) {
+                Array.prototype.forEach.call(files, function (f) {
+                    if (selected.length >= MAX_FILES) { setStatus('Tối đa ' + MAX_FILES + ' ảnh'); return; }
+                    if (!/^image\/(jpeg|png|webp|gif)$/i.test(f.type)) { setStatus('Chỉ nhận JPG, PNG, WEBP, GIF'); return; }
+                    if (f.size > MAX_SIZE) { setStatus('Ảnh tối đa 20MB'); return; }
+                    selected.push(f);
+                });
+                fileInput.value = '';
+                renderPreview();
+            }
+
+            function uploadOne(file) {
+                var fd = new FormData();
+                fd.append('file', file);
+                fd.append('upload_preset', UPLOAD_PRESET);
+                return fetch('https://api.cloudinary.com/v1_1/' + CLOUD_NAME + '/image/upload', {
+                    method: 'POST', body: fd
+                }).then(function (r) { return r.json(); }).then(function (d) {
+                    if (!d.secure_url) throw new Error('fail');
+                    return d.secure_url;
+                });
+            }
+
+            /* open */
+            if (openBtn) openBtn.addEventListener('click', openModal);
+            closeBtn.addEventListener('click', closeModal);
+            backdrop.addEventListener('click', closeModal);
+            document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeModal(); });
+
+            /* pick files */
+            dropzone.addEventListener('click', function () { fileInput.click(); });
+            fileInput.addEventListener('change', function () { addFiles(fileInput.files); });
+
+            /* drag & drop */
+            dropzone.addEventListener('dragover', function (e) { e.preventDefault(); dropzone.classList.add('is-drag'); });
+            dropzone.addEventListener('dragleave', function () { dropzone.classList.remove('is-drag'); });
+            dropzone.addEventListener('drop', function (e) {
+                e.preventDefault();
+                dropzone.classList.remove('is-drag');
+                addFiles(e.dataTransfer.files);
+            });
+
+            /* send */
+            sendBtn.addEventListener('click', function () {
+                if (!selected.length || uploading) return;
+                var files = selected.slice();
+                uploading = true;
+                sendBtn.disabled = true;
+                closeBtn.disabled = true;
+                setStatus('Đang gửi ' + files.length + ' ảnh...');
+
+                Promise.allSettled(files.map(uploadOne)).then(function (results) {
+                    var ok = results.filter(function (r) { return r.status === 'fulfilled'; }).length;
+                    var fail = files.length - ok;
+                    selected = [];
+                    renderPreview();
+                    if (fail === 0) {
+                        setStatus('Cảm ơn bạn đã gửi ảnh 🌷', 2200, closeModal);
+                    } else if (ok > 0) {
+                        setStatus('Gửi được ' + ok + '/' + files.length + ' ảnh 🌷', 3000, closeModal);
+                    } else {
+                        selected = files;
+                        renderPreview();
+                        setStatus('Gửi thất bại, thử lại nhé!', 3000);
+                    }
+                }).finally(function () {
+                    uploading = false;
+                    sendBtn.disabled = false;
+                    closeBtn.disabled = false;
+                });
+            });
+        })();
+    </script>
+    <script>
+        (function () {
+            var modal = document.getElementById('key-modal');
+            var form = document.getElementById('key-form');
+            var input = document.getElementById('key-input');
+            var error = document.getElementById('key-error');
+            var closeBtn = document.getElementById('key-close');
+            var targetHref = '';
+            var targetKeyHash = '';
+            var targetErrorMsg = '';
+            var defaultPlaceholder = '';
+            var KEY_HASH = '8c0c09a2e480836be00a0957b3dee97f5fc337846357a573b13751df70f43f5b';
+
+            function sha256(str) {
+                var buf = new TextEncoder().encode(str);
+                return crypto.subtle.digest('SHA-256', buf).then(function (hashBuf) {
+                    return Array.from(new Uint8Array(hashBuf)).map(function (b) {
+                        return b.toString(16).padStart(2, '0');
+                    }).join('');
+                });
+            }
+
+            function getUnlockStorageKey(url) {
+                var targetUrl = new URL(url, window.location.href);
+                var filename = targetUrl.pathname.split('/').filter(Boolean).pop() || targetUrl.pathname;
+                return 'life-unlocked:' + filename;
+            }
+
+            function rememberUnlockedPage(url) {
+                try { sessionStorage.setItem(getUnlockStorageKey(url), '1'); } catch (e) { }
+            }
+
+            function openModal(card) {
+                targetHref = card ? card.getAttribute('data-locked-href') || '' : '';
+                targetKeyHash = card ? card.getAttribute('data-key') || KEY_HASH : KEY_HASH;
+                targetErrorMsg = 'X\u00e1c nh\u1eadn kh\u00f4ng th\u00e0nh c\u00f4ng';
+                if (input) input.setAttribute('placeholder', card ? card.getAttribute('data-key-placeholder') || defaultPlaceholder : defaultPlaceholder);
+                if (error) error.textContent = '';
+                if (input) input.value = '';
+                document.body.classList.add('is-modal-open');
+                modal.classList.add('is-open');
+                modal.setAttribute('aria-hidden', 'false');
+                setTimeout(function () { if (input) input.focus(); }, 60);
+            }
+
+            function closeModal() {
+                document.body.classList.remove('is-modal-open');
+                modal.classList.remove('is-open');
+                modal.setAttribute('aria-hidden', 'true');
+                targetHref = '';
+                targetKeyHash = '';
+                targetErrorMsg = '';
+                if (input) input.setAttribute('placeholder', defaultPlaceholder);
+            }
+
+            document.querySelectorAll('[data-locked-href]').forEach(function (card) {
+                card.addEventListener('click', function () {
+                    openModal(card);
+                });
+            });
+
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+                var keyValue = input.value.trim();
+                if (!keyValue) {
+                    error.textContent = 'Mở vô hiệu';
+                    input.focus();
+                    return;
+                }
+                var submitBtn = form.querySelector('button[type="submit"]');
+                if (submitBtn) submitBtn.disabled = true;
+
+                sha256(keyValue).then(function (hash) {
+                    if (hash === targetKeyHash && targetHref) {
+                        rememberUnlockedPage(targetHref);
+                        window.location.href = targetHref;
+                    } else {
+                        error.textContent = targetErrorMsg;
+                        input.select();
+                        if (submitBtn) submitBtn.disabled = false;
+                    }
+                });
+            });
+
+            closeBtn.addEventListener('click', closeModal);
+            modal.querySelector('.key-modal__backdrop').addEventListener('click', closeModal);
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape') closeModal();
+            });
+        })();
+    </script>
+</body>
+
+</html>
