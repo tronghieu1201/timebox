@@ -1,14 +1,5 @@
-Chỉnh lại 
-1 Ở trang 127.0.0.1:5500/life.html Góc riêng 
+1 : http://127.0.0.1:5500/family.html ấn quay lại http://127.0.0.1:5500/ thì trang http://127.0.0.1:5500/ này lại load lại trang 
 
-các thanh điều hướng chỉnh lại thứ tự Kỷ niệm nằm rồi tới lăng kính của Hiếu
+2 : http://127.0.0.1:5500/?view=life ấn quay lại http://127.0.0.1:5500/ thì trang http://127.0.0.1:5500/ này k load lại trang là đúng 
 
-
-2 ở trang 127.0.0.1:5500/life.html hiện tại tôi ấn vào thanh điều hướng kỷ niệm ( http://127.0.0.1:5500/moments.html ) và ấn mũi tên quay lại nếu đúng sẽ quay lại trang http://127.0.0.1:5500/life.html mà lại quay lại lại http://127.0.0.1:5500/ index.html là sai chỉnh lại 
-
-
-3 Khi ấn vào thanh điều hướng Lăng kính của Hiếu thì ra card nội dung 
-Có thể không đúng với bạn, nhưng nó là góc nhìn từng trải của mình. Chấp nhậ và không  và khi ấn chấp sẽ ra thẻ Sai số thứ... thì chỉ màu thành màu be mờ mờ giốgn thẻ bio-card giao diện 
-
-
-4 Thanh điều hướng feedback ấn vào ra pouop Nhập suy nghĩ cũng đổi màu giống be be mờ mờ giống thẻ bio-card
+3 : Và có thắc mắc ở trang http://127.0.0.1:5500/ ấn vào thanh điều hướng Góc riêng thì ra trang http://127.0.0.1:5500/?view=life từ trang http://127.0.0.1:5500/?view=life ấn thanh điều hướng Kỷ niệm ra trang http://127.0.0.1:5500/?view=moments và ở trang http://127.0.0.1:5500/?view=moments ấn thanh điều hướng Sinh viên thì ra trang http://127.0.0.1:5500/campus.html ( trang bị f5 lại  ) và ở trang http://127.0.0.1:5500/campus.html ấn quay lại thfi k ra trang http://127.0.0.1:5500/campus.html  mà lại về trang http://127.0.0.1:5500/life.html???

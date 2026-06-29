@@ -1,5 +1,12 @@
 // theme.js – interactions for link panels, modals, galleries, and toasts.
 (function () {
+    /* ---- Service Worker Registration ---- */
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+            navigator.serviceWorker.register('./sw.js').catch(function () {});
+        });
+    }
+
     /* ---- Page Transition Helpers (exposed globally) ---- */
     function prefetchPage(url) {
         if (!url || !document.createElement) return;
@@ -51,6 +58,17 @@
             var href = backLink.getAttribute('href');
             if (!href || href === '#') return;
             e.preventDefault();
+            if (backLink.hasAttribute('data-history-back')) {
+                var fallback = backLink.getAttribute('data-back-fallback') || href;
+                var referrer = '';
+                try { referrer = document.referrer ? new URL(document.referrer).origin : ''; } catch (err) {}
+                if (window.history.length > 1 && referrer === window.location.origin) {
+                    window.history.back();
+                    return;
+                }
+                navigateWithTransition(fallback);
+                return;
+            }
             navigateWithTransition(href);
         });
     });

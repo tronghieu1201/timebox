@@ -528,7 +528,12 @@
     if (backBtn) {
         backBtn.addEventListener('click', function (e) {
             e.preventDefault();
-            window.location.href = './';
+            // SPA mode: dùng _spaGoBack nếu có, fallback về navigate
+            if (window._spaGoBack) {
+                window._spaGoBack();
+            } else {
+                navigateWithTransition('./');
+            }
         });
     }
 
