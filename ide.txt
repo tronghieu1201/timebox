@@ -1,5 +1,0 @@
-1 : http://127.0.0.1:5500/family.html ấn quay lại http://127.0.0.1:5500/ thì trang http://127.0.0.1:5500/ này lại load lại trang 
-
-2 : http://127.0.0.1:5500/?view=life ấn quay lại http://127.0.0.1:5500/ thì trang http://127.0.0.1:5500/ này k load lại trang là đúng 
-
-3 : Và có thắc mắc ở trang http://127.0.0.1:5500/ ấn vào thanh điều hướng Góc riêng thì ra trang http://127.0.0.1:5500/?view=life từ trang http://127.0.0.1:5500/?view=life ấn thanh điều hướng Kỷ niệm ra trang http://127.0.0.1:5500/?view=moments và ở trang http://127.0.0.1:5500/?view=moments ấn thanh điều hướng Sinh viên thì ra trang http://127.0.0.1:5500/campus.html ( trang bị f5 lại  ) và ở trang http://127.0.0.1:5500/campus.html ấn quay lại thfi k ra trang http://127.0.0.1:5500/campus.html  mà lại về trang http://127.0.0.1:5500/life.html???
