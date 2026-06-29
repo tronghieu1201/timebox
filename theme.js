@@ -1,5 +1,60 @@
 // theme.js – interactions for link panels, modals, galleries, and toasts.
 (function () {
+    /* ---- Page Transition Helpers (exposed globally) ---- */
+    function prefetchPage(url) {
+        if (!url || !document.createElement) return;
+        try {
+            var existing = document.querySelector('link[rel="prefetch"][href="' + url + '"]');
+            if (existing) return;
+            var link = document.createElement('link');
+            link.rel = 'prefetch';
+            link.href = url;
+            document.head.appendChild(link);
+        } catch (e) {}
+    }
+
+    function navigateWithTransition(url) {
+        if (!url) return;
+        try { sessionStorage.setItem('_nav_transition', '1'); } catch (e) {}
+        var mainCard = document.querySelector('.bio-card');
+        if (mainCard) {
+            mainCard.classList.add('is-exiting');
+        }
+        document.body.classList.add('is-page-transitioning');
+        setTimeout(function () {
+            window.location.href = url;
+        }, 150);
+    }
+
+    // Expose to global scope for inline use across pages
+    window.navigateWithTransition = navigateWithTransition;
+    window.prefetchPage = prefetchPage;
+
+    /* ---- Page Enter Animation ---- */
+    (function () {
+        var mainCard = document.querySelector('.bio-card');
+        if (!mainCard) return;
+        var fromInternalNav = false;
+        try { fromInternalNav = sessionStorage.getItem('_nav_transition') === '1'; } catch (e) {}
+        if (fromInternalNav) {
+            mainCard.classList.add('is-entering');
+            try { sessionStorage.removeItem('_nav_transition'); } catch (e) {}
+            mainCard.addEventListener('animationend', function () {
+                mainCard.classList.remove('is-entering');
+            }, { once: true });
+        }
+    })();
+
+    /* ---- Smooth back button on life/album pages ---- */
+    document.querySelectorAll('.life-back').forEach(function (backLink) {
+        backLink.addEventListener('click', function (e) {
+            var href = backLink.getAttribute('href');
+            if (!href || href === '#') return;
+            e.preventDefault();
+            navigateWithTransition(href);
+        });
+    });
+
     /* ---- Pointer-tracking ripple on .link-btn ---- */
     var lastRippleTime = 0;
     var rippleThrottle = 16; // ~60fps
@@ -81,26 +136,6 @@
         });
     });
 
-    function prefetchPage(url) {
-        if (!url || !document.createElement) return;
-        var link = document.createElement('link');
-        link.rel = 'prefetch';
-        link.href = url;
-        document.head.appendChild(link);
-    }
-
-    function navigateWithTransition(url) {
-        if (!url) return;
-        var mainCard = document.querySelector('.bio-card');
-        if (mainCard) {
-            mainCard.classList.add('is-exiting');
-        }
-        document.body.classList.add('is-page-transitioning');
-        setTimeout(function () {
-            window.location.href = url;
-        }, 180);
-    }
-
     var personalLink = document.getElementById('link-life');
     if (personalLink) {
         personalLink.addEventListener('click', function (e) {
@@ -109,6 +144,16 @@
         });
         prefetchPage(personalLink.getAttribute('href'));
     }
+
+    /* ---- Prefetch sub-pages on life.html ---- */
+    (function () {
+        var subPages = ['./moments.html', './campus.html', './cooking.html'];
+        // Prefetch after a short idle delay so it doesn't compete with initial load
+        var schedFn = window.requestIdleCallback || function (cb) { setTimeout(cb, 400); };
+        schedFn(function () {
+            subPages.forEach(function (url) { prefetchPage(url); });
+        });
+    })();
 
     document.querySelectorAll('[data-panel-back]').forEach(function (btn) {
         btn.addEventListener('click', function () {

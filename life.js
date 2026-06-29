@@ -48,7 +48,8 @@
         'Hãy chấp nhận góc nhìn của người khác mà không cần chứng minh mình đúng.',
         'Mình đang yêu người đó theo cách hiện tại, hay mình đang giữ một phần của bản thân mình trong quá khứ.',
         'Anh học thêm, để kể em nhiều — Em học thêm, để hiểu những gì anh kể.',
-        'Bất kể là mối quan hệ gì, khi người khác không cần. Bạn phải học cách thu hồi sự nhiệt tình và lịch sự rời đi.'
+        'Bất kể là mối quan hệ gì, khi người khác không cần. Bạn phải học cách thu hồi sự nhiệt tình và lịch sự rời đi.',
+        'Đừng mải mê một ánh mặt trời đã lặn, mà quên ngước nhìn bầu trời đầy sao'
     ];
     var specialThoughtIndexes = [1, 7, 11];
     var thoughtsGuideNotice = null;
@@ -400,7 +401,7 @@
         thoughtsConfirmModal.innerHTML =
             '<div class="thoughts-confirm__backdrop"></div>' +
             '<article class="thoughts-confirm__card" role="dialog" aria-modal="true" aria-label="X&aacute;c nh&#7853;n L&#259;ng k&iacute;nh">' +
-                '<p class="thoughts-confirm__message">C&oacute; th&#7875; kh&ocirc;ng &#273;&uacute;ng v&#7899;i b&#7841;n, nh&#432;ng n&oacute; l&agrave; g&oacute;c nh&igrave;n t&#7915;ng tr&#7843;i c&#7911;a m&#236;nh.</p>' +
+                '<p class="thoughts-confirm__message">Có thể bạn đã nghe - đã thấy và có thể chưa đúng với bạn, nhưng đó là góc nhìn từng trải của mình.</p>' +
                 '<div class="thoughts-confirm__actions">' +
                     '<button type="button" class="thoughts-confirm__accept">Ch&#7845;p nh&#7853;n</button>' +
                     '<button type="button" class="thoughts-confirm__decline">Kh&ocirc;ng</button>' +

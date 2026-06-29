@@ -20,6 +20,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="life.css">
+    <link rel="prefetch" href="./life.html">
 </head>
 
 <body>
@@ -41,17 +42,15 @@
                 <div class="life-card__icon"><i class="fas fa-house-user" aria-hidden="true"></i></div>
                 <div class="life-card__body">
                     <h2 class="life-card__title">Gia đình</h2>
-                    <p class="life-card__desc">Gia đình của Hiếu</p>
                 </div>
                 <i class="fas fa-chevron-right life-card__arrow" aria-hidden="true"></i>
             </button>
 
             <!-- Góc riêng -->
-            <button type="button" class="life-card life-card--button" onclick="window.location.href='./life.html'">
+            <button type="button" class="life-card life-card--button" onclick="navigateWithTransition('./life.html')">
                 <div class="life-card__icon"><i class="fas fa-compass" aria-hidden="true"></i></div>
                 <div class="life-card__body">
                     <h2 class="life-card__title">Góc riêng</h2>
-                    <p class="life-card__desc">Lăng kính, upload & feedback</p>
                 </div>
                 <i class="fas fa-chevron-right life-card__arrow" aria-hidden="true"></i>
             </button>
@@ -61,7 +60,6 @@
                 <div class="life-card__icon"><i class="fas fa-upload" aria-hidden="true"></i></div>
                 <div class="life-card__body">
                     <h2 class="life-card__title">Upload</h2>
-                    <p class="life-card__desc">Ném ảnh tại đây.</p>
                 </div>
                 <i class="fas fa-chevron-right life-card__arrow" aria-hidden="true"></i>
             </button>

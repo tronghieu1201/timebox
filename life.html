@@ -15,6 +15,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="life.css">
+    <link rel="prefetch" href="./moments.html">
+    <link rel="prefetch" href="./cooking.html">
+    <link rel="prefetch" href="./campus.html">
 </head>
 
 <body>
@@ -37,13 +40,12 @@
 
 
             <!-- Kỷ niệm -->
-            <button type="button" class="life-card life-card--button" onclick="window.location.href='./moments.html'">
+            <button type="button" class="life-card life-card--button" onclick="navigateWithTransition('./moments.html')">
                 <div class="life-card__icon">
                     <i class="fas fa-images" aria-hidden="true"></i>
                 </div>
                 <div class="life-card__body">
                     <h2 class="life-card__title">Kỷ niệm</h2>
-                    <p class="life-card__desc">Những người quanh Hiếu</p>
                 </div>
                 <i class="fas fa-chevron-right life-card__arrow" aria-hidden="true"></i>
             </button>
@@ -55,31 +57,28 @@
                 </div>
                 <div class="life-card__body">
                     <h2 class="life-card__title">Lăng kính của Hiếu</h2>
-                    <p class="life-card__desc">Có thể bạn đã thấy ở đâu đó...</p>
                 </div>
                 <i class="fas fa-chevron-right life-card__arrow" aria-hidden="true"></i>
             </a>
 
-            <!-- Sinh viên (locked) -->
-            <button type="button" class="life-card life-card--button" data-locked-href="./campus.html" data-key-placeholder="" data-key-error="Chỉ có bạn Hiếu mới mở được">
+            <!-- Sinh viên -->
+            <button type="button" class="life-card life-card--button" onclick="navigateWithTransition('./campus.html')">
                 <div class="life-card__icon">
                     <i class="fas fa-graduation-cap" aria-hidden="true"></i>
                 </div>
                 <div class="life-card__body">
                     <h2 class="life-card__title">Sinh viên</h2>
-                    <p class="life-card__desc">Hiếu và bạn bè</p>
                 </div>
                 <i class="fas fa-chevron-right life-card__arrow" aria-hidden="true"></i>
             </button>
 
             <!-- Nấu ăn -->
-            <button type="button" class="life-card life-card--button" onclick="window.location.href='./cooking.html'">
+            <button type="button" class="life-card life-card--button" onclick="navigateWithTransition('./cooking.html')">
                 <div class="life-card__icon">
                     <i class="fas fa-utensils" aria-hidden="true"></i>
                 </div>
                 <div class="life-card__body">
                     <h2 class="life-card__title">Nấu ăn</h2>
-                    <p class="life-card__desc">Cơm sinh viên.</p>
                 </div>
                 <i class="fas fa-chevron-right life-card__arrow" aria-hidden="true"></i>
             </button>
@@ -91,7 +90,6 @@
                 </div>
                 <div class="life-card__body">
                     <h2 class="life-card__title">Feedback</h2>
-                    <p class="life-card__desc">Gửi feedback tại đây...</p>
                 </div>
                 <i class="fas fa-chevron-right life-card__arrow" aria-hidden="true"></i>
             </button>
@@ -129,8 +127,8 @@
         <!-- Join modal -->
         <div class="join-modal" id="join-modal" role="dialog" aria-label="Feedback" aria-hidden="true">
             <div class="join-modal__backdrop"></div>
+            <button type="button" class="join-modal__close" id="join-close" aria-label="Đóng">&times;</button>
             <article class="join-modal__card">
-                <button type="button" class="join-modal__close" id="join-close" aria-label="Đóng">&times;</button>
                 <form class="join-form" id="join-form">
                     <input type="hidden" name="createdAt" id="join-created-at">
                     <label class="join-form__field">

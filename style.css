@@ -50,7 +50,7 @@ html {
 }
 
 body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-family: 'Be Vietnam Pro', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     background:
         var(--page-bg-image) center / cover fixed no-repeat,
         linear-gradient(135deg, var(--bg-start), var(--bg-end));
@@ -199,11 +199,6 @@ body.is-page-transitioning {
     overflow: hidden;
 }
 
-.bio-card.is-exiting {
-    opacity: 0;
-    transform: translateY(8px) scale(0.98);
-}
-
 .bio-card::before {
     content: '';
     position: absolute;
@@ -277,7 +272,7 @@ body.is-page-transitioning {
 @keyframes cardEnter {
     from {
         opacity: 0;
-        transform: translateY(30px) scale(0.97);
+        transform: translateY(22px) scale(0.97);
     }
 
     to {
@@ -286,6 +281,29 @@ body.is-page-transitioning {
     }
 }
 
+/* Page enter – dùng khi navigate vào trang mới */
+@keyframes pageEnter {
+    from {
+        opacity: 0;
+        transform: translateY(14px) scale(0.985);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.bio-card.is-entering {
+    animation: pageEnter 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Exit nhanh hơn để cảm giác responsive */
+.bio-card.is-exiting {
+    opacity: 0;
+    transform: translateY(6px) scale(0.985);
+    transition: opacity 0.14s ease, transform 0.14s ease;
+}
 /* ---------- Profile Header ---------- */
 .profile-header {
     text-align: center;
@@ -1568,6 +1586,10 @@ body.is-page-transitioning {
     font-weight: 700;
     cursor: pointer;
     transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
 }
 
 .photo-pager__btn:hover,
@@ -1603,24 +1625,6 @@ body.is-page-transitioning {
 
 /* ---------- Responsive ---------- */
 @media (max-width: 480px) {
-    :root {
-        --card-bg: rgba(15, 23, 42, 0.88);
-        --card-border: rgba(59, 130, 246, 0.28);
-        --accent-soft: rgba(30, 58, 138, 0.68);
-        --status-bg: rgba(30, 58, 138, 0.62);
-        --toggle-bg: transparent;
-        --page-bg-image: url("images/backgrod.webp");
-    }
-
-    .dark {
-        --card-bg: rgba(15, 23, 42, 0.88);
-        --card-border: rgba(59, 130, 246, 0.28);
-        --accent-soft: rgba(30, 58, 138, 0.68);
-        --status-bg: rgba(30, 58, 138, 0.62);
-        --toggle-bg: transparent;
-        --page-bg-image: url("images/backgrod.webp");
-    }
-
     body {
         padding: 44px 10px 28px;
     }
@@ -1932,7 +1936,7 @@ body.is-page-transitioning {
     }
 }
 
-@media (max-width: 360px) {
+@media (max-width: 380px) {
     .bio-card {
         padding: 24px 16px 24px;
     }
@@ -2242,10 +2246,14 @@ button,
 
     .link-btn:active {
         transform: scale(0.97);
+        transition: transform 0.1s ease;
+        background: rgba(255, 255, 255, 0.07) !important;
     }
 
     .group-card:active {
-        transform: scale(0.98);
+        transform: scale(0.97);
+        transition: transform 0.1s ease;
+        background: rgba(255, 255, 255, 0.06) !important;
     }
 }
 
@@ -2332,7 +2340,7 @@ button,
 }
 
 /* ---------- Very small (≤360px) ---------- */
-@media (max-width: 360px) {
+@media (max-width: 380px) {
     .profile-name {
         font-size: 20px;
     }
@@ -2525,7 +2533,7 @@ select {
     }
 }
 
-@media (max-width: 360px) {
+@media (max-width: 380px) {
     .bio-card {
         max-width: calc(100vw - 16px);
         padding-left: 12px;
