@@ -78,7 +78,7 @@
             var targetKeyHash = '';
             var targetErrorMsg = '';
             var defaultPlaceholder = '';
-            var KEY_HASH = '8c0c09a2e480836be00a0957b3dee97f5fc337846357a573b13751df70f43f5b';
+            var KEY_HASH = '4d18b69a768ca124246afb1ab533333f957d67650b8a9ef8c67ea7ffa7200c1a';
 
             function sha256(str) {
                 var buf = new TextEncoder().encode(str);
@@ -142,7 +142,10 @@
                 sha256(keyValue).then(function (hash) {
                     if (hash === targetKeyHash && targetHref) {
                         rememberUnlockedPage(targetHref);
-                        window.location.href = targetHref;
+                        var href = targetHref;
+                        closeModal();
+                        if (submitBtn) submitBtn.disabled = false;
+                        window.location.href = href;
                     } else {
                         error.textContent = targetErrorMsg;
                         input.select();
