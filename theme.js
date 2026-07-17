@@ -622,7 +622,10 @@
     }
 
     function getCloudinaryGalleryPhotos(gallery) {
-        var imageList = gallery.getAttribute('data-gallery-cloudinary') || '';
+        var imageList = [
+            gallery.getAttribute('data-gallery-prepend') || '',
+            gallery.getAttribute('data-gallery-cloudinary') || ''
+        ].filter(Boolean).join(',');
         if (!imageList.trim()) return [];
 
         var urls = imageList.split(',')
