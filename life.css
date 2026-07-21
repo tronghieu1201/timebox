@@ -2324,6 +2324,54 @@
     display: none;
 }
 
+.upload-modal__pin-options {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin: 8px 0;
+}
+
+.upload-modal__pin-options[hidden] {
+    display: none;
+}
+
+.upload-modal__pin-choice {
+    position: relative;
+    cursor: pointer;
+}
+
+.upload-modal__pin-choice input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.upload-modal__pin-choice span {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    min-height: 28px;
+    padding: 5px 10px;
+    border: 1px solid var(--card-border);
+    border-radius: 999px;
+    color: var(--text-secondary);
+    background: rgba(255, 255, 255, 0.05);
+    font-size: 11px;
+    font-weight: 700;
+    transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.upload-modal__pin-choice input:checked + span {
+    color: var(--text-primary);
+    border-color: rgba(255, 255, 255, 0.42);
+    background: rgba(255, 255, 255, 0.18);
+}
+
+.upload-modal__pin-choice input:focus-visible + span {
+    outline: 2px solid rgba(125, 180, 255, 0.9);
+    outline-offset: 2px;
+}
+
 /* preview */
 .upload-modal__preview {
     display: grid;
@@ -2665,7 +2713,8 @@
 
     .gallery-panel__close,
     .join-modal__close,
-    .key-modal__close {
+    .key-modal__close,
+    .upload-modal__close {
         width: 44px;
         height: 44px;
         flex: 0 0 44px;

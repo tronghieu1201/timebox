@@ -20,8 +20,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="life.css">
-    <link rel="prefetch" href="./life.html">
-    <link rel="prefetch" href="./moments.html">
     <style>
         .spa-shell {
             position: relative;
@@ -32,7 +30,6 @@
 
         .spa-view {
             width: 100%;
-            will-change: transform, opacity;
         }
 
         .spa-view.is-hidden {
@@ -127,7 +124,7 @@
                     </button>
                     <h1 class="life-title">Gia đình mình</h1>
                 </header>
-                <section class="photo-gallery" aria-label="Album gia dinh"
+                <section class="photo-gallery" aria-label="Album gia dinh" data-live-scope="family"
                     data-gallery-cloudinary="https://res.cloudinary.com/dtpw5htqs/image/upload/v1782843231/474919975_620365200643532_1969014067725644935_n_gw5f4v.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782843229/405002857_858864052679605_2321506920921441389_n_ufzq4h.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782843228/419461838_427518506294410_7497663406157582344_n_axfccp.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782843227/420557200_1803026840198809_5054056938182832634_n_cbfe4e.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782843224/352840803_632090475516819_2496629704571334396_n_ufypg3.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782843224/364198136_2563393060478451_202851886270146469_n_b7ypjs.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782843226/353404349_1224884841558866_4655714473081427073_n_lhcoda.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782843232/476880045_1586477362010710_1731960998613157307_n_hgf2bw.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782843235/553895920_1133959295471819_8286816900586390701_n_sspwb8.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782843237/613354640_889209363703149_4987623942501048444_n_atcr3h.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782843234/495071579_2058007294689282_3395155635642199359_n_ln8u1r.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782843238/637974375_802482968854487_6559249715192562672_n_cjut6w.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782843240/672755822_938016605883494_8900332934448303080_n_yunvox.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782445536/z7977421421246_e1124cbeb01bdb34a57c1b077465222e_agkjdu.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782445536/z7977421190637_fd1aa95fddd59c6c41e1dc721e89be34_bimxxf.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782290358/z7971162030633_114dd7da15988c7204cdd879387cd095_uhobb6.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782481059/727082953_985291301003447_1485165696336316805_n_hp0zu1.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782452992/IMG_3079_h55rhc.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782452991/1I7O035HN_807RV1_m1ornz.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782452992/1I7O0PVMM_807RV1_h7vzhi.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782486601/Screenshot_73_q5i56e.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782486602/z4553161299473_3f97a24e42cd38c04e78510dd95b58d7_n2as0x.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782486601/dff29471-428f-47db-949b-02dc94200ac1_lugtnv.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782486602/352955887_966768314472029_8758201426811431935_n_vi9hwj.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782486603/353087561_1298057061094554_7317470717430735685_n_wmab8a.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782445536/z7977421444455_a21e501c170541f1d34032ef67b0a1f0_yhcej7.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782445535/z7977421292225_6b6f207c5780ea01a503a54867d179cf_tkjagg.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782445535/z7977421059680_1f57d410e0e99619dc962b0c500de3bd_i1q3e8.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782445535/z7977420740452_790bca5b19d1d6fa0d528b875835eaa9_mzryvu.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782445535/z7977420575747_97bee961346dc4cd995811d24d0fbf9d_ceqgjf.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782445535/z7977420494936_1cb1dba9e59702e6694801deb4e0d734_k00mfr.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782445534/z7977420352216_c3fb25dd953b4b1135ef07f7fe107aea_xfdrfk.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782445534/z7977420352012_a32e431e3f1dddf1aa6fc60f7405804f_wzhsdc.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782290356/z7971158903452_ae4c5d419cd2c043a4d05c41aa762375_t00an1.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782290354/z7971158843659_d670b24c4ebb0ea39b11e313c00cad7f_yfltee.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782290353/z7971158795148_c6546e3736bc6a663191966181d77ff8_iugooi.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782290351/z7971158767549_155a33db166cc729c5270fe5052616e1_dxomsa.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782290349/z7971158701287_623a8aa558c66c2fc78f8f6c3abcd115_igekpp.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782290347/z7971158651332_c87f84fcf2f0c2340259f4def8efd2f8_mwzinp.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782290345/z7971158618450_d731f856eb52387589e617ffbe9cecff_belygp.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782290339/z7971158592791_396af9fb702d13c08d280b225bec0604_lmviww.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782290327/IMG_5341_chkbwj.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782290325/IMG_5332_y7l7fx.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782290320/IMG_5308_wxnmw4.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782290322/IMG_5309_nvhklv.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782290312/IMG_3004_cb4bzj.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782290318/IMG_5307_cfhl00.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782290311/IMG_2846_crvxqc.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782289943/IMG_3123_pj5e7d.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782289937/z4553161151438_edad6dd155c1094bdefeeabeaf459486_lyeg4g.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782289935/z4553161119313_6b143769903ceb4efc0a1e7742d0a6f5_grxg2b.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782289930/IMG_5331_habq8x.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782289927/IMG_3124_nhruqe.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782743446/1I7O09M3V_807RV1_bslr3j.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782743445/1I7O0PV7N_807RV1_snod3h.webp"
                     data-pinned-image="https://res.cloudinary.com/dtpw5htqs/image/upload/v1782486603/353087561_1298057061094554_7317470717430735685_n_wmab8a.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782486602/352955887_966768314472029_8758201426811431935_n_vi9hwj.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782843226/353404349_1224884841558866_4655714473081427073_n_lhcoda.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782843224/352840803_632090475516819_2496629704571334396_n_ufypg3.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782445536/z7977421421246_e1124cbeb01bdb34a57c1b077465222e_agkjdu.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782445536/z7977421190637_fd1aa95fddd59c6c41e1dc721e89be34_bimxxf.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782290358/z7971162030633_114dd7da15988c7204cdd879387cd095_uhobb6.webp">
                 </section>
@@ -270,37 +267,53 @@
 
         <!-- ════ VIEW: FRIENDS (Những thằng ở tuổi 16) ════ -->
         <div class="spa-view is-hidden" id="view-friends">
-            <main class="bio-card album-page">
+            <main class="bio-card album-page" style="position:relative;">
                 <header class="life-header">
                     <button type="button" class="life-back" id="btn-back-friends" aria-label="Quay lại">
                         <i class="fas fa-arrow-left" aria-hidden="true"></i>
                     </button>
                     <h1 class="life-title">Những thằng ở tuổi 16</h1>
                 </header>
-                <section class="photo-gallery" aria-label="Album Best Friends"
+                <section class="photo-gallery" aria-label="Album Best Friends" data-live-scope="friends"
                     data-gallery-cloudinary="https://res.cloudinary.com/dtpw5htqs/image/upload/v1783095792/IMG_6447_u8p06h.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1783095792/IMG_6441_boqnbv.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1783095792/IMG_6453_rwdkfp.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1783095792/IMG_6452_bgerog.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782285735/z7970828591662_7287208052dbaa6a8a1637bec96113f7_ggy62w.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782285193/IMG_1458_qexx6a.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782285192/IMG_1457_juqln5.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782285191/df711c41-215c-40da-9737-0fe450b9be96_whjnnx.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782285190/cf891f1f-21f1-440d-b49f-2d86efa462ea_ubvgwp.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782285188/cd942cc0-cf13-4e00-ba61-65a0e5435340_r94gy3.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782285187/643c91de-691e-4ba4-8ef3-ceb05b586c5c_bawxlb.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782285185/z7968429834343_5b9e8278fc949764c79f2744244c449e_vh9pcp.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782285186/0d1d757b-1e88-4f78-bc10-613370b6b7ce_tihgyu.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782285183/z7968429774386_c18dda87d14938d0c632f4e15391a9dc_s6oq3y.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782285181/z7961712141973_cdc3cbe101365e1b34abe5ffdaf78a4d_e2jtbp.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782285180/z7429701366088_8556aaaf9a0a19a2b05ce342b7e6fec2_piqmpy.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782285179/IMG_4147_vmjxjx.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782285178/IMG_3753_rlcxk9.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782285176/IMG_3720_poncwz.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782285176/IMG_3718_sxxsqt.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782285175/IMG_3072_ncbq6o.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782486552/IMG_4092_xhwkzn.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782486552/1I7O0NQQP_807RV1_svpax3.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782486553/IMG_4820_zqplz5.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782486553/1I7O06786_807RV1_lqjk83.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782486553/z7961689553601_d263b055bf8c8e0c1af4e74a1bf11eee_aucfws.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782486553/z7961689256587_c4cff1c9c413393e53a65d97ebde9ff6_brxmhu.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782743476/1I7O0NQN1_807RV1_z6wcmi.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782743475/IMG_5967_wlnv0k.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782743472/1I7O09LTP_807RV1_h2fgca.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782743472/1I7O035LG_807RV1_oghhv3.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782743474/IMG_3717_p0lwff.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782743487/1I7O11BT7_807RV1_nezlw2.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782743486/1I7O11BG6_807RV1_lytavf.webp"
                     data-pinned-image="https://res.cloudinary.com/dtpw5htqs/image/upload/v1782285181/z7961712141973_cdc3cbe101365e1b34abe5ffdaf78a4d_e2jtbp.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782285176/IMG_3720_poncwz.webp">
                 </section>
+                <div class="family-upload-mobile">
+                    <button type="button" class="family-upload-mobile__btn" id="friends-upload-open-mobile">
+                        <i class="fas fa-camera" aria-hidden="true"></i><span>Upload</span>
+                    </button>
+                </div>
+                <button type="button" class="family-upload-fab" id="friends-upload-open-desktop" aria-label="Upload ảnh">
+                    <i class="fas fa-camera" aria-hidden="true"></i>
+                </button>
             </main>
         </div><!-- /view-friends -->
 
         <div class="spa-view is-hidden" id="view-keepsakes">
-            <main class="bio-card album-page">
+            <main class="bio-card album-page" style="position:relative;">
                 <header class="life-header">
                     <button type="button" class="life-back" id="btn-back-keepsakes" aria-label="Quay lại Kỷ niệm">
                         <i class="fas fa-arrow-left" aria-hidden="true"></i>
                     </button>
-                    <h1 class="life-title">Hm...!</h1>
+                    <h1 class="life-title">⭐</h1>
                 </header>
 
-                <section class="photo-gallery" aria-label="Album Keepsakes"
+                <section class="photo-gallery" aria-label="Album Keepsakes" data-live-scope="keepsakes"
                     data-gallery-cloudinary="https://res.cloudinary.com/dtpw5htqs/image/upload/v1782314527/z7859878819639_0bd47bfa86fed208b0357e5a0f9f2202_cqrkge.jpg">
                 </section>
+                <div class="family-upload-mobile">
+                    <button type="button" class="family-upload-mobile__btn" id="keepsakes-upload-open-mobile">
+                        <i class="fas fa-camera" aria-hidden="true"></i><span>Upload</span>
+                    </button>
+                </div>
+                <button type="button" class="family-upload-fab" id="keepsakes-upload-open-desktop" aria-label="Upload ảnh">
+                    <i class="fas fa-camera" aria-hidden="true"></i>
+                </button>
             </main>
         </div><!-- /view-keepsakes -->
 
         <div class="spa-view is-hidden" id="view-cooking">
-            <main class="bio-card album-page">
+            <main class="bio-card album-page" style="position:relative;">
                 <header class="life-header">
                     <button type="button" class="life-back" id="btn-back-cooking" aria-label="Quay lại Góc riêng">
                         <i class="fas fa-arrow-left" aria-hidden="true"></i>
@@ -308,16 +321,24 @@
                     <h1 class="life-title">Cơm sinh viên</h1>
                 </header>
 
-                <section class="photo-gallery" aria-label="Album ảnh nấu ăn"
+                <section class="photo-gallery" aria-label="Album ảnh nấu ăn" data-live-scope="cooking"
                     data-gallery-prepend="https://res.cloudinary.com/dtpw5htqs/image/upload/v1784300631/IMG_6644_ryhytk.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1784300631/IMG_6618_spyfog.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1784300631/IMG_6722_kfgtq8.webp"
                     data-gallery-cloudinary="https://res.cloudinary.com/dtpw5htqs/image/upload/v1783735170/IMG_6469_ed50i9.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1783735169/IMG_6594_y7gjzi.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1783735153/IMG_6523_rsd1cg.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1783735153/IMG_6583_lwdzw3.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1783735153/IMG_6484_whpa0h.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1783735152/IMG_6480_skisqs.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782841988/1I7O0PVHF_807RV1_zo1oky.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782841977/1I7O0RC4L_807RV1_y3rgqg.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782841989/1I7O0RC85_807RV1_tau2qp.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782841990/1I7O0STQV_807RV1_gydqzo.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782841998/z7067349656334_d7f278650b5accfccf0e58209f001424_l5aul5.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782842002/z7431497882665_8085e3371327f7e9bcf446eeb784a53b_tc9kvt.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782842001/z7431496260864_4e69a9ec888200892b2098200730fcfd_f7mmqw.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782842000/z7431496229451_e4d8b685f8c9e861a3fecfdd017b488e_gqv75i.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782842004/z7431496261166_d1ee29857eeee6f32411a6478a53265d_rlbs1f.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782842007/1I7O0NQKP_807RV1_ricy89.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782842009/1I7O0PVD7_807RV1_vmzyg6.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782842005/z7431588275072_bf2260e83f8c67d6348614eb15b39d54_fummvy.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782842006/z7431588276975_20fe8229b5c0516449faf796f5a44fbe_gqll4b.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782841998/IMG_4807_acxqa0.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782841999/z7431496225118_21e738b8e4511eac612727005fcee851_zxbcpr.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782841995/IMG_4704_mvewab.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782839282/IMG_4966_fmlvmy.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782839281/IMG_6312_lkwvqg.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782839280/IMG_5841_jzsxq4.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782839276/IMG_5055_b6ptyo.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782839274/IMG_5050_vspgeh.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782839274/IMG_5049_efk8vd.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782839274/IMG_5052_y4kyde.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782839279/IMG_5606_kyxjyy.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782723340/IMG_6301_esmljp.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782740838/IMG_6223_jm9yaf.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782740839/IMG_6307_v9gr8z.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782282314/z7967139980045_b79316869706d1d8c8d99e47193b2ac9_ujg9wl.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782282303/1I7O0RCLA_807RV1_wqfgsm.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782282303/1I7O0673N_807RV1_uul4fi.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782282303/1I7O0STUI_807RV1_zd4mfp.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782282303/1I7O06756_807RV1_nmbedo.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782282304/IMG_1453_cdemy8.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782282304/IMG_4525_lrtsnp.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782282304/IMG_3439_hkwkvx.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782282304/IMG_4380_kq3oeo.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782282304/cooking-01_o8lfpu.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782282305/z7968429780516_ed3414230415a7c391c708e440c036ea_u6jfzv.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782282305/z7968429778881_5f6d3590f7d3e8e27e2807f4dee17d30_ll328j.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782282305/z7968429789926_2cee510c4a1fcc5c38e155cf0e9a8c89_qpeuq0.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782282306/z7968424123252_04538f7930f4a203cb045cf78f35c5e1_b0j83z.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782282306/z7968429804592_c73c35c379542a9a9cf84bdf4a6f65cd_ejk58z.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782282306/z7968429799221_4b614d5dd6e337d57700753941512cde_ubjsn6.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782282307/z7968429819693_c6673d877717c06288b6ff3c601d8c18_fc8uu4.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782282307/z7968429808486_b72b31104301936ff3b36f8bd83fce02_phantx.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782282308/z7968429820039_d4fa4ea8d6f3232e18fb2c776d40bd40_bwgqgy.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782282309/z7968429899720_2da92c0523a8b0555399d4c4447673bf_vzy7jl.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782282309/z7968429827395_d430d5120ea6db8bf3445f2bede644a7_hwjbub.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782282309/z7968429847045_3b3b7c942e34698b602055e82977437c_llpins.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782282310/1I7O0NQKP_807RV1_podkof.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782282310/IMG_4576_pnaffv.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782282311/IMG_4811_i8cbrr.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782282313/IMG_4893_cxpan0.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782282314/1I7O0HO1M_807RV1_ke0hfu.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782282315/1I7O09M9L_807RV1_emdymh.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782282316/IMG_3392_nrcseo.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782282315/IMG_2162_wyxrim.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782282317/tranh_zjsuvw.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782282317/IMG_3898_o32x1x.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782282316/IMG_3607_ldtmki.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782282318/1I7O0NQP3_807RV1_xacrrq.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782282318/1I7O0RCCT_807RV1_xxljt6.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782486572/IMG_5413_yspnqz.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782486572/IMG_6276_pu7q0w.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782567987/IMG_6285_cs6xxj.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782743511/IMG_5331_p5s2mb.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782743510/IMG_5058_ohghln.webp"
                     data-pinned-image="https://res.cloudinary.com/dtpw5htqs/image/upload/v1782282314/z7967139980045_b79316869706d1d8c8d99e47193b2ac9_ujg9wl.webp">
                 </section>
+                <div class="family-upload-mobile">
+                    <button type="button" class="family-upload-mobile__btn" id="cooking-upload-open-mobile">
+                        <i class="fas fa-camera" aria-hidden="true"></i><span>Upload</span>
+                    </button>
+                </div>
+                <button type="button" class="family-upload-fab" id="cooking-upload-open-desktop" aria-label="Upload ảnh">
+                    <i class="fas fa-camera" aria-hidden="true"></i>
+                </button>
             </main>
         </div><!-- /view-cooking -->
 
         <div class="spa-view is-hidden" id="view-campus">
-            <main class="bio-card album-page">
+            <main class="bio-card album-page" style="position:relative;">
                 <header class="life-header">
                     <button type="button" class="life-back" id="btn-back-campus" aria-label="Quay lại Góc riêng">
                         <i class="fas fa-arrow-left" aria-hidden="true"></i>
@@ -325,7 +346,15 @@
                     <h1 class="life-title">Thằng Hiếu chưa cập nhật 🌷</h1>
                 </header>
 
-                <section class="photo-gallery" aria-label="Album sinh viên" data-gallery-placeholders="0"></section>
+                <section class="photo-gallery" aria-label="Album sinh viên" data-live-scope="campus"></section>
+                <div class="family-upload-mobile">
+                    <button type="button" class="family-upload-mobile__btn" id="campus-upload-open-mobile">
+                        <i class="fas fa-camera" aria-hidden="true"></i><span>Upload</span>
+                    </button>
+                </div>
+                <button type="button" class="family-upload-fab" id="campus-upload-open-desktop" aria-label="Upload ảnh">
+                    <i class="fas fa-camera" aria-hidden="true"></i>
+                </button>
             </main>
         </div><!-- /view-campus -->
     </div><!-- /spa-shell -->
@@ -366,6 +395,17 @@
             <div class="upload-modal__dropzone" id="upload-dropzone">
                 <i class="fas fa-camera upload-modal__dropzone-icon" aria-hidden="true"></i>
                 <span class="upload-modal__dropzone-label">Chọn ảnh để gửi</span>
+            </div>
+
+            <div class="upload-modal__pin-options" id="upload-pin-options" aria-label="Pin image" hidden>
+                <label class="upload-modal__pin-choice">
+                    <input type="radio" name="upload-pin" value="pinned">
+                    <span><i class="fas fa-thumbtack" aria-hidden="true"></i> Ghim ảnh</span>
+                </label>
+                <label class="upload-modal__pin-choice">
+                    <input type="radio" name="upload-pin" value="normal" checked>
+                    <span>Không ghim</span>
+                </label>
             </div>
 
             <!-- Preview grid -->
@@ -432,6 +472,15 @@
 
             function setView(id, direction) {
                 if (!views[id] || id === currentView) return;
+                if (currentView && window.suspendTimeboxGallery) {
+                    window.suspendTimeboxGallery(currentView);
+                }
+                if (currentView === 'family' && id !== 'family') {
+                    clearFamilyUnlock();
+                }
+                if (currentView === 'friends' && id !== 'friends') {
+                    clearFriendsUnlock();
+                }
                 Object.keys(views).forEach(function (key) {
                     views[key].classList.add('is-hidden');
                     views[key].classList.remove('anim-enter-right', 'anim-enter-left');
@@ -439,9 +488,15 @@
                 views[id].classList.remove('is-hidden');
                 void views[id].offsetWidth;
                 views[id].classList.add(direction === 'back' ? 'anim-enter-left' : 'anim-enter-right');
+                views[id].addEventListener('animationend', function () {
+                    views[id].classList.remove('anim-enter-right', 'anim-enter-left');
+                }, { once: true });
                 currentView = id;
                 document.title = titles[id] || 'Timebox';
                 window.scrollTo(0, 0);
+                if (window.ensureTimeboxGallery) {
+                    window.ensureTimeboxGallery(id);
+                }
             }
 
             function goForward(id) {
@@ -490,6 +545,52 @@
 
             var btnGoFriends = document.getElementById('btn-go-friends');
             var btnBackFriends = document.getElementById('btn-back-friends');
+            var FAMILY_UNLOCK_KEY = 'timebox-family-unlocked-until';
+            var FAMILY_UNLOCK_MS = 7 * 60 * 1000;
+            var FRIENDS_UNLOCK_KEY = 'timebox-friends-unlocked-until';
+            var FRIENDS_UNLOCK_MS = 7 * 60 * 1000;
+
+            function hasFamilyUnlock() {
+                try {
+                    var expiresAt = Number(sessionStorage.getItem(FAMILY_UNLOCK_KEY) || 0);
+                    if (expiresAt > Date.now()) return true;
+                    sessionStorage.removeItem(FAMILY_UNLOCK_KEY);
+                } catch (e) { }
+                return false;
+            }
+
+            function clearFamilyUnlock() {
+                try {
+                    sessionStorage.removeItem(FAMILY_UNLOCK_KEY);
+                } catch (e) { }
+            }
+
+            function hasFriendsUnlock() {
+                try {
+                    var expiresAt = Number(sessionStorage.getItem(FRIENDS_UNLOCK_KEY) || 0);
+                    if (expiresAt > Date.now()) return true;
+                    sessionStorage.removeItem(FRIENDS_UNLOCK_KEY);
+                } catch (e) { }
+                return false;
+            }
+
+            function clearFriendsUnlock() {
+                try {
+                    sessionStorage.removeItem(FRIENDS_UNLOCK_KEY);
+                } catch (e) { }
+            }
+
+            window._rememberFamilyUnlock = function () {
+                try {
+                    sessionStorage.setItem(FAMILY_UNLOCK_KEY, String(Date.now() + FAMILY_UNLOCK_MS));
+                } catch (e) { }
+            };
+
+            window._rememberFriendsUnlock = function () {
+                try {
+                    sessionStorage.setItem(FRIENDS_UNLOCK_KEY, String(Date.now() + FRIENDS_UNLOCK_MS));
+                } catch (e) { }
+            };
 
             if (btnGoLife) btnGoLife.addEventListener('click', function () { goForward('life'); });
             if (btnGoMoments) btnGoMoments.addEventListener('click', function () { goForward('moments'); });
@@ -545,12 +646,16 @@
             var protectedInitialView = requestedView === 'family' || requestedView === 'friends'
                 ? requestedView
                 : '';
-            var initialView = protectedInitialView ? 'home' : requestedView;
+            var familyAlreadyUnlocked = requestedView === 'family' && hasFamilyUnlock();
+            var friendsAlreadyUnlocked = requestedView === 'friends' && hasFriendsUnlock();
+            var initialView = familyAlreadyUnlocked || friendsAlreadyUnlocked
+                ? requestedView
+                : (protectedInitialView ? 'home' : requestedView);
             history.replaceState({ spaView: initialView, spaDepth: currentDepth }, '', getViewUrl(initialView));
             setView(initialView, 'forward');
-            if (protectedInitialView === 'family' && btnGoFamily) {
+            if (!familyAlreadyUnlocked && protectedInitialView === 'family' && btnGoFamily) {
                 setTimeout(function () { btnGoFamily.click(); }, 0);
-            } else if (protectedInitialView === 'friends' && btnGoFriends) {
+            } else if (!friendsAlreadyUnlocked && protectedInitialView === 'friends' && btnGoFriends) {
                 setTimeout(function () { btnGoFriends.click(); }, 0);
             }
         })();
@@ -566,29 +671,61 @@
             var sendBtn = document.getElementById('upload-send-btn');
             var statusEl = document.getElementById('upload-status');
             var fileInput = document.getElementById('upload-input');
+            var pinOptions = document.getElementById('upload-pin-options');
+            var pinInputs = document.querySelectorAll('input[name="upload-pin"]');
             var openBtn = document.getElementById('btn-upload-open');
             var familyDesktopBtn = document.getElementById('family-upload-open-desktop');
             var familyMobileBtn = document.getElementById('family-upload-open-mobile');
+            var keepsakesDesktopBtn = document.getElementById('keepsakes-upload-open-desktop');
+            var keepsakesMobileBtn = document.getElementById('keepsakes-upload-open-mobile');
+            var friendsDesktopBtn = document.getElementById('friends-upload-open-desktop');
+            var friendsMobileBtn = document.getElementById('friends-upload-open-mobile');
+            var cookingDesktopBtn = document.getElementById('cooking-upload-open-desktop');
+            var cookingMobileBtn = document.getElementById('cooking-upload-open-mobile');
+            var campusDesktopBtn = document.getElementById('campus-upload-open-desktop');
+            var campusMobileBtn = document.getElementById('campus-upload-open-mobile');
 
+            var GALLERY_API = 'https://timebox.trghy.workers.dev';
             var CLOUD_NAME = 'dtpw5htqs';
             var UPLOAD_PRESET = 'Upload_img';
             var MAX_FILES = 10;
             var MAX_SIZE = 20 * 1024 * 1024;
             var selected = [];
             var uploading = false;
+            var activeUploadScope = '';
+            var activeUploadPreset = UPLOAD_PRESET;
             var statusTimer = null;
+            var previewUrls = [];
 
-            function openModal() {
+            function releasePreviewUrls() {
+                previewUrls.forEach(function (url) {
+                    try { URL.revokeObjectURL(url); } catch (e) { }
+                });
+                previewUrls = [];
+            }
+
+            function openModal(scope, uploadPreset) {
+                activeUploadScope = scope || '';
+                activeUploadPreset = uploadPreset || UPLOAD_PRESET;
+                setStatus('');
+                if (pinOptions) pinOptions.hidden = !activeUploadScope;
+                Array.prototype.forEach.call(pinInputs, function (input) {
+                    input.checked = input.value === 'normal';
+                });
                 document.body.classList.add('is-modal-open');
                 modal.classList.add('is-open');
                 modal.setAttribute('aria-hidden', 'false');
             }
 
-            function closeModal() {
-                if (uploading) return;
+            function closeModal(force) {
+                if (uploading && force !== true) return;
                 document.body.classList.remove('is-modal-open');
                 modal.classList.remove('is-open');
                 modal.setAttribute('aria-hidden', 'true');
+                selected = [];
+                fileInput.value = '';
+                renderPreview();
+                setStatus('');
             }
 
             function setStatus(msg, duration, cb) {
@@ -604,6 +741,7 @@
             }
 
             function renderPreview() {
+                releasePreviewUrls();
                 preview.innerHTML = '';
                 if (!selected.length) {
                     preview.hidden = true;
@@ -616,8 +754,9 @@
                     wrap.className = 'upload-modal__preview-item';
                     var img = document.createElement('img');
                     img.alt = file.name;
-                    img.src = URL.createObjectURL(file);
-                    img.onload = function () { URL.revokeObjectURL(img.src); };
+                    var previewUrl = URL.createObjectURL(file);
+                    previewUrls.push(previewUrl);
+                    img.src = previewUrl;
                     var rm = document.createElement('button');
                     rm.type = 'button';
                     rm.className = 'upload-modal__preview-remove';
@@ -647,25 +786,71 @@
                 renderPreview();
             }
 
-            function uploadOne(file) {
+            function isPinnedUpload() {
+                var checked = document.querySelector('input[name="upload-pin"]:checked');
+                return Boolean(activeUploadScope && checked && checked.value === 'pinned');
+            }
+
+            function getUploadSignature(scope, pinned) {
+                return fetch(GALLERY_API + '/gallery/upload-signature', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ scope: scope, pinned: pinned === true })
+                }).then(function (response) {
+                    return response.json().catch(function () {
+                        return { ok: false, message: 'Máy chủ trả dữ liệu không hợp lệ' };
+                    }).then(function (data) {
+                        if (!response.ok || !data.ok) {
+                            throw new Error(data.message || 'Không thể cấp quyền upload');
+                        }
+                        return data;
+                    });
+                });
+            }
+
+            function uploadOne(file, signed) {
                 var fd = new FormData();
                 fd.append('file', file);
-                fd.append('upload_preset', UPLOAD_PRESET);
-                return fetch('https://api.cloudinary.com/v1_1/' + CLOUD_NAME + '/image/upload', {
+                var uploadUrl;
+
+                if (signed) {
+                    fd.append('api_key', signed.apiKey);
+                    fd.append('timestamp', String(signed.timestamp));
+                    fd.append('signature', signed.signature);
+                    fd.append('asset_folder', signed.assetFolder);
+                    fd.append('tags', signed.tags);
+                    uploadUrl = signed.uploadUrl;
+                } else {
+                    fd.append('upload_preset', activeUploadPreset);
+                    uploadUrl = 'https://api.cloudinary.com/v1_1/' + CLOUD_NAME + '/image/upload';
+                }
+
+                return fetch(uploadUrl, {
                     method: 'POST', body: fd
                 }).then(function (r) { return r.json(); }).then(function (d) {
-                    if (!d.secure_url) throw new Error('fail');
+                    if (!d.secure_url) {
+                        throw new Error(d && d.error && d.error.message ? d.error.message : 'Upload thất bại');
+                    }
                     return d.secure_url;
                 });
             }
 
             /* open */
-            if (openBtn) openBtn.addEventListener('click', openModal);
-            if (familyDesktopBtn) familyDesktopBtn.addEventListener('click', openModal);
-            if (familyMobileBtn) familyMobileBtn.addEventListener('click', openModal);
+            if (openBtn) openBtn.addEventListener('click', function () { openModal('', 'Upload_img'); });
+            if (familyDesktopBtn) familyDesktopBtn.addEventListener('click', function () { openModal('family'); });
+            if (familyMobileBtn) familyMobileBtn.addEventListener('click', function () { openModal('family'); });
+            if (keepsakesDesktopBtn) keepsakesDesktopBtn.addEventListener('click', function () { openModal('keepsakes'); });
+            if (keepsakesMobileBtn) keepsakesMobileBtn.addEventListener('click', function () { openModal('keepsakes'); });
+            if (friendsDesktopBtn) friendsDesktopBtn.addEventListener('click', function () { openModal('friends'); });
+            if (friendsMobileBtn) friendsMobileBtn.addEventListener('click', function () { openModal('friends'); });
+            if (cookingDesktopBtn) cookingDesktopBtn.addEventListener('click', function () { openModal('cooking'); });
+            if (cookingMobileBtn) cookingMobileBtn.addEventListener('click', function () { openModal('cooking'); });
+            if (campusDesktopBtn) campusDesktopBtn.addEventListener('click', function () { openModal('campus'); });
+            if (campusMobileBtn) campusMobileBtn.addEventListener('click', function () { openModal('campus'); });
             closeBtn.addEventListener('click', closeModal);
             backdrop.addEventListener('click', closeModal);
             document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeModal(); });
+            window.addEventListener('pagehide', releasePreviewUrls);
 
             /* pick files */
             dropzone.addEventListener('click', function () { fileInput.click(); });
@@ -684,25 +869,55 @@
             sendBtn.addEventListener('click', function () {
                 if (!selected.length || uploading) return;
                 var files = selected.slice();
+                var uploadScope = activeUploadScope;
+                var pinUpload = isPinnedUpload();
                 uploading = true;
                 sendBtn.disabled = true;
                 closeBtn.disabled = true;
                 setStatus('Đang gửi ' + files.length + ' ảnh...');
 
-                Promise.allSettled(files.map(uploadOne)).then(function (results) {
+                var signaturePromise = uploadScope
+                    ? getUploadSignature(uploadScope, pinUpload)
+                    : Promise.resolve(null);
+
+                signaturePromise.then(function (signed) {
+                    return Promise.allSettled(files.map(function (file) {
+                        return uploadOne(file, signed);
+                    }));
+                }).then(function (results) {
                     var ok = results.filter(function (r) { return r.status === 'fulfilled'; }).length;
                     var fail = files.length - ok;
                     selected = [];
                     renderPreview();
+                    if (ok > 0 && uploadScope && window.prependTimeboxGallery) {
+                        var uploadedUrls = results.filter(function (result) {
+                            return result.status === 'fulfilled';
+                        }).map(function (result) {
+                            return result.value;
+                        });
+                        window.prependTimeboxGallery(uploadScope, uploadedUrls, pinUpload);
+                    }
                     if (fail === 0) {
-                        setStatus('Cảm ơn bạn đã gửi ảnh 🌷', 2200, closeModal);
+                        setStatus('');
+                        closeModal(true);
+                        if (window.showTimeboxToast) {
+                            window.showTimeboxToast('Cảm ơn bạn đã gửi ảnh 🌷');
+                        }
                     } else if (ok > 0) {
-                        setStatus('Gửi được ' + ok + '/' + files.length + ' ảnh 🌷', 3000, closeModal);
+                        setStatus('');
+                        closeModal(true);
+                        if (window.showTimeboxToast) {
+                            window.showTimeboxToast('Gửi được ' + ok + '/' + files.length + ' ảnh 🌷');
+                        }
                     } else {
                         selected = files;
                         renderPreview();
                         setStatus('Gửi thất bại, thử lại nhé!', 3000);
                     }
+                }).catch(function (error) {
+                    selected = files;
+                    renderPreview();
+                    setStatus(error.message || 'Gửi thất bại, thử lại nhé!', 3000);
                 }).finally(function () {
                     uploading = false;
                     sendBtn.disabled = false;
@@ -786,7 +1001,13 @@
                     if (result.ok) {
                         closeModal();
                         if (action === 'family' || action === 'friends') {
-                            // SPA navigate — không lưu session, mỗi lần đều hỏi lại
+                            if (action === 'family' && window._rememberFamilyUnlock) {
+                                window._rememberFamilyUnlock();
+                            }
+                            if (action === 'friends' && window._rememberFriendsUnlock) {
+                                window._rememberFriendsUnlock();
+                            }
+                            // Family/Friends được nhớ tạm 7 phút; mật khẩu không được lưu ở trình duyệt.
                             window._spaGoForward && window._spaGoForward(action);
                         } else if (targetHref) {
                             rememberUnlockedPage(targetHref);

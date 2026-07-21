@@ -29,6 +29,7 @@
     var MOMENTS_MAX_SIZE_MB = 20;
     var MOMENTS_MAX_SIZE = MOMENTS_MAX_SIZE_MB * 1024 * 1024;
     var selectedMomentsFiles = [];
+    var momentsPreviewUrls = [];
     var momentsStatusTimer = null;
     var momentsUploading = false;
     var DEFAULT_TOAST_MESSAGE = toast ? toast.textContent : 'Mục này đang được cập nhật, hãy quay lại sau nhé!';
@@ -47,7 +48,8 @@
         'Mình đang yêu người đó theo cách hiện tại, hay mình đang giữ một phần của bản thân mình trong quá khứ.',
         'Anh học thêm, để kể em nhiều — Em học thêm, để hiểu những gì anh kể.',
         'Bất kể là mối quan hệ gì, khi người khác không cần. Bạn phải học cách thu hồi sự nhiệt tình và lịch sự rời đi.',
-        'Đừng mải mê một ánh mặt trời đã lặn, mà quên ngước nhìn bầu trời đầy sao'
+        'Đừng mải mê một ánh mặt trời đã lặn, mà quên ngước nhìn bầu trời đầy sao',
+        'Khi tình cảm vừa nảy sinh, điều đầu tiên mà tôi nghĩ đến lại là làm thế nào để phớt lờ nhau.'
     ];
     var specialThoughtIndexes = [1, 7, 11];
 
@@ -191,9 +193,17 @@
         }
     }
 
+    function releaseMomentsPreviewUrls() {
+        momentsPreviewUrls.forEach(function (url) {
+            try { URL.revokeObjectURL(url); } catch (e) { }
+        });
+        momentsPreviewUrls = [];
+    }
+
     function renderMomentsPreview() {
         if (!momentsPreview || !momentsSendBtn || !momentsUploadHint) return;
 
+        releaseMomentsPreviewUrls();
         momentsPreview.innerHTML = '';
 
         if (!selectedMomentsFiles.length) {
@@ -210,10 +220,9 @@
 
             item.className = 'moments-upload-preview__item';
             img.alt = file.name;
-            img.src = URL.createObjectURL(file);
-            img.onload = function () {
-                URL.revokeObjectURL(img.src);
-            };
+            var previewUrl = URL.createObjectURL(file);
+            momentsPreviewUrls.push(previewUrl);
+            img.src = previewUrl;
             removeBtn.type = 'button';
             removeBtn.className = 'moments-upload-preview__remove';
             removeBtn.setAttribute('aria-label', 'Xóa ảnh ' + file.name);
@@ -278,6 +287,7 @@
     }
 
     function resetMomentsUpload() {
+        releaseMomentsPreviewUrls();
         selectedMomentsFiles = [];
         if (momentsPreview) {
             momentsPreview.innerHTML = '';
@@ -364,6 +374,7 @@
         overlay.classList.remove('is-open');
         overlay.classList.remove('is-upload-mode');
         overlay.setAttribute('aria-hidden', 'true');
+        resetMomentsUpload();
 
         var url = new URL(window.location.href);
         if (url.searchParams.has('category')) {
@@ -570,4 +581,5 @@
             closeThoughtsGuideNotice();
         }
     });
+    window.addEventListener('pagehide', releaseMomentsPreviewUrls);
 })();

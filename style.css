@@ -47,6 +47,8 @@
 /* ---------- Body & Background ---------- */
 html {
     scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
 }
 
 body {
@@ -56,6 +58,7 @@ body {
         linear-gradient(135deg, var(--bg-start), var(--bg-end));
     color: var(--text-primary);
     min-height: 100vh;
+    min-height: 100dvh;
     display: flex;
     justify-content: center;
     align-items: flex-start;
@@ -1345,8 +1348,9 @@ body.is-page-transitioning {
     animation: skeleton-shimmer 1.4s ease infinite;
 }
 
-.photo-card img.is-loaded~.photo-card {
+.photo-card.is-loaded {
     animation: none;
+    background: var(--card-bg);
 }
 
 @keyframes skeleton-shimmer {
@@ -2235,6 +2239,7 @@ button,
 
     .link-btn:hover,
     .group-card:hover,
+    .photo-card:hover,
     .profile-name-btn:hover,
     .link-btn:hover::before,
     .link-btn:hover::after,
@@ -2242,6 +2247,10 @@ button,
     .group-card:hover .group-card__arrow {
         transform: none;
         box-shadow: none;
+    }
+
+    .photo-card {
+        touch-action: manipulation;
     }
 
     .link-btn:active {

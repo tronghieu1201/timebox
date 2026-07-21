@@ -165,6 +165,7 @@
 
     /* ---- Prefetch sub-pages on life.html ---- */
     (function () {
+        if (!/\/life\.html$/i.test(window.location.pathname)) return;
         var subPages = ['./moments.html', './campus.html', './cooking.html'];
         // Prefetch after a short idle delay so it doesn't compete with initial load
         var schedFn = window.requestIdleCallback || function (cb) { setTimeout(cb, 400); };
@@ -314,9 +315,11 @@
     var photoLightboxImg = document.getElementById('photo-lightbox-img');
     var photoLightboxCaption = document.getElementById('photo-lightbox-caption');
     var photoLightboxClose = document.getElementById('photo-lightbox-close');
+    var photoLightboxReleaseTimer = null;
 
     function openPhotoLightbox(card) {
         if (!photoLightbox || !photoLightboxImg) return;
+        clearTimeout(photoLightboxReleaseTimer);
         var src = card.getAttribute('data-full');
         var title = card.getAttribute('data-title') || '';
         var meta = card.getAttribute('data-meta') || '';
@@ -360,6 +363,14 @@
         document.body.classList.remove('is-modal-open');
         photoLightbox.classList.remove('is-open', 'is-loading');
         photoLightbox.setAttribute('aria-hidden', 'true');
+        photoLightboxImg.dataset.requestId = '';
+        photoLightboxReleaseTimer = setTimeout(function () {
+            photoLightboxImg.onload = null;
+            photoLightboxImg.onerror = null;
+            photoLightboxImg.removeAttribute('srcset');
+            photoLightboxImg.removeAttribute('src');
+            if (photoLightboxCaption) photoLightboxCaption.textContent = '';
+        }, 220);
     }
 
     function isImageFile(path) {
@@ -387,10 +398,14 @@
         });
     }
 
-    function createPhotoCard(gallery, src, name, fullSrc, originalSrc, thumbSrcset, fullSrcset, isPriority) {
+    function createPhotoCard(gallery, src, name, fullSrc, originalSrc, thumbSrcset, fullSrcset, isPriority, isPinnedUpload) {
         var card = document.createElement('button');
         var img = document.createElement('img');
-        var isPinned = isPinnedPhotoCard(gallery, originalSrc || fullSrc || src, fullSrc || src);
+        var isPinned = isPinnedUpload === true || isPinnedPhotoCard(
+            gallery,
+            originalSrc || fullSrc || src,
+            fullSrc || src
+        );
 
         card.className = 'photo-card';
         card.type = 'button';
@@ -418,9 +433,11 @@
         
         img.onload = function () {
             img.classList.add('is-loaded');
+            card.classList.add('is-loaded');
         };
         if (img.complete) {
             img.classList.add('is-loaded');
+            card.classList.add('is-loaded');
         }
 
         card.appendChild(img);
@@ -514,7 +531,17 @@
         gallery.innerHTML = '';
         gallery._currentPage = currentPage;
         visiblePhotos.forEach(function (photo, index) {
-            createPhotoCard(gallery, photo.thumb || photo.src, photo.name, photo.full || photo.src, photo.src, photo.thumbSrcset, photo.fullSrcset, index < 3);
+            createPhotoCard(
+                gallery,
+                photo.thumb || photo.src,
+                photo.name,
+                photo.full || photo.src,
+                photo.src,
+                photo.thumbSrcset,
+                photo.fullSrcset,
+                index < 3,
+                photo.isPinnedUpload === true
+            );
         });
         createPhotoPager(gallery, pageCount, currentPage, function (nextPage) {
             gallery.classList.add('is-changing');
@@ -599,10 +626,20 @@
 
     function applyPinnedPhotoOrder(gallery, photos) {
         var pinnedUrls = getPinnedPhotoUrls(gallery).map(normalizeGalleryPhotoUrl);
-        if (!pinnedUrls.length || !photos.length) return photos;
+        if (!photos.length) return photos;
+
+        // Ảnh lấy trực tiếp từ folder luôn đứng trước toàn bộ URL cũ.
+        var livePinnedPhotos = photos.filter(function (photo) {
+            return photo.isLive && photo.isPinnedUpload;
+        });
+        var liveNormalPhotos = photos.filter(function (photo) {
+            return photo.isLive && !photo.isPinnedUpload;
+        });
+        var nonLivePhotos = photos.filter(function (photo) { return !photo.isLive; });
+        if (!pinnedUrls.length) return livePinnedPhotos.concat(liveNormalPhotos, nonLivePhotos);
 
         var pinnedPhotos = [];
-        var remainingPhotos = photos.slice();
+        var remainingPhotos = nonLivePhotos.slice();
 
         pinnedUrls.forEach(function (pinnedUrl) {
             var pinnedIndex = -1;
@@ -618,7 +655,7 @@
             }
         });
 
-        return pinnedPhotos.concat(remainingPhotos);
+        return pinnedPhotos.concat(livePinnedPhotos, liveNormalPhotos, remainingPhotos);
     }
 
     function getCloudinaryGalleryPhotos(gallery) {
@@ -699,9 +736,105 @@
         }));
     }
 
+    var LIVE_GALLERY_API = 'https://timebox.trghy.workers.dev/gallery/images';
+
+    function getLiveGalleryPhotos(scope) {
+        return fetch(LIVE_GALLERY_API + '?scope=' + encodeURIComponent(scope), {
+            headers: { 'Accept': 'application/json' },
+            cache: 'no-store'
+        }).then(function (response) {
+            return response.json().catch(function () {
+                return { ok: false, message: 'Máy chủ trả dữ liệu không hợp lệ' };
+            }).then(function (data) {
+                if (!response.ok || !data.ok) {
+                    throw new Error(data.message || 'Không thể tải ảnh mới');
+                }
+                return (data.images || []).map(function (image) {
+                    var src = image.src || '';
+                    return {
+                        src: src,
+                        thumb: getCloudinaryVariant(src, 'f_auto,q_auto:good,c_limit,w_720'),
+                        thumbSrcset: getCloudinarySrcset(src, [360, 540, 720, 960], 'q_auto:good'),
+                        full: getCloudinaryVariant(src, 'f_auto,q_auto:best,c_limit,w_2400'),
+                        fullSrcset: getCloudinarySrcset(src, [1200, 1800, 2400], 'q_auto:best'),
+                        name: image.publicId || 'Ảnh mới',
+                        time: Date.parse(image.createdAt || '') || 0,
+                        isLive: true,
+                        isPinnedUpload: image.pinned === true
+                    };
+                }).filter(function (photo) {
+                    return photo.src && isImageFile(photo.src);
+                });
+            });
+        });
+    }
+
+    function mergeGalleryPhotos(livePhotos, oldPhotos) {
+        var seen = {};
+        return livePhotos.concat(oldPhotos).filter(function (photo) {
+            var key = normalizeGalleryPhotoUrl(photo.src);
+            if (!key || seen[key]) return false;
+            seen[key] = true;
+            return true;
+        });
+    }
+
+    function refreshLiveGallery(gallery) {
+        var scope = gallery.getAttribute('data-live-scope');
+        if (!scope) return Promise.resolve();
+        var oldPhotos = getCloudinaryGalleryPhotos(gallery);
+
+        return getLiveGalleryPhotos(scope).then(function (livePhotos) {
+            var mergedPhotos = mergeGalleryPhotos(livePhotos, oldPhotos);
+            gallery._lastGalleryRefresh = Date.now();
+            if (gallery._isSuspended) {
+                gallery._photos = applyPinnedPhotoOrder(gallery, sortPhotosNewestFirst(mergedPhotos));
+            } else {
+                renderPhotoGallery(gallery, mergedPhotos);
+            }
+        }).catch(function () {
+            // Nếu Worker tạm lỗi, các URL ảnh cũ vẫn hiển thị bình thường.
+            if (!gallery._photos && oldPhotos.length) renderPhotoGallery(gallery, oldPhotos);
+            if (!gallery._photos) gallery._hasLoaded = false;
+        });
+    }
+
+    window.refreshTimeboxGallery = function (scope) {
+        var gallery = document.querySelector('.photo-gallery[data-live-scope="' + scope + '"]');
+        return gallery ? refreshLiveGallery(gallery) : Promise.resolve();
+    };
+
+    window.prependTimeboxGallery = function (scope, urls, pinned) {
+        var gallery = document.querySelector('.photo-gallery[data-live-scope="' + scope + '"]');
+        if (!gallery || !urls || !urls.length) return;
+        var now = Date.now();
+        var uploadedPhotos = urls.map(function (src, index) {
+            return {
+                src: src,
+                thumb: getCloudinaryVariant(src, 'f_auto,q_auto:good,c_limit,w_720'),
+                thumbSrcset: getCloudinarySrcset(src, [360, 540, 720, 960], 'q_auto:good'),
+                full: getCloudinaryVariant(src, 'f_auto,q_auto:best,c_limit,w_2400'),
+                fullSrcset: getCloudinarySrcset(src, [1200, 1800, 2400], 'q_auto:best'),
+                name: decodeURIComponent((src.split('?')[0].split('/').pop() || 'Ảnh mới')),
+                time: now - index,
+                isLive: true,
+                isPinnedUpload: pinned === true
+            };
+        });
+        var currentPhotos = gallery._photos || getCloudinaryGalleryPhotos(gallery);
+        renderPhotoGallery(gallery, mergeGalleryPhotos(uploadedPhotos, currentPhotos));
+    };
+
     function loadPhotoGallery(gallery) {
+        gallery._hasLoaded = true;
+        gallery._isSuspended = false;
         var dir = gallery.getAttribute('data-gallery-dir');
         var cloudinaryPhotos = getCloudinaryGalleryPhotos(gallery);
+        if (gallery.hasAttribute('data-live-scope')) {
+            if (cloudinaryPhotos.length) renderPhotoGallery(gallery, cloudinaryPhotos);
+            refreshLiveGallery(gallery);
+            return;
+        }
         if (cloudinaryPhotos.length) {
             renderPhotoGallery(gallery, applyPinnedPhotoOrder(gallery, cloudinaryPhotos));
             return;
@@ -769,8 +902,43 @@
             });
     }
 
-    document.querySelectorAll('.photo-gallery[data-gallery-dir], .photo-gallery[data-gallery-cloudinary]').forEach(function (gallery) {
-        loadPhotoGallery(gallery);
+    var gallerySelector = '.photo-gallery[data-gallery-dir], .photo-gallery[data-gallery-cloudinary], .photo-gallery[data-live-scope]';
+
+    function ensurePhotoGalleryLoaded(gallery) {
+        if (!gallery) return;
+        gallery._isSuspended = false;
+        if (gallery._photos) {
+            renderPhotoGalleryPage(gallery, gallery._photos, gallery._currentPage || 1);
+            if (gallery.hasAttribute('data-live-scope') &&
+                Date.now() - (gallery._lastGalleryRefresh || 0) > 2 * 60 * 1000) {
+                refreshLiveGallery(gallery);
+            }
+            return;
+        }
+        if (!gallery._hasLoaded) loadPhotoGallery(gallery);
+    }
+
+    window.ensureTimeboxGallery = function (viewId) {
+        var view = document.getElementById('view-' + viewId);
+        var gallery = view ? view.querySelector(gallerySelector) : null;
+        ensurePhotoGalleryLoaded(gallery);
+    };
+
+    window.suspendTimeboxGallery = function (viewId) {
+        var view = document.getElementById('view-' + viewId);
+        var gallery = view ? view.querySelector(gallerySelector) : null;
+        if (!gallery) return;
+        gallery._isSuspended = true;
+        gallery.innerHTML = '';
+        var pager = gallery.parentElement.querySelector('.photo-pager');
+        if (pager) pager.remove();
+    };
+
+    document.querySelectorAll(gallerySelector).forEach(function (gallery) {
+        var spaView = gallery.closest('.spa-view');
+        if (!spaView || !spaView.classList.contains('is-hidden')) {
+            ensurePhotoGalleryLoaded(gallery);
+        }
     });
 
     // Debounce resize event
@@ -779,8 +947,8 @@
         window.addEventListener('resize', function () {
             clearTimeout(resizeTimer);
             resizeTimer = setTimeout(function () {
-                document.querySelectorAll('.photo-gallery[data-gallery-dir], .photo-gallery[data-gallery-cloudinary]').forEach(function (gallery) {
-                    if (gallery._photos) {
+                document.querySelectorAll(gallerySelector).forEach(function (gallery) {
+                    if (gallery._photos && !gallery._isSuspended) {
                         var currentPage = gallery._currentPage || 1;
                         renderPhotoGalleryPage(gallery, gallery._photos, currentPage);
                     }
@@ -901,6 +1069,8 @@
             toast.classList.remove('is-visible');
         }, 2000);
     }
+
+    window.showTimeboxToast = showToast;
 
     if (emailBtn) {
         emailBtn.addEventListener('click', function () {
