@@ -163,19 +163,9 @@
             var input = document.getElementById('key-input');
             var error = document.getElementById('key-error');
             var closeBtn = document.getElementById('key-close');
+            var AUTH_API = 'https://timebox.trghy.workers.dev/verify';
             var targetHref = '';
-            var targetKeyHash = '';
             var defaultPlaceholder = '';
-            var KEY_HASH = '4d18b69a768ca124246afb1ab533333f957d67650b8a9ef8c67ea7ffa7200c1a';
-
-            function sha256(str) {
-                var buf = new TextEncoder().encode(str);
-                return crypto.subtle.digest('SHA-256', buf).then(function (hashBuf) {
-                    return Array.from(new Uint8Array(hashBuf)).map(function (b) {
-                        return b.toString(16).padStart(2, '0');
-                    }).join('');
-                });
-            }
 
             function getUnlockStorageKey(url) {
                 var targetUrl = new URL(url, window.location.href);
@@ -189,7 +179,6 @@
 
             function openModal(card) {
                 targetHref = card ? card.getAttribute('data-locked-href') || '' : '';
-                targetKeyHash = card ? card.getAttribute('data-key') || KEY_HASH : KEY_HASH;
                 if (input) input.setAttribute('placeholder', card ? card.getAttribute('data-key-placeholder') || defaultPlaceholder : defaultPlaceholder);
                 if (error) error.textContent = '';
                 if (input) input.value = '';
@@ -204,7 +193,6 @@
                 modal.classList.remove('is-open');
                 modal.setAttribute('aria-hidden', 'true');
                 targetHref = '';
-                targetKeyHash = '';
                 if (input) input.setAttribute('placeholder', defaultPlaceholder);
             }
 
@@ -224,19 +212,29 @@
                 }
                 var submitBtn = form.querySelector('button[type="submit"]');
                 if (submitBtn) submitBtn.disabled = true;
+                var scope = /friends/i.test(targetHref) ? 'friends' : 'family';
 
-                sha256(keyValue).then(function (hash) {
-                    if (hash === targetKeyHash && targetHref) {
+                fetch(AUTH_API, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ password: keyValue, scope: scope })
+                }).then(function (response) {
+                    return response.json().catch(function () { return { ok: false }; });
+                }).then(function (result) {
+                    if (result.ok && targetHref) {
                         rememberUnlockedPage(targetHref);
                         var href = targetHref;
                         closeModal();
-                        if (submitBtn) submitBtn.disabled = false;
                         window.location.href = href;
                     } else {
                         error.innerHTML = 'Xác nhận không thành công';
                         input.select();
-                        if (submitBtn) submitBtn.disabled = false;
                     }
+                }).catch(function () {
+                    error.textContent = 'Kh\u00f4ng th\u1ec3 k\u1ebft n\u1ed1i m\u00e1y ch\u1ee7';
+                    input.select();
+                }).finally(function () {
+                    if (submitBtn) submitBtn.disabled = false;
                 });
             });
 

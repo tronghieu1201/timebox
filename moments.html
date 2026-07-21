@@ -44,7 +44,7 @@
             </button>
 
             <!-- Bạn bè (locked) -->
-            <button type="button" class="life-card life-card--button" data-locked-href="./friends.html" data-key="3885efa5b17654578e93c89224f54a52e0978efc9bba64d03127fd4b7fc382d5" data-key-placeholder="" data-key-error="Mở vô hiệu">
+            <button type="button" class="life-card life-card--button" data-locked-href="./friends.html" data-key-placeholder="" data-key-error="Mở vô hiệu">
                 <div class="life-card__icon"><i class="fas fa-users" aria-hidden="true"></i></div>
                 <div class="life-card__body"><h2 class="life-card__title">Những thằng cốt đột</h2></div>
                 <i class="fas fa-chevron-right life-card__arrow" aria-hidden="true"></i>
@@ -74,20 +74,10 @@
             var input = document.getElementById('key-input');
             var error = document.getElementById('key-error');
             var closeBtn = document.getElementById('key-close');
+            var AUTH_API = 'https://timebox.trghy.workers.dev/verify';
             var targetHref = '';
-            var targetKeyHash = '';
             var targetErrorMsg = '';
             var defaultPlaceholder = '';
-            var KEY_HASH = '4d18b69a768ca124246afb1ab533333f957d67650b8a9ef8c67ea7ffa7200c1a';
-
-            function sha256(str) {
-                var buf = new TextEncoder().encode(str);
-                return crypto.subtle.digest('SHA-256', buf).then(function (hashBuf) {
-                    return Array.from(new Uint8Array(hashBuf)).map(function (b) {
-                        return b.toString(16).padStart(2, '0');
-                    }).join('');
-                });
-            }
 
             function getUnlockStorageKey(url) {
                 var targetUrl = new URL(url, window.location.href);
@@ -101,7 +91,6 @@
 
             function openModal(card) {
                 targetHref = card ? card.getAttribute('data-locked-href') || '' : '';
-                targetKeyHash = card ? card.getAttribute('data-key') || KEY_HASH : KEY_HASH;
                 targetErrorMsg = 'X\u00e1c nh\u1eadn kh\u00f4ng th\u00e0nh c\u00f4ng';
                 if (input) input.setAttribute('placeholder', card ? card.getAttribute('data-key-placeholder') || defaultPlaceholder : defaultPlaceholder);
                 if (error) error.textContent = '';
@@ -117,7 +106,6 @@
                 modal.classList.remove('is-open');
                 modal.setAttribute('aria-hidden', 'true');
                 targetHref = '';
-                targetKeyHash = '';
                 targetErrorMsg = '';
                 if (input) input.setAttribute('placeholder', defaultPlaceholder);
             }
@@ -139,18 +127,27 @@
                 var submitBtn = form.querySelector('button[type="submit"]');
                 if (submitBtn) submitBtn.disabled = true;
 
-                sha256(keyValue).then(function (hash) {
-                    if (hash === targetKeyHash && targetHref) {
+                fetch(AUTH_API, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ password: keyValue, scope: 'friends' })
+                }).then(function (response) {
+                    return response.json().catch(function () { return { ok: false }; });
+                }).then(function (result) {
+                    if (result.ok && targetHref) {
                         rememberUnlockedPage(targetHref);
                         var href = targetHref;
                         closeModal();
-                        if (submitBtn) submitBtn.disabled = false;
                         window.location.href = href;
                     } else {
                         error.textContent = targetErrorMsg;
                         input.select();
-                        if (submitBtn) submitBtn.disabled = false;
                     }
+                }).catch(function () {
+                    error.textContent = 'Kh\u00f4ng th\u1ec3 k\u1ebft n\u1ed1i m\u00e1y ch\u1ee7';
+                    input.select();
+                }).finally(function () {
+                    if (submitBtn) submitBtn.disabled = false;
                 });
             });
 

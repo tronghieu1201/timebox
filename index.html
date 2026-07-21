@@ -89,7 +89,6 @@
                 <section class="life-grid" id="link-hub" aria-label="Danh mục kỷ niệm">
                     <!-- Gia đình (locked → SPA) -->
                     <button type="button" class="life-card life-card--button life-card--family" id="btn-go-family"
-                        data-family-key="4d18b69a768ca124246afb1ab533333f957d67650b8a9ef8c67ea7ffa7200c1a"
                         data-key-error="Mở vô hiệu">
                         <div class="life-card__icon"><i class="fas fa-house-user" aria-hidden="true"></i></div>
                         <div class="life-card__body">
@@ -258,7 +257,6 @@
                     </button>
 
                     <button type="button" class="life-card life-card--button" id="btn-go-friends"
-                        data-friends-key="3885efa5b17654578e93c89224f54a52e0978efc9bba64d03127fd4b7fc382d5"
                         data-key-error="Mở vô hiệu">
                         <div class="life-card__icon"><i class="fas fa-users" aria-hidden="true"></i></div>
                         <div class="life-card__body">
@@ -506,13 +504,12 @@
             if (btnBackFriends) btnBackFriends.addEventListener('click', goBack);
 
             // Helper mở key modal cho SPA view
-            function openKeyModalForView(keyHash, errMsg, targetView) {
+            function openKeyModalForView(errMsg, targetView) {
                 var modal = document.getElementById('key-modal');
                 var input = document.getElementById('key-input');
                 var error = document.getElementById('key-error');
                 if (!modal || !input) return;
                 input.value = ''; if (error) error.textContent = '';
-                modal._targetHash = keyHash;
                 modal._targetErr = errMsg;
                 modal._targetAction = targetView;
                 document.body.classList.add('is-modal-open');
@@ -525,7 +522,6 @@
             if (btnGoFamily) {
                 btnGoFamily.addEventListener('click', function () {
                     openKeyModalForView(
-                        btnGoFamily.getAttribute('data-family-key'),
                         btnGoFamily.getAttribute('data-key-error') || 'Mở vô hiệu',
                         'family'
                     );
@@ -536,7 +532,6 @@
             if (btnGoFriends) {
                 btnGoFriends.addEventListener('click', function () {
                     openKeyModalForView(
-                        btnGoFriends.getAttribute('data-friends-key'),
                         btnGoFriends.getAttribute('data-key-error') || 'Mở vô hiệu',
                         'friends'
                     );
@@ -546,9 +541,18 @@
             window._spaGoBack = goBack;
             window._spaGoForward = goForward;
 
-            var initialView = getViewFromUrl();
+            var requestedView = getViewFromUrl();
+            var protectedInitialView = requestedView === 'family' || requestedView === 'friends'
+                ? requestedView
+                : '';
+            var initialView = protectedInitialView ? 'home' : requestedView;
             history.replaceState({ spaView: initialView, spaDepth: currentDepth }, '', getViewUrl(initialView));
             setView(initialView, 'forward');
+            if (protectedInitialView === 'family' && btnGoFamily) {
+                setTimeout(function () { btnGoFamily.click(); }, 0);
+            } else if (protectedInitialView === 'friends' && btnGoFriends) {
+                setTimeout(function () { btnGoFriends.click(); }, 0);
+            }
         })();
     </script>
     <script>
@@ -714,20 +718,10 @@
             var input = document.getElementById('key-input');
             var error = document.getElementById('key-error');
             var closeBtn = document.getElementById('key-close');
+            var AUTH_API = 'https://timebox.trghy.workers.dev/verify';
             var targetHref = '';
-            var targetKeyHash = '';
             var targetErrorMsg = '';
             var defaultPlaceholder = '';
-            var KEY_HASH = '4d18b69a768ca124246afb1ab533333f957d67650b8a9ef8c67ea7ffa7200c1a';
-
-            function sha256(str) {
-                var buf = new TextEncoder().encode(str);
-                return crypto.subtle.digest('SHA-256', buf).then(function (hashBuf) {
-                    return Array.from(new Uint8Array(hashBuf)).map(function (b) {
-                        return b.toString(16).padStart(2, '0');
-                    }).join('');
-                });
-            }
 
             function getUnlockStorageKey(url) {
                 var targetUrl = new URL(url, window.location.href);
@@ -741,7 +735,6 @@
 
             function openModal(card) {
                 targetHref = card ? card.getAttribute('data-locked-href') || '' : '';
-                targetKeyHash = card ? card.getAttribute('data-key') || KEY_HASH : KEY_HASH;
                 targetErrorMsg = 'X\u00e1c nh\u1eadn kh\u00f4ng th\u00e0nh c\u00f4ng';
                 if (input) input.setAttribute('placeholder', card ? card.getAttribute('data-key-placeholder') || defaultPlaceholder : defaultPlaceholder);
                 if (error) error.textContent = '';
@@ -757,7 +750,6 @@
                 modal.classList.remove('is-open');
                 modal.setAttribute('aria-hidden', 'true');
                 targetHref = '';
-                targetKeyHash = '';
                 targetErrorMsg = '';
                 if (input) input.setAttribute('placeholder', defaultPlaceholder);
             }
@@ -778,14 +770,21 @@
                 }
                 var submitBtn = form.querySelector('button[type="submit"]');
                 if (submitBtn) submitBtn.disabled = true;
+                var action = modal._targetAction || '';
+                var scope = action === 'friends' || /friends/i.test(targetHref)
+                    ? 'friends'
+                    : 'family';
 
-                sha256(keyValue).then(function (hash) {
-                    var checkHash = modal._targetHash || targetKeyHash;
+                fetch(AUTH_API, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ password: keyValue, scope: scope })
+                }).then(function (response) {
+                    return response.json().catch(function () { return { ok: false }; });
+                }).then(function (result) {
                     var checkErr = modal._targetErr || targetErrorMsg;
-                    var action = modal._targetAction || '';
-                    if (hash === checkHash) {
+                    if (result.ok) {
                         closeModal();
-                        if (submitBtn) submitBtn.disabled = false;
                         if (action === 'family' || action === 'friends') {
                             // SPA navigate — không lưu session, mỗi lần đều hỏi lại
                             window._spaGoForward && window._spaGoForward(action);
@@ -796,8 +795,12 @@
                     } else {
                         error.textContent = checkErr || targetErrorMsg;
                         input.select();
-                        if (submitBtn) submitBtn.disabled = false;
                     }
+                }).catch(function () {
+                    error.textContent = 'Kh\u00f4ng th\u1ec3 k\u1ebft n\u1ed1i m\u00e1y ch\u1ee7';
+                    input.select();
+                }).finally(function () {
+                    if (submitBtn) submitBtn.disabled = false;
                 });
             });
 
