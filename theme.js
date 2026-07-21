@@ -374,7 +374,7 @@
     }
 
     function isImageFile(path) {
-        return /\.(avif|gif|jpe?g|png|webp)$/i.test(path || '');
+        return /\.(avif|gif|jpe?g|png|webp|heic|heif)$/i.test(path || '');
     }
 
     function normalizeGalleryPhotoUrl(url) {

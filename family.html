@@ -92,8 +92,9 @@
         var CLOUD_NAME = 'dtpw5htqs';
         var UPLOAD_PRESET = 'Upload_img';
         var MAX_FILES = 10;
-        var MAX_SIZE_MB = 20;
+        var MAX_SIZE_MB = 10;
         var MAX_SIZE = MAX_SIZE_MB * 1024 * 1024;
+        var MAX_CONCURRENT_UPLOADS = 2;
 
         var selectedFiles = [];
         var isUploading = false;
@@ -114,7 +115,7 @@
                 '<button type="button" class="fup-send" id="fup-send" hidden>' +
                     '<i class="fas fa-paper-plane"></i>' +
                 '</button>' +
-                '<input type="file" id="fup-input" accept="image/jpeg,image/png,image/webp,image/gif" multiple hidden>' +
+                '<input type="file" id="fup-input" accept="image/jpeg,image/png,image/webp,image/gif,image/heic,image/heif,.heic,.heif" multiple hidden>' +
                 '<p class="fup-status" id="fup-status" aria-live="polite"></p>' +
             '</div>';
         document.body.appendChild(modal);
@@ -204,8 +205,12 @@
                     setStatus('Tối đa ' + MAX_FILES + ' ảnh');
                     return;
                 }
-                if (!/^image\/(jpeg|png|webp|gif)$/i.test(f.type)) {
-                    setStatus('Chỉ nhận JPG, PNG, WEBP, GIF');
+                var fileType = String(f.type || '').toLowerCase();
+                var fileName = String(f.name || '').toLowerCase();
+                var supportedType = /^image\/(jpeg|png|webp|gif|heic|heif|heic-sequence|heif-sequence)$/.test(fileType) ||
+                    /\.(jpe?g|png|webp|gif|heic|heif)$/.test(fileName);
+                if (!supportedType) {
+                    setStatus('Chỉ nhận JPG, PNG, WEBP, GIF, HEIC, HEIF');
                     return;
                 }
                 if (f.size > MAX_SIZE) {
@@ -229,6 +234,27 @@
             });
         }
 
+        function uploadFilesWithLimit(files) {
+            var results = new Array(files.length);
+            var nextIndex = 0;
+
+            function runNext() {
+                var index = nextIndex;
+                nextIndex += 1;
+                if (index >= files.length) return Promise.resolve();
+                return uploadOne(files[index]).then(function (value) {
+                    results[index] = { status: 'fulfilled', value: value };
+                }).catch(function (reason) {
+                    results[index] = { status: 'rejected', reason: reason };
+                }).then(runNext);
+            }
+
+            var workers = [];
+            var workerCount = Math.min(MAX_CONCURRENT_UPLOADS, files.length);
+            for (var i = 0; i < workerCount; i += 1) workers.push(runNext());
+            return Promise.all(workers).then(function () { return results; });
+        }
+
         hint.addEventListener('click', function () { fileInput.click(); });
         fileInput.addEventListener('change', function () { handleFiles(fileInput.files); });
 
@@ -240,7 +266,7 @@
             closeBtn.disabled = true;
             setStatus('Đang gửi ' + toUpload.length + ' ảnh...');
 
-            Promise.allSettled(toUpload.map(uploadOne)).then(function (results) {
+            uploadFilesWithLimit(toUpload).then(function (results) {
                 var ok = results.filter(function (r) { return r.status === 'fulfilled'; }).length;
                 var fail = results.length - ok;
                 selectedFiles = [];

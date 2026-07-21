@@ -211,7 +211,7 @@
                                 <i class="fas fa-paper-plane" aria-hidden="true"></i>
                             </button>
                             <input type="file" id="moments-upload-input"
-                                accept="image/jpeg,image/png,image/webp,image/gif" multiple hidden>
+                                accept="image/jpeg,image/png,image/webp,image/gif,image/heic,image/heif,.heic,.heif" multiple hidden>
                         </div>
                         <p class="cooking-upload-widget__status moments-upload-status" id="moments-upload-status"
                             aria-live="polite"></p>
@@ -419,7 +419,7 @@
             <!-- Status -->
             <p class="upload-modal__status" id="upload-status" aria-live="polite"></p>
 
-            <input type="file" id="upload-input" accept="image/jpeg,image/png,image/webp,image/gif" multiple hidden>
+            <input type="file" id="upload-input" accept="image/jpeg,image/png,image/webp,image/gif,image/heic,image/heif,.heic,.heif" multiple hidden>
         </article>
     </div>
 
@@ -689,7 +689,9 @@
             var CLOUD_NAME = 'dtpw5htqs';
             var UPLOAD_PRESET = 'Upload_img';
             var MAX_FILES = 10;
-            var MAX_SIZE = 20 * 1024 * 1024;
+            // Cloudinary Free giới hạn 10 MB cho mỗi ảnh.
+            var MAX_SIZE = 10 * 1024 * 1024;
+            var MAX_CONCURRENT_UPLOADS = 2;
             var selected = [];
             var uploading = false;
             var activeUploadScope = '';
@@ -754,9 +756,20 @@
                     wrap.className = 'upload-modal__preview-item';
                     var img = document.createElement('img');
                     img.alt = file.name;
+                    var fallback = document.createElement('div');
+                    fallback.className = 'upload-modal__preview-fallback';
+                    fallback.hidden = true;
+                    fallback.innerHTML = '<i class="fas fa-image" aria-hidden="true"></i>';
+                    var fallbackName = document.createElement('span');
+                    fallbackName.textContent = file.name;
+                    fallback.appendChild(fallbackName);
                     var previewUrl = URL.createObjectURL(file);
                     previewUrls.push(previewUrl);
                     img.src = previewUrl;
+                    img.addEventListener('error', function () {
+                        img.hidden = true;
+                        fallback.hidden = false;
+                    }, { once: true });
                     var rm = document.createElement('button');
                     rm.type = 'button';
                     rm.className = 'upload-modal__preview-remove';
@@ -767,6 +780,7 @@
                         renderPreview();
                     });
                     wrap.appendChild(img);
+                    wrap.appendChild(fallback);
                     wrap.appendChild(rm);
                     preview.appendChild(wrap);
                 });
@@ -775,11 +789,18 @@
                 sendBtn.hidden = false;
             }
 
+            function isSupportedImageFile(file) {
+                var mime = String(file.type || '').toLowerCase();
+                var name = String(file.name || '').toLowerCase();
+                return /^image\/(jpeg|png|webp|gif|heic|heif|heic-sequence|heif-sequence)$/.test(mime) ||
+                    /\.(jpe?g|png|webp|gif|heic|heif)$/.test(name);
+            }
+
             function addFiles(files) {
                 Array.prototype.forEach.call(files, function (f) {
                     if (selected.length >= MAX_FILES) { setStatus('Tối đa ' + MAX_FILES + ' ảnh'); return; }
-                    if (!/^image\/(jpeg|png|webp|gif)$/i.test(f.type)) { setStatus('Chỉ nhận JPG, PNG, WEBP, GIF'); return; }
-                    if (f.size > MAX_SIZE) { setStatus('Ảnh tối đa 20MB'); return; }
+                    if (!isSupportedImageFile(f)) { setStatus('Chỉ nhận JPG, PNG, WEBP, GIF, HEIC, HEIF'); return; }
+                    if (f.size > MAX_SIZE) { setStatus('Mỗi ảnh tối đa 10MB'); return; }
                     selected.push(f);
                 });
                 fileInput.value = '';
@@ -835,6 +856,28 @@
                 });
             }
 
+            function uploadFilesWithLimit(files, signed) {
+                var results = new Array(files.length);
+                var nextIndex = 0;
+
+                function runNext() {
+                    var index = nextIndex;
+                    nextIndex += 1;
+                    if (index >= files.length) return Promise.resolve();
+
+                    return uploadOne(files[index], signed).then(function (value) {
+                        results[index] = { status: 'fulfilled', value: value };
+                    }).catch(function (reason) {
+                        results[index] = { status: 'rejected', reason: reason };
+                    }).then(runNext);
+                }
+
+                var workers = [];
+                var workerCount = Math.min(MAX_CONCURRENT_UPLOADS, files.length);
+                for (var i = 0; i < workerCount; i += 1) workers.push(runNext());
+                return Promise.all(workers).then(function () { return results; });
+            }
+
             /* open */
             if (openBtn) openBtn.addEventListener('click', function () { openModal('', 'Upload_img'); });
             if (familyDesktopBtn) familyDesktopBtn.addEventListener('click', function () { openModal('family'); });
@@ -881,9 +924,7 @@
                     : Promise.resolve(null);
 
                 signaturePromise.then(function (signed) {
-                    return Promise.allSettled(files.map(function (file) {
-                        return uploadOne(file, signed);
-                    }));
+                    return uploadFilesWithLimit(files, signed);
                 }).then(function (results) {
                     var ok = results.filter(function (r) { return r.status === 'fulfilled'; }).length;
                     var fail = files.length - ok;

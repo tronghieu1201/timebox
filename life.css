@@ -2393,6 +2393,36 @@
     display: block;
 }
 
+.upload-modal__preview-fallback {
+    width: 100%;
+    aspect-ratio: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px;
+    overflow: hidden;
+    border-radius: 10px;
+    border: 1px solid rgba(100, 130, 170, 0.24);
+    background: rgba(255, 255, 255, 0.12);
+    color: var(--text-primary);
+    text-align: center;
+}
+
+.upload-modal__preview-fallback span {
+    width: 100%;
+    overflow: hidden;
+    font-size: 10px;
+    line-height: 1.2;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.upload-modal__preview-fallback[hidden] {
+    display: none;
+}
+
 .upload-modal__preview-remove {
     position: absolute;
     top: -5px;

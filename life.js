@@ -26,8 +26,9 @@
     var MOMENTS_UPLOAD_CLOUD_NAME = 'dtpw5htqs';
     var MOMENTS_UPLOAD_PRESET = 'Upload_img';
     var MOMENTS_MAX_FILES = 10;
-    var MOMENTS_MAX_SIZE_MB = 20;
+    var MOMENTS_MAX_SIZE_MB = 10;
     var MOMENTS_MAX_SIZE = MOMENTS_MAX_SIZE_MB * 1024 * 1024;
+    var MOMENTS_MAX_CONCURRENT_UPLOADS = 2;
     var selectedMomentsFiles = [];
     var momentsPreviewUrls = [];
     var momentsStatusTimer = null;
@@ -258,6 +259,28 @@
         });
     }
 
+    function uploadMomentsWithLimit(files) {
+        var results = new Array(files.length);
+        var nextIndex = 0;
+
+        function runNext() {
+            var index = nextIndex;
+            nextIndex += 1;
+            if (index >= files.length) return Promise.resolve();
+
+            return uploadMomentToCloudinary(files[index]).then(function (value) {
+                results[index] = { status: 'fulfilled', value: value };
+            }).catch(function (reason) {
+                results[index] = { status: 'rejected', reason: reason };
+            }).then(runNext);
+        }
+
+        var workers = [];
+        var workerCount = Math.min(MOMENTS_MAX_CONCURRENT_UPLOADS, files.length);
+        for (var i = 0; i < workerCount; i += 1) workers.push(runNext());
+        return Promise.all(workers).then(function () { return results; });
+    }
+
     function handleMomentsFileSelect(files) {
         var fileArray = Array.prototype.slice.call(files || []);
         if (momentsUploadInput) momentsUploadInput.value = '';
@@ -270,8 +293,12 @@
             }
 
             var file = fileArray[i];
-            if (!/^image\/(jpeg|png|webp|gif)$/i.test(file.type)) {
-                setMomentsStatus('Chỉ nhận ảnh JPG, PNG, WEBP hoặc GIF');
+            var fileType = String(file.type || '').toLowerCase();
+            var fileName = String(file.name || '').toLowerCase();
+            var supportedType = /^image\/(jpeg|png|webp|gif|heic|heif|heic-sequence|heif-sequence)$/.test(fileType) ||
+                /\.(jpe?g|png|webp|gif|heic|heif)$/.test(fileName);
+            if (!supportedType) {
+                setMomentsStatus('Chỉ nhận ảnh JPG, PNG, WEBP, GIF, HEIC hoặc HEIF');
                 continue;
             }
 
@@ -472,9 +499,7 @@
 
             setMomentsStatus('Đang gửi ' + filesToUpload.length + ' ảnh...');
 
-            Promise.allSettled(filesToUpload.map(function (file) {
-                return uploadMomentToCloudinary(file);
-            })).then(function (results) {
+            uploadMomentsWithLimit(filesToUpload).then(function (results) {
                 var succeeded = results.filter(function (r) { return r.status === 'fulfilled'; }).length;
                 var failed = results.length - succeeded;
 

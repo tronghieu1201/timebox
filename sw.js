@@ -1,6 +1,6 @@
 // Timebox service worker: fast shell, bounded image cache, fresh API data.
 var CACHE_PREFIX = 'timebox-';
-var SHELL_CACHE = CACHE_PREFIX + 'shell-v10';
+var SHELL_CACHE = CACHE_PREFIX + 'shell-v11';
 var IMAGE_CACHE = CACHE_PREFIX + 'images-v1';
 var ASSET_CACHE = CACHE_PREFIX + 'assets-v1';
 var MAX_IMAGE_ENTRIES = 180;
