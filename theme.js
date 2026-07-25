@@ -543,7 +543,7 @@
             if (!gallery || !photo || !photo.publicId || !photo.scope) return;
             unpinButton.disabled = true;
             closeButton.disabled = true;
-            status.textContent = 'Đang bỏ ghim...';
+            status.textContent = mode === 'pin' ? 'Đang ghim ảnh...' : 'Đang bỏ ghim...';
             fetch(mode === 'pin' ? GALLERY_PIN_API : GALLERY_UNPIN_API, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
