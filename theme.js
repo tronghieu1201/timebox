@@ -316,6 +316,28 @@
     var photoLightboxCaption = document.getElementById('photo-lightbox-caption');
     var photoLightboxClose = document.getElementById('photo-lightbox-close');
     var photoLightboxReleaseTimer = null;
+    var photoLightboxPinAction = null;
+
+    if (photoLightbox) {
+        var photoLightboxContent = photoLightbox.querySelector('.photo-lightbox__content');
+        if (photoLightboxContent) {
+            photoLightboxPinAction = document.createElement('button');
+            photoLightboxPinAction.type = 'button';
+            photoLightboxPinAction.className = 'photo-lightbox__pin-action';
+            photoLightboxPinAction.hidden = true;
+            photoLightboxContent.appendChild(photoLightboxPinAction);
+            photoLightboxPinAction.addEventListener('click', function () {
+                var gallery = photoLightbox._activeGallery;
+                var photo = photoLightbox._activePhoto;
+                if (!gallery || !photo) return;
+                openPinActionDialog(
+                    gallery,
+                    photo,
+                    isPhotoPinned(gallery, photo) ? 'unpin' : 'pin'
+                );
+            });
+        }
+    }
 
     function openPhotoLightbox(card) {
         if (!photoLightbox || !photoLightboxImg) return;
@@ -353,6 +375,9 @@
             photoLightboxCaption.textContent = caption;
             photoLightboxCaption.hidden = !caption;
         }
+        photoLightbox._activeGallery = card._gallery || null;
+        photoLightbox._activePhoto = card._photo || null;
+        updatePhotoLightboxPinAction();
         document.body.classList.add('is-modal-open');
         photoLightbox.classList.add('is-open');
         photoLightbox.setAttribute('aria-hidden', 'false');
@@ -360,9 +385,13 @@
 
     function closePhotoLightbox() {
         if (!photoLightbox) return;
+        closeUnpinDialog();
         document.body.classList.remove('is-modal-open');
         photoLightbox.classList.remove('is-open', 'is-loading');
         photoLightbox.setAttribute('aria-hidden', 'true');
+        photoLightbox._activeGallery = null;
+        photoLightbox._activePhoto = null;
+        if (photoLightboxPinAction) photoLightboxPinAction.hidden = true;
         photoLightboxImg.dataset.requestId = '';
         photoLightboxReleaseTimer = setTimeout(function () {
             photoLightboxImg.onload = null;
@@ -382,13 +411,67 @@
         return decodeURIComponent(url.split('?')[0]).replace(/\/+$/, '');
     }
 
+    function getCloudinaryPublicId(url) {
+        var marker = '/image/upload/';
+        var normalized = normalizeGalleryPhotoUrl(url);
+        var markerIndex = normalized.indexOf(marker);
+        if (markerIndex === -1) return '';
+        var parts = normalized.slice(markerIndex + marker.length).split('/');
+        var versionIndex = parts.findIndex(function (part) { return /^v\d+$/.test(part); });
+        if (versionIndex !== -1) parts = parts.slice(versionIndex + 1);
+        if (!parts.length) return '';
+        parts[parts.length - 1] = parts[parts.length - 1].replace(/\.[a-z0-9]+$/i, '');
+        return decodeURIComponent(parts.join('/'));
+    }
+
+    function isExplicitlyUnpinned(gallery, publicId) {
+        return Boolean(publicId && (gallery._unpinnedPublicIds || []).indexOf(publicId) !== -1);
+    }
+
+    function isExplicitlyPinned(gallery, publicId) {
+        return Boolean(publicId && (gallery._pinnedPublicIds || []).indexOf(publicId) !== -1);
+    }
+
+    function isPhotoPinned(gallery, photo) {
+        if (!gallery || !photo) return false;
+        var publicId = photo.publicId || getCloudinaryPublicId(photo.src);
+        if (isExplicitlyUnpinned(gallery, publicId)) return false;
+        if (photo.isPinnedUpload === true || isExplicitlyPinned(gallery, publicId)) return true;
+        return isPinnedPhotoCard(gallery, photo.src, photo.full || photo.src, publicId);
+    }
+
+    function updatePhotoLightboxPinAction() {
+        if (!photoLightboxPinAction || !photoLightbox) return;
+        var gallery = photoLightbox._activeGallery;
+        var photo = photoLightbox._activePhoto;
+        var publicId = photo && (photo.publicId || getCloudinaryPublicId(photo.src));
+        var scope = gallery && gallery.getAttribute('data-live-scope');
+        if (!gallery || !photo || !scope || !publicId) {
+            photoLightboxPinAction.hidden = true;
+            return;
+        }
+        photo.publicId = publicId;
+        photo.scope = scope;
+        var pinned = isPhotoPinned(gallery, photo);
+        photoLightboxPinAction.hidden = false;
+        photoLightboxPinAction.classList.toggle('is-pinned', pinned);
+        photoLightboxPinAction.innerHTML =
+            '<i class="fas fa-thumbtack" aria-hidden="true"></i>';
+        photoLightboxPinAction.setAttribute(
+            'aria-label',
+            pinned ? 'Mở tùy chọn bỏ ghim ảnh' : 'Mở tùy chọn ghim ảnh'
+        );
+    }
+
     function getPinnedPhotoUrls(gallery) {
         return (gallery.getAttribute('data-pinned-image') || '').split(',').map(function (url) {
             return url.trim();
         }).filter(Boolean);
     }
 
-    function isPinnedPhotoCard(gallery, src, fullSrc) {
+    function isPinnedPhotoCard(gallery, src, fullSrc, publicId) {
+        if (isExplicitlyUnpinned(gallery, publicId || getCloudinaryPublicId(src || fullSrc))) return false;
+        if (isExplicitlyPinned(gallery, publicId || getCloudinaryPublicId(src || fullSrc))) return true;
         var pinnedUrls = getPinnedPhotoUrls(gallery).map(normalizeGalleryPhotoUrl);
         if (!pinnedUrls.length) return false;
 
@@ -398,14 +481,128 @@
         });
     }
 
-    function createPhotoCard(gallery, src, name, fullSrc, originalSrc, thumbSrcset, fullSrcset, isPriority, isPinnedUpload) {
+    var GALLERY_PIN_API = 'https://timebox.trghy.workers.dev/gallery/pin';
+    var GALLERY_UNPIN_API = 'https://timebox.trghy.workers.dev/gallery/unpin';
+    var unpinDialog = null;
+
+    function closeUnpinDialog() {
+        if (!unpinDialog) return;
+        unpinDialog.classList.remove('is-open');
+        unpinDialog.setAttribute('aria-hidden', 'true');
+        unpinDialog._gallery = null;
+        unpinDialog._photo = null;
+    }
+
+    function ensureUnpinDialog() {
+        if (unpinDialog) return unpinDialog;
+        unpinDialog = document.createElement('div');
+        unpinDialog.className = 'pin-action-modal';
+        unpinDialog.setAttribute('aria-hidden', 'true');
+        unpinDialog.innerHTML =
+            '<div class="pin-action-modal__backdrop"></div>' +
+            '<div class="pin-action-modal__card" role="dialog" aria-modal="true" aria-label="Tùy chọn ảnh ghim">' +
+                '<button type="button" class="pin-action-modal__unpin"><i class="fas fa-thumbtack" aria-hidden="true"></i> Bỏ ghim</button>' +
+                '<button type="button" class="pin-action-modal__close">Đóng</button>' +
+                '<p class="pin-action-modal__status" aria-live="polite"></p>' +
+            '</div>';
+        document.body.appendChild(unpinDialog);
+
+        var closeButton = unpinDialog.querySelector('.pin-action-modal__close');
+        var unpinButton = unpinDialog.querySelector('.pin-action-modal__unpin');
+        unpinDialog.querySelector('.pin-action-modal__backdrop').addEventListener('click', closeUnpinDialog);
+        closeButton.addEventListener('click', closeUnpinDialog);
+        unpinButton.addEventListener('click', function () {
+            var gallery = unpinDialog._gallery;
+            var photo = unpinDialog._photo;
+            var status = unpinDialog.querySelector('.pin-action-modal__status');
+            var mode = unpinDialog._mode === 'pin' ? 'pin' : 'unpin';
+            if (!gallery || !photo || !photo.publicId || !photo.scope) return;
+            unpinButton.disabled = true;
+            closeButton.disabled = true;
+            status.textContent = 'Đang bỏ ghim...';
+            fetch(mode === 'pin' ? GALLERY_PIN_API : GALLERY_UNPIN_API, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ scope: photo.scope, publicId: photo.publicId })
+            }).then(function (response) {
+                return response.json().catch(function () { return {}; }).then(function (data) {
+                    if (!response.ok || !data.ok) {
+                        throw new Error(data.message || (mode === 'pin' ? 'Không thể ghim ảnh' : 'Không thể bỏ ghim'));
+                    }
+                });
+            }).then(function () {
+                gallery._unpinnedPublicIds = gallery._unpinnedPublicIds || [];
+                gallery._pinnedPublicIds = gallery._pinnedPublicIds || [];
+                if (mode === 'pin') {
+                    gallery._unpinnedPublicIds = gallery._unpinnedPublicIds.filter(function (id) {
+                        return id !== photo.publicId;
+                    });
+                    if (gallery._pinnedPublicIds.indexOf(photo.publicId) === -1) {
+                        gallery._pinnedPublicIds.push(photo.publicId);
+                    }
+                    photo.isPinnedUpload = true;
+                } else {
+                    gallery._pinnedPublicIds = gallery._pinnedPublicIds.filter(function (id) {
+                        return id !== photo.publicId;
+                    });
+                    if (gallery._unpinnedPublicIds.indexOf(photo.publicId) === -1) {
+                        gallery._unpinnedPublicIds.push(photo.publicId);
+                    }
+                    photo.isPinnedUpload = false;
+                }
+                closeUnpinDialog();
+                renderPhotoGallery(gallery, (gallery._photos || []).slice());
+                updatePhotoLightboxPinAction();
+                if (window.showTimeboxToast) {
+                    window.showTimeboxToast(mode === 'pin' ? 'Đã ghim ảnh' : 'Đã bỏ ghim ảnh');
+                }
+            }).catch(function (error) {
+                status.textContent = error.message || (mode === 'pin' ? 'Không thể ghim ảnh' : 'Không thể bỏ ghim');
+            }).finally(function () {
+                unpinButton.disabled = false;
+                closeButton.disabled = false;
+            });
+        });
+        return unpinDialog;
+    }
+
+    function openPinActionDialog(gallery, photo, mode) {
+        var dialog = ensureUnpinDialog();
+        dialog._gallery = gallery;
+        dialog._photo = photo;
+        dialog._mode = mode === 'pin' ? 'pin' : 'unpin';
+        var actionButton = dialog.querySelector('.pin-action-modal__unpin');
+        actionButton.innerHTML = dialog._mode === 'pin'
+            ? '<i class="fas fa-thumbtack" aria-hidden="true"></i> Ghim ảnh'
+            : '<i class="fas fa-thumbtack" aria-hidden="true"></i> Bỏ ghim';
+        actionButton.classList.toggle('is-pin-mode', dialog._mode === 'pin');
+        dialog.querySelector('.pin-action-modal__status').textContent = '';
+        dialog.classList.add('is-open');
+        dialog.setAttribute('aria-hidden', 'false');
+        dialog.querySelector('.pin-action-modal__unpin').focus();
+    }
+
+    function openUnpinDialog(gallery, photo) {
+        openPinActionDialog(gallery, photo, 'unpin');
+    }
+
+    function createPhotoCard(gallery, src, name, fullSrc, originalSrc, thumbSrcset, fullSrcset, isPriority, isPinnedUpload, photo) {
         var card = document.createElement('button');
         var img = document.createElement('img');
+        photo = photo || {};
+        var publicId = (photo && photo.publicId) || getCloudinaryPublicId(originalSrc || fullSrc || src);
+        var scope = gallery.getAttribute('data-live-scope') || '';
+        photo.publicId = publicId;
+        photo.scope = scope;
+        card._gallery = gallery;
+        card._photo = photo;
         var isPinned = isPinnedUpload === true || isPinnedPhotoCard(
             gallery,
             originalSrc || fullSrc || src,
-            fullSrc || src
+            fullSrc || src,
+            publicId
         );
+        if (isExplicitlyUnpinned(gallery, publicId)) isPinned = false;
 
         card.className = 'photo-card';
         card.type = 'button';
@@ -445,7 +642,22 @@
             var pinBadge = document.createElement('span');
             pinBadge.className = 'photo-card__pin';
             pinBadge.innerHTML = '<i class="fas fa-thumbtack" aria-hidden="true"></i>';
-            pinBadge.setAttribute('aria-label', 'Ảnh ghim');
+            pinBadge.setAttribute('role', 'button');
+            pinBadge.setAttribute('tabindex', '0');
+            pinBadge.setAttribute('aria-label', 'Tùy chọn ảnh ghim');
+            function activatePinMenu(event) {
+                event.preventDefault();
+                event.stopPropagation();
+                if (!scope || !publicId) return;
+                photo = photo || {};
+                photo.publicId = publicId;
+                photo.scope = scope;
+                openUnpinDialog(gallery, photo);
+            }
+            pinBadge.addEventListener('click', activatePinMenu);
+            pinBadge.addEventListener('keydown', function (event) {
+                if (event.key === 'Enter' || event.key === ' ') activatePinMenu(event);
+            });
             card.appendChild(pinBadge);
         }
         card.addEventListener('click', function () {
@@ -540,7 +752,8 @@
                 photo.thumbSrcset,
                 photo.fullSrcset,
                 index < 3,
-                photo.isPinnedUpload === true
+                photo.isPinnedUpload === true,
+                photo
             );
         });
         createPhotoPager(gallery, pageCount, currentPage, function (nextPage) {
@@ -613,33 +826,25 @@
         }).join(', ');
     }
 
-    function normalizeGalleryPhotoUrl(url) {
-        if (!url) return '';
-        return decodeURIComponent(url.split('?')[0]).replace(/\/+$/, '');
-    }
-
-    function getPinnedPhotoUrls(gallery) {
-        return (gallery.getAttribute('data-pinned-image') || '').split(',').map(function (url) {
-            return url.trim();
-        }).filter(Boolean);
-    }
-
     function applyPinnedPhotoOrder(gallery, photos) {
-        var pinnedUrls = getPinnedPhotoUrls(gallery).map(normalizeGalleryPhotoUrl);
+        var pinnedUrls = getPinnedPhotoUrls(gallery).filter(function (url) {
+            return !isExplicitlyUnpinned(gallery, getCloudinaryPublicId(url));
+        }).map(normalizeGalleryPhotoUrl);
         if (!photos.length) return photos;
 
-        // Ảnh lấy trực tiếp từ folder luôn đứng trước toàn bộ URL cũ.
-        var livePinnedPhotos = photos.filter(function (photo) {
-            return photo.isLive && photo.isPinnedUpload;
+        // Ảnh ghim đứng đầu; toàn bộ ảnh còn lại giữ đúng thứ tự thời gian.
+        var taggedPinnedPhotos = photos.filter(function (photo) {
+            var publicId = photo.publicId || getCloudinaryPublicId(photo.src);
+            return !isExplicitlyUnpinned(gallery, publicId) &&
+                (photo.isPinnedUpload === true || isExplicitlyPinned(gallery, publicId));
         });
-        var liveNormalPhotos = photos.filter(function (photo) {
-            return photo.isLive && !photo.isPinnedUpload;
+        var normalPhotos = photos.filter(function (photo) {
+            return taggedPinnedPhotos.indexOf(photo) === -1;
         });
-        var nonLivePhotos = photos.filter(function (photo) { return !photo.isLive; });
-        if (!pinnedUrls.length) return livePinnedPhotos.concat(liveNormalPhotos, nonLivePhotos);
+        if (!pinnedUrls.length) return taggedPinnedPhotos.concat(normalPhotos);
 
         var pinnedPhotos = [];
-        var remainingPhotos = nonLivePhotos.slice();
+        var remainingPhotos = normalPhotos.slice();
 
         pinnedUrls.forEach(function (pinnedUrl) {
             var pinnedIndex = -1;
@@ -655,7 +860,7 @@
             }
         });
 
-        return pinnedPhotos.concat(livePinnedPhotos, liveNormalPhotos, remainingPhotos);
+        return pinnedPhotos.concat(taggedPinnedPhotos, remainingPhotos);
     }
 
     function getCloudinaryGalleryPhotos(gallery) {
@@ -738,7 +943,7 @@
 
     var LIVE_GALLERY_API = 'https://timebox.trghy.workers.dev/gallery/images';
 
-    function getLiveGalleryPhotos(scope) {
+    function getLiveGalleryPhotos(scope, gallery) {
         return fetch(LIVE_GALLERY_API + '?scope=' + encodeURIComponent(scope), {
             headers: { 'Accept': 'application/json' },
             cache: 'no-store'
@@ -749,6 +954,12 @@
                 if (!response.ok || !data.ok) {
                     throw new Error(data.message || 'Không thể tải ảnh mới');
                 }
+                gallery._unpinnedPublicIds = Array.isArray(data.unpinnedPublicIds)
+                    ? data.unpinnedPublicIds
+                    : [];
+                gallery._pinnedPublicIds = Array.isArray(data.pinnedPublicIds)
+                    ? data.pinnedPublicIds
+                    : [];
                 return (data.images || []).map(function (image) {
                     var src = image.src || '';
                     return {
@@ -760,6 +971,7 @@
                         name: image.publicId || 'Ảnh mới',
                         time: Date.parse(image.createdAt || '') || 0,
                         isLive: true,
+                        publicId: image.publicId || '',
                         isPinnedUpload: image.pinned === true
                     };
                 }).filter(function (photo) {
@@ -784,7 +996,7 @@
         if (!scope) return Promise.resolve();
         var oldPhotos = getCloudinaryGalleryPhotos(gallery);
 
-        return getLiveGalleryPhotos(scope).then(function (livePhotos) {
+        return getLiveGalleryPhotos(scope, gallery).then(function (livePhotos) {
             var mergedPhotos = mergeGalleryPhotos(livePhotos, oldPhotos);
             gallery._lastGalleryRefresh = Date.now();
             if (gallery._isSuspended) {

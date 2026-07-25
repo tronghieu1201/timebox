@@ -2623,9 +2623,38 @@
 }
 
 .upload-modal__preview-remove {
-    width: 28px;
-    height: 28px;
-    line-height: 28px;
+    top: -8px;
+    right: -8px;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    background: transparent;
+    box-shadow: none;
+    color: transparent;
+    font-size: 0;
+    line-height: 1;
+}
+
+.upload-modal__preview-remove::before {
+    content: "×";
+    position: absolute;
+    inset: 11px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: rgba(10, 18, 36, 0.9);
+    color: #f8fafc;
+    font-size: 15px;
+    line-height: 1;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+}
+
+.upload-modal__preview-remove:hover {
+    background: transparent;
+}
+
+.upload-modal__preview-remove:hover::before {
+    background: #ef4444;
 }
 
 @media (min-width: 768px) {
