@@ -36,21 +36,21 @@
     var DEFAULT_TOAST_MESSAGE = toast ? toast.textContent : 'Mục này đang được cập nhật, hãy quay lại sau nhé!';
     var THOUGHTS_STORAGE_KEY = 'life-thoughts-selected';
     var thoughtsQuotes = [
-        'Nghe hàng nghìn đạo lý — nhưng vẫn chưa sống tốt ở hiện tại.',
-        'Những thứ đơn giản tạo nên tình yêu — tình yêu sẽ là những thứ đơn giản.',
-        'Không cô đơn vì biết đủ hay không cô đơn vì không biết đủ.',
-        'Ánh mắt của tôi chỉ dành cho bạn — nhưng liệu chỉ nhìn từ xa thì có hối hận không.',
-        'Biết đủ để không cần nói.',
-        'Ai cũng nghĩ mình là nạn nhân nhưng đâu nghĩ rằng ai cũng có lỗi.',
-        'Một khoảnh khắc nhỏ đã biến ngày hôm đó thành kỷ niệm.',
-        'Không cho em được gì nhiều nên chẳng dám đòi hỏi bao nhiêu.',
-        'Khởi đầu đầy lời tạm biệt.',
-        'Hãy chấp nhận góc nhìn của người khác mà không cần chứng minh mình đúng.',
-        'Mình đang yêu người đó theo cách hiện tại, hay mình đang giữ một phần của bản thân mình trong quá khứ.',
-        'Anh học thêm, để kể em nhiều — Em học thêm, để hiểu những gì anh kể.',
-        'Bất kể là mối quan hệ gì, khi người khác không cần. Bạn phải học cách thu hồi sự nhiệt tình và lịch sự rời đi.',
-        'Đừng mải mê một ánh mặt trời đã lặn, mà quên ngước nhìn bầu trời đầy sao',
-        'Khi tình cảm vừa nảy sinh, điều đầu tiên mà tôi nghĩ đến lại là làm thế nào để phớt lờ nhau.'
+        'Nghe hàng nghìn đạo lý, nhưng vẫn chưa học được cách sống trọn vẹn với hiện tại.',
+        'Những điều giản dị tạo nên tình yêu, và sau cùng, tình yêu cũng chỉ còn lại trong những điều giản dị ấy.',
+        'Không còn cô đơn vì đã biết đủ, hay chỉ vì chưa từng biết mình đang thiếu điều gì?',
+        'Ánh mắt chỉ dành cho một người, nhưng nếu mãi đứng nhìn từ xa, liệu sau này có hối tiếc?',
+        'Biết đủ, nên có những điều không còn cần phải nói ra.',
+        'Ai cũng nghĩ mình là nạn nhân, nhưng ít ai chịu nhìn lại phần lỗi của chính mình.',
+        'Chỉ một khoảnh khắc nhỏ cũng đủ biến một ngày bình thường thành kỷ niệm.',
+        'Không thể cho em quá nhiều, nên cũng chẳng dám đòi hỏi em phải đáp lại bao nhiêu.',
+        'Có những khởi đầu đã mang theo quá nhiều lời tạm biệt.',
+        'Hãy học cách chấp nhận góc nhìn của người khác mà không nhất thiết phải chứng minh mình đúng.',
+        'Mình đang yêu người ấy trong hiện tại, hay chỉ đang níu giữ một phần của chính mình thuộc về quá khứ?',
+        'Anh học thêm để có nhiều điều kể em nghe; em học thêm để hiểu được những điều anh kể.',
+        'Dù là mối quan hệ nào, khi người khác không còn cần, hãy thu lại sự nhiệt tình và lịch sự rời đi.',
+        'Đừng mãi tiếc nuối một mặt trời đã lặn mà quên ngước nhìn bầu trời vẫn còn đầy sao.',
+        'Khi tình cảm vừa nảy sinh, điều đầu tiên xuất hiện trong đầu lại là làm thế nào để cả hai phớt lờ nó.'
     ];
     var specialThoughtIndexes = [1, 7, 11];
 
@@ -102,7 +102,13 @@
         } catch (e) {}
 
         document.querySelectorAll('.thoughts-number-btn').forEach(function (btn) {
-            btn.classList.toggle('is-active', Number(btn.getAttribute('data-index')) === safeIndex);
+            var isActive = Number(btn.getAttribute('data-index')) === safeIndex;
+            var icon = btn.querySelector('i');
+            btn.classList.toggle('is-active', isActive);
+            if (icon) {
+                icon.classList.toggle('fa-box', !isActive);
+                icon.classList.toggle('fa-box-open', isActive);
+            }
         });
     }
 
@@ -120,7 +126,9 @@
             btn.type = 'button';
             btn.className = 'thoughts-number-btn';
             btn.setAttribute('data-index', String(index));
-            btn.innerHTML = '<span>' + (index + 1) + '</span>';
+            btn.setAttribute('aria-label', 'Mở chiếc hộp bí ẩn ' + (index + 1));
+            btn.setAttribute('title', 'Chiếc hộp bí ẩn');
+            btn.innerHTML = '<i class="fas fa-box" aria-hidden="true"></i>';
             btn.addEventListener('click', function () {
                 setThoughtQuote(index);
             });

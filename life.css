@@ -394,6 +394,11 @@
     box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
 }
 
+.thoughts-number-btn i {
+    font-size: 18px;
+    line-height: 1;
+}
+
 .gallery-panel__quote {
     margin-top: 16px;
     padding: 18px;
