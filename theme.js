@@ -11,6 +11,174 @@
         });
     }
 
+    /* ---- Shared dialog focus, Escape, and scroll lock ---- */
+    var managedDialogSelector = [
+        '.lightbox',
+        '.profile-modal',
+        '.gallery-overlay',
+        '.photo-lightbox',
+        '.join-modal',
+        '.key-modal',
+        '.upload-modal',
+        '.thoughts-confirm',
+        '.pin-action-modal'
+    ].join(', ');
+    var dialogCloseSelector = '.pin-action-modal__close, .thoughts-confirm__decline, .upload-modal__close, .key-modal__close, .join-modal__close, .gallery-panel__close, .photo-lightbox__close, .profile-modal__close, .lightbox__close';
+    var dialogOpenState = new WeakMap();
+    var dialogReturnFocus = new WeakMap();
+
+    function getOpenManagedDialogs() {
+        return Array.prototype.filter.call(document.querySelectorAll(managedDialogSelector), function (dialog) {
+            return dialog.classList.contains('is-open') && dialog.getAttribute('aria-hidden') !== 'true';
+        });
+    }
+
+    function getDialogFocusable(dialog) {
+        return Array.prototype.filter.call(dialog.querySelectorAll(
+            'button:not([disabled]), [href], input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        ), function (element) {
+            return !element.hidden && element.getAttribute('aria-hidden') !== 'true' && element.offsetParent !== null;
+        });
+    }
+
+    function prepareDialogClose(dialog) {
+        if (!dialog) return;
+        var active = document.activeElement;
+        if (active && dialog.contains(active) && typeof active.blur === 'function') active.blur();
+    }
+
+    function syncModalState() {
+        var dialogs = document.querySelectorAll(managedDialogSelector);
+        Array.prototype.forEach.call(dialogs, function (dialog) {
+            var isOpen = dialog.classList.contains('is-open') && dialog.getAttribute('aria-hidden') !== 'true';
+            var wasOpen = dialogOpenState.get(dialog) === true;
+            dialog.inert = !isOpen;
+
+            if (isOpen && !wasOpen) {
+                var active = document.activeElement;
+                if (active && active !== document.body && !dialog.contains(active)) {
+                    dialogReturnFocus.set(dialog, active);
+                }
+                dialogOpenState.set(dialog, true);
+                window.setTimeout(function () {
+                    if (!dialog.classList.contains('is-open') || dialog.contains(document.activeElement)) return;
+                    var initial = dialog.querySelector('[data-dialog-focus]') ||
+                        dialog.querySelector('input:not([disabled]):not([type="hidden"]), textarea:not([disabled])') ||
+                        getDialogFocusable(dialog)[0];
+                    if (initial) initial.focus({ preventScroll: true });
+                }, 0);
+            } else if (!isOpen && wasOpen) {
+                dialogOpenState.set(dialog, false);
+                var previous = dialogReturnFocus.get(dialog);
+                dialogReturnFocus.delete(dialog);
+                var remainingDialogs = getOpenManagedDialogs();
+                var nextDialog = remainingDialogs[remainingDialogs.length - 1];
+                if (previous && nextDialog && !dialogReturnFocus.has(nextDialog)) {
+                    dialogReturnFocus.set(nextDialog, previous);
+                }
+                window.setTimeout(function () {
+                    if (!previous || !previous.isConnected || previous.offsetParent === null) return;
+                    var parentDialog = previous.closest(managedDialogSelector);
+                    if (!getOpenManagedDialogs().length || (parentDialog && parentDialog.classList.contains('is-open'))) {
+                        previous.focus({ preventScroll: true });
+                    }
+                }, 0);
+            }
+        });
+
+        var hasOpenDialog = getOpenManagedDialogs().length > 0;
+        document.body.classList.toggle('is-modal-open', hasOpenDialog);
+        var shell = document.querySelector('.spa-shell');
+        if (shell) {
+            var openDialogs = getOpenManagedDialogs();
+            shell.inert = false;
+            Array.prototype.forEach.call(shell.children, function (child) {
+                var containsOpenDialog = openDialogs.some(function (dialog) {
+                    return child === dialog || child.contains(dialog);
+                });
+                child.inert = hasOpenDialog && !containsOpenDialog;
+            });
+        }
+    }
+
+    window.prepareTimeboxDialogClose = prepareDialogClose;
+    window.syncTimeboxModalState = syncModalState;
+    window.closeTimeboxDialogsForNavigation = function () {
+        var safety = 12;
+        var dialogs = getOpenManagedDialogs();
+        while (dialogs.length && safety > 0) {
+            var dialog = dialogs[dialogs.length - 1];
+            var closeButton = dialog.querySelector(dialogCloseSelector);
+            if (!closeButton || closeButton.disabled) return false;
+            closeButton.click();
+            var remaining = getOpenManagedDialogs();
+            if (remaining.length >= dialogs.length && remaining[remaining.length - 1] === dialog) return false;
+            dialogs = remaining;
+            safety -= 1;
+        }
+        syncModalState();
+        return getOpenManagedDialogs().length === 0;
+    };
+
+    var dialogObserver = new MutationObserver(function (mutations) {
+        var shouldSync = mutations.some(function (mutation) {
+            if (mutation.type === 'childList') {
+                var changedNodes = Array.prototype.concat.call(
+                    Array.prototype.slice.call(mutation.addedNodes),
+                    Array.prototype.slice.call(mutation.removedNodes)
+                );
+                return changedNodes.some(function (node) {
+                    return node.nodeType === 1 && (
+                        (node.matches && node.matches(managedDialogSelector)) ||
+                        (node.querySelector && node.querySelector(managedDialogSelector))
+                    );
+                });
+            }
+            return mutation.target.matches && mutation.target.matches(managedDialogSelector);
+        });
+        if (shouldSync) syncModalState();
+    });
+    dialogObserver.observe(document.body, {
+        subtree: true,
+        childList: true,
+        attributes: true,
+        attributeFilter: ['class', 'aria-hidden']
+    });
+
+    document.addEventListener('keydown', function (event) {
+        if (event.key !== 'Tab') return;
+        var dialogs = getOpenManagedDialogs();
+        var dialog = dialogs[dialogs.length - 1];
+        if (!dialog) return;
+        var focusable = getDialogFocusable(dialog);
+        if (!focusable.length) {
+            event.preventDefault();
+            return;
+        }
+        var first = focusable[0];
+        var last = focusable[focusable.length - 1];
+        if (event.shiftKey && document.activeElement === first) {
+            event.preventDefault();
+            last.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+            event.preventDefault();
+            first.focus();
+        }
+    }, true);
+
+    document.addEventListener('keydown', function (event) {
+        if (event.key !== 'Escape') return;
+        var dialogs = getOpenManagedDialogs();
+        var dialog = dialogs[dialogs.length - 1];
+        if (!dialog) return;
+        var closeButton = dialog.querySelector(dialogCloseSelector);
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        if (closeButton && !closeButton.disabled) closeButton.click();
+    }, true);
+
+    syncModalState();
+
     /* ---- Page Transition Helpers (exposed globally) ---- */
     function prefetchPage(url) {
         if (!url || !document.createElement) return;
@@ -214,14 +382,15 @@
     }
 
     function closeLightbox(skipHistory) {
-        if (lightbox) {
+        if (lightbox && lightbox.classList.contains('is-open')) {
             if (!skipHistory && qrHistoryActive) {
                 window.history.back();
                 return;
             }
-            document.body.classList.remove('is-modal-open');
+            prepareDialogClose(lightbox);
             lightbox.classList.remove('is-open');
             lightbox.setAttribute('aria-hidden', 'true');
+            syncModalState();
             qrHistoryActive = false;
         }
     }
@@ -292,10 +461,11 @@
     }
 
     function closeProfileModal() {
-        if (profileModal) {
-            document.body.classList.remove('is-modal-open');
+        if (profileModal && profileModal.classList.contains('is-open')) {
+            prepareDialogClose(profileModal);
             profileModal.classList.remove('is-open');
             profileModal.setAttribute('aria-hidden', 'true');
+            syncModalState();
         }
     }
 
@@ -410,11 +580,12 @@
     }
 
     function closePhotoLightbox() {
-        if (!photoLightbox) return;
+        if (!photoLightbox || !photoLightbox.classList.contains('is-open')) return;
         closeUnpinDialog();
-        document.body.classList.remove('is-modal-open');
+        prepareDialogClose(photoLightbox);
         photoLightbox.classList.remove('is-open', 'is-loading');
         photoLightbox.setAttribute('aria-hidden', 'true');
+        syncModalState();
         photoLightbox._activeGallery = null;
         photoLightbox._activePhoto = null;
         if (photoLightboxPinAction) photoLightboxPinAction.hidden = true;
@@ -513,10 +684,21 @@
     var GALLERY_UNPIN_API = 'https://timebox.trghy.workers.dev/gallery/unpin';
     var unpinDialog = null;
 
+    function fetchGalleryActionWithTimeout(url, options, timeoutMs) {
+        if (!window.AbortController) return fetch(url, options);
+        var controller = new AbortController();
+        var timer = setTimeout(function () { controller.abort(); }, timeoutMs);
+        return fetch(url, Object.assign({}, options, { signal: controller.signal })).finally(function () {
+            clearTimeout(timer);
+        });
+    }
+
     function closeUnpinDialog() {
-        if (!unpinDialog) return;
+        if (!unpinDialog || !unpinDialog.classList.contains('is-open')) return;
+        prepareDialogClose(unpinDialog);
         unpinDialog.classList.remove('is-open');
         unpinDialog.setAttribute('aria-hidden', 'true');
+        syncModalState();
         unpinDialog._gallery = null;
         unpinDialog._photo = null;
     }
@@ -548,11 +730,11 @@
             unpinButton.disabled = true;
             closeButton.disabled = true;
             status.textContent = mode === 'pin' ? 'Đang ghim ảnh...' : 'Đang bỏ ghim...';
-            fetch(mode === 'pin' ? GALLERY_PIN_API : GALLERY_UNPIN_API, {
+            fetchGalleryActionWithTimeout(mode === 'pin' ? GALLERY_PIN_API : GALLERY_UNPIN_API, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ scope: photo.scope, publicId: photo.publicId })
-            }).then(function (response) {
+            }, 30000).then(function (response) {
                 return response.json().catch(function () { return {}; }).then(function (data) {
                     if (!response.ok || !data.ok) {
                         throw new Error(data.message || (mode === 'pin' ? 'Không thể ghim ảnh' : 'Không thể bỏ ghim'));
@@ -578,13 +760,24 @@
                     }
                     photo.isPinnedUpload = false;
                 }
+                var pageToKeep = gallery._currentPage || 1;
                 closeUnpinDialog();
-                renderPhotoGallery(gallery, (gallery._photos || []).slice());
+                renderPhotoGallery(gallery, (gallery._photos || []).slice(), pageToKeep);
                 updatePhotoLightboxPinAction();
+                if (!photoLightbox || !photoLightbox.classList.contains('is-open')) {
+                    gallery.setAttribute('tabindex', '-1');
+                    window.requestAnimationFrame(function () {
+                        gallery.focus({ preventScroll: true });
+                    });
+                }
                 if (window.showTimeboxToast) {
                     window.showTimeboxToast(mode === 'pin' ? 'Đã ghim ảnh' : 'Đã bỏ ghim ảnh');
                 }
             }).catch(function (error) {
+                if (error && error.name === 'AbortError') {
+                    status.textContent = 'Kết nối quá lâu, vui lòng thử lại.';
+                    return;
+                }
                 status.textContent = error.message || (mode === 'pin' ? 'Không thể ghim ảnh' : 'Không thể bỏ ghim');
             }).finally(function () {
                 unpinButton.disabled = false;
@@ -607,7 +800,8 @@
         dialog.querySelector('.pin-action-modal__status').textContent = '';
         dialog.classList.add('is-open');
         dialog.setAttribute('aria-hidden', 'false');
-        dialog.querySelector('.pin-action-modal__unpin').focus();
+        syncModalState();
+        actionButton.focus({ preventScroll: true });
     }
 
     function openUnpinDialog(gallery, photo) {
@@ -615,7 +809,8 @@
     }
 
     function createPhotoCard(gallery, src, name, fullSrc, originalSrc, thumbSrcset, fullSrcset, isPriority, isPinnedUpload, photo) {
-        var card = document.createElement('button');
+        var card = document.createElement('div');
+        var openButton = document.createElement('button');
         var img = document.createElement('img');
         photo = photo || {};
         var publicId = (photo && photo.publicId) || getCloudinaryPublicId(originalSrc || fullSrc || src);
@@ -633,7 +828,9 @@
         if (isExplicitlyUnpinned(gallery, publicId)) isPinned = false;
 
         card.className = 'photo-card';
-        card.type = 'button';
+        openButton.type = 'button';
+        openButton.className = 'photo-card__open';
+        openButton.setAttribute('aria-label', 'Mở ảnh ' + (name || 'kỷ niệm'));
         card.style.setProperty('--card-delay', Math.min(gallery.children.length, 11) * 35 + 'ms');
         card.setAttribute('data-full', fullSrc || src);
         if (fullSrcset) {
@@ -645,7 +842,7 @@
 
         if (thumbSrcset) {
             img.srcset = thumbSrcset;
-            img.sizes = '(max-width: 639px) calc((100vw - 34px) / 2), (max-width: 899px) calc((100vw - 68px) / 3), 210px';
+            img.sizes = '(max-width: 899px) and (orientation: landscape) calc((100vw - 54px) / 4), (max-width: 639px) calc((100vw - 36px) / 3), (max-width: 699px) calc((100vw - 68px) / 3), (max-width: 899px) calc((100vw - 88px) / 4), 210px';
         }
         img.src = src;
         img.alt = name || 'Anh nau an';
@@ -666,13 +863,13 @@
             card.classList.add('is-loaded');
         }
 
-        card.appendChild(img);
+        openButton.appendChild(img);
+        card.appendChild(openButton);
         if (isPinned) {
-            var pinBadge = document.createElement('span');
+            var pinBadge = document.createElement('button');
+            pinBadge.type = 'button';
             pinBadge.className = 'photo-card__pin';
             pinBadge.innerHTML = '<i class="fas fa-thumbtack" aria-hidden="true"></i>';
-            pinBadge.setAttribute('role', 'button');
-            pinBadge.setAttribute('tabindex', '0');
             pinBadge.setAttribute('aria-label', 'Tùy chọn ảnh ghim');
             function activatePinMenu(event) {
                 event.preventDefault();
@@ -684,12 +881,9 @@
                 openUnpinDialog(gallery, photo);
             }
             pinBadge.addEventListener('click', activatePinMenu);
-            pinBadge.addEventListener('keydown', function (event) {
-                if (event.key === 'Enter' || event.key === ' ') activatePinMenu(event);
-            });
             card.appendChild(pinBadge);
         }
-        card.addEventListener('click', function () {
+        openButton.addEventListener('click', function () {
             openPhotoLightbox(card);
         });
         gallery.appendChild(card);
@@ -739,22 +933,41 @@
         pager.className = 'photo-pager';
         pager.setAttribute('aria-label', 'Chuyen trang anh');
 
-        for (var i = 1; i <= pageCount; i += 1) {
-            (function (page) {
-                var btn = document.createElement('button');
-                btn.type = 'button';
-                btn.className = 'photo-pager__btn';
-                btn.textContent = page;
-                if (page === currentPage) {
-                    btn.classList.add('is-active');
-                    btn.setAttribute('aria-current', 'page');
+        var pages = [];
+        if (pageCount <= 7) {
+            for (var pageNumber = 1; pageNumber <= pageCount; pageNumber += 1) pages.push(pageNumber);
+        } else {
+            [1, currentPage - 1, currentPage, currentPage + 1, pageCount].forEach(function (pageNumber) {
+                if (pageNumber >= 1 && pageNumber <= pageCount && pages.indexOf(pageNumber) === -1) {
+                    pages.push(pageNumber);
                 }
-                btn.addEventListener('click', function () {
-                    onPageChange(page);
-                });
-                pager.appendChild(btn);
-            })(i);
+            });
+            pages.sort(function (a, b) { return a - b; });
         }
+
+        pages.forEach(function (page, index) {
+            if (index > 0 && page - pages[index - 1] > 1) {
+                var ellipsis = document.createElement('span');
+                ellipsis.className = 'photo-pager__ellipsis';
+                ellipsis.textContent = '…';
+                ellipsis.setAttribute('aria-hidden', 'true');
+                pager.appendChild(ellipsis);
+            }
+            var btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'photo-pager__btn';
+            btn.textContent = page;
+            btn.setAttribute('aria-label', 'Trang ' + page + ' trên ' + pageCount);
+            if (page === currentPage) {
+                btn.classList.add('is-active');
+                btn.setAttribute('aria-current', 'page');
+            }
+            btn.addEventListener('click', function () {
+                if (page === currentPage) return;
+                onPageChange(page);
+            });
+            pager.appendChild(btn);
+        });
 
         gallery.insertAdjacentElement('afterend', pager);
     }
@@ -764,6 +977,7 @@
     }
 
     function renderPhotoGalleryPage(gallery, photos, page) {
+        gallery.classList.remove('is-changing');
         var perPage = getPerPage();
         var pageCount = Math.max(1, Math.ceil(photos.length / perPage));
         var currentPage = Math.min(Math.max(page || 1, 1), pageCount);
@@ -793,18 +1007,37 @@
             );
         });
         createPhotoPager(gallery, pageCount, currentPage, function (nextPage) {
+            if (nextPage === currentPage) return;
+            clearTimeout(gallery._pageTimer);
             gallery.classList.add('is-changing');
-            setTimeout(function () {
+            var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            gallery._pageTimer = setTimeout(function () {
+                gallery._pageTimer = null;
                 renderPhotoGalleryPage(gallery, photos, nextPage);
                 gallery.classList.remove('is-changing');
-            }, 180);
+                gallery.setAttribute('tabindex', '-1');
+                gallery.setAttribute('aria-label', 'Trang ảnh ' + nextPage + ' trên ' + pageCount);
+                window.requestAnimationFrame(function () {
+                    gallery.focus({ preventScroll: true });
+                    if (window.innerWidth <= 899) {
+                        gallery.scrollIntoView({
+                            behavior: reduceMotion ? 'auto' : 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            }, reduceMotion ? 0 : 140);
         });
     }
 
-    function renderPhotoGallery(gallery, photos) {
+    function renderPhotoGallery(gallery, photos, page) {
+        if (photoLightbox && photoLightbox.classList.contains('is-open') && photoLightbox._activeGallery === gallery) {
+            gallery.setAttribute('tabindex', '-1');
+            dialogReturnFocus.set(photoLightbox, gallery);
+        }
         var sortedPhotos = applyPinnedPhotoOrder(gallery, sortPhotosNewestFirst(photos));
         gallery._photos = sortedPhotos;
-        renderPhotoGalleryPage(gallery, sortedPhotos, 1);
+        renderPhotoGalleryPage(gallery, sortedPhotos, page || 1);
     }
 
     function getGithubGalleryUrl(gallery, dir) {
@@ -1038,11 +1271,11 @@
             if (gallery._isSuspended) {
                 gallery._photos = applyPinnedPhotoOrder(gallery, sortPhotosNewestFirst(mergedPhotos));
             } else {
-                renderPhotoGallery(gallery, mergedPhotos);
+                renderPhotoGallery(gallery, mergedPhotos, gallery._currentPage || 1);
             }
         }).catch(function () {
             // Nếu Worker tạm lỗi, các URL ảnh cũ vẫn hiển thị bình thường.
-            if (!gallery._photos && oldPhotos.length) renderPhotoGallery(gallery, oldPhotos);
+            if (!gallery._photos && oldPhotos.length) renderPhotoGallery(gallery, oldPhotos, gallery._currentPage || 1);
             if (!gallery._photos) gallery._hasLoaded = false;
         });
     }
@@ -1176,6 +1409,9 @@
         var view = document.getElementById('view-' + viewId);
         var gallery = view ? view.querySelector(gallerySelector) : null;
         if (!gallery) return;
+        clearTimeout(gallery._pageTimer);
+        gallery._pageTimer = null;
+        gallery.classList.remove('is-changing');
         gallery._isSuspended = true;
         gallery.innerHTML = '';
         var pager = gallery.parentElement.querySelector('.photo-pager');
@@ -1189,26 +1425,25 @@
         }
     });
 
-    // Debounce resize event
+    // CSS owns the responsive column count. Resize only refits an open lightbox.
     var resizeTimer = null;
+    function queueLightboxFit() {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(function () {
+            if (photoLightbox && photoLightbox.classList.contains('is-open')) {
+                fitPhotoLightboxImage();
+            }
+        }, 120);
+    }
     if (window.addEventListener) {
-        window.addEventListener('resize', function () {
-            clearTimeout(resizeTimer);
-            resizeTimer = setTimeout(function () {
-                if (photoLightbox && photoLightbox.classList.contains('is-open')) {
-                    fitPhotoLightboxImage();
-                }
-                document.querySelectorAll(gallerySelector).forEach(function (gallery) {
-                    if (gallery._photos && !gallery._isSuspended) {
-                        var currentPage = gallery._currentPage || 1;
-                        renderPhotoGalleryPage(gallery, gallery._photos, currentPage);
-                    }
-                });
-            }, 250);
-        });
+        window.addEventListener('resize', queueLightboxFit, { passive: true });
+    }
+    if (window.visualViewport && window.visualViewport.addEventListener) {
+        window.visualViewport.addEventListener('resize', queueLightboxFit, { passive: true });
     }
 
     document.querySelectorAll('.photo-card').forEach(function (card) {
+        if (card.querySelector('.photo-card__open')) return;
         card.addEventListener('click', function () {
             openPhotoLightbox(card);
         });

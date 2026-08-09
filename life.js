@@ -40,6 +40,7 @@
     var momentsPreviewUrls = [];
     var momentsStatusTimer = null;
     var momentsUploading = false;
+    var momentsUploadController = null;
     var DEFAULT_TOAST_MESSAGE = toast ? toast.textContent : 'Mục này đang được cập nhật, hãy quay lại sau nhé!';
     var THOUGHTS_STORAGE_KEY = 'life-thoughts-selected';
     var thoughtsQuotes = [
@@ -155,7 +156,6 @@
         if (momentsUploadWidget) momentsUploadWidget.hidden = categoryKey !== 'daily';
         if (momentsStatus) momentsStatus.classList.remove('is-visible');
         clearTimeout(toastTimer);
-        document.body.classList.add('is-modal-open');
         emptyEl.hidden = false;
         emptyEl.classList.remove('is-visible');
         quoteEl.hidden = true;
@@ -183,8 +183,10 @@
             });
         }
 
+        document.body.classList.add('is-modal-open');
         overlay.classList.add('is-open');
         overlay.setAttribute('aria-hidden', 'false');
+        if (window.syncTimeboxModalState) window.syncTimeboxModalState();
     }
 
     function showLifeToast(message) {
@@ -259,15 +261,32 @@
         momentsSendBtn.hidden = false;
     }
 
-    function uploadMomentToCloudinary(file) {
+    function fetchMomentWithTimeout(url, options, timeoutMs) {
+        if (!window.AbortController) return fetch(url, options);
+        var controller = new AbortController();
+        var timer = setTimeout(function () { controller.abort(); }, timeoutMs);
+        var externalSignal = options && options.signal;
+        var abortFromExternal = function () { controller.abort(); };
+        if (externalSignal) {
+            if (externalSignal.aborted) controller.abort();
+            else externalSignal.addEventListener('abort', abortFromExternal, { once: true });
+        }
+        return fetch(url, Object.assign({}, options, { signal: controller.signal })).finally(function () {
+            clearTimeout(timer);
+            if (externalSignal) externalSignal.removeEventListener('abort', abortFromExternal);
+        });
+    }
+
+    function uploadMomentToCloudinary(file, signal) {
         var formData = new FormData();
         formData.append('file', file);
         formData.append('upload_preset', MOMENTS_UPLOAD_PRESET);
 
-        return fetch('https://api.cloudinary.com/v1_1/' + MOMENTS_UPLOAD_CLOUD_NAME + '/image/upload', {
+        return fetchMomentWithTimeout('https://api.cloudinary.com/v1_1/' + MOMENTS_UPLOAD_CLOUD_NAME + '/image/upload', {
             method: 'POST',
-            body: formData
-        }).then(function (response) {
+            body: formData,
+            signal: signal
+        }, 90000).then(function (response) {
             return response.json();
         }).then(function (data) {
             if (!data.secure_url) throw new Error('Upload failed');
@@ -275,7 +294,7 @@
         });
     }
 
-    function uploadMomentsWithLimit(files) {
+    function uploadMomentsWithLimit(files, signal) {
         var results = new Array(files.length);
         var nextIndex = 0;
 
@@ -284,7 +303,7 @@
             nextIndex += 1;
             if (index >= files.length) return Promise.resolve();
 
-            return uploadMomentToCloudinary(files[index]).then(function (value) {
+            return uploadMomentToCloudinary(files[index], signal).then(function (value) {
                 results[index] = { status: 'fulfilled', value: value };
             }).catch(function (reason) {
                 results[index] = { status: 'rejected', reason: reason };
@@ -397,7 +416,8 @@
     }
 
     function closeThoughtsConfirm(accepted) {
-        if (!thoughtsConfirmModal) return;
+        if (!thoughtsConfirmModal || !thoughtsConfirmModal.classList.contains('is-open')) return;
+        if (window.prepareTimeboxDialogClose) window.prepareTimeboxDialogClose(thoughtsConfirmModal);
         thoughtsConfirmModal.classList.remove('is-open');
         thoughtsConfirmModal.classList.add('is-closing');
         thoughtsConfirmModal.setAttribute('aria-hidden', 'true');
@@ -405,21 +425,22 @@
         thoughtsConfirmCloseTimer = setTimeout(function () {
             if (!thoughtsConfirmModal) return;
             thoughtsConfirmModal.classList.remove('is-closing');
-            if (!accepted) document.body.classList.remove('is-modal-open');
         }, 320);
 
         if (accepted) openGallery('thoughts');
+        if (window.syncTimeboxModalState) window.syncTimeboxModalState();
     }
 
     function closeGallery() {
-        if (!overlay) return;
+        if (!overlay || !overlay.classList.contains('is-open')) return;
         // Không cho đóng trong khi đang upload
         if (momentsUploading) return;
         clearTimeout(toastTimer);
-        document.body.classList.remove('is-modal-open');
+        if (window.prepareTimeboxDialogClose) window.prepareTimeboxDialogClose(overlay);
         overlay.classList.remove('is-open');
         overlay.classList.remove('is-upload-mode');
         overlay.setAttribute('aria-hidden', 'true');
+        if (window.syncTimeboxModalState) window.syncTimeboxModalState();
         resetMomentsUpload();
 
         var url = new URL(window.location.href);
@@ -437,10 +458,11 @@
     }
 
     function closeJoinModal() {
-        if (!joinModal) return;
-        document.body.classList.remove('is-modal-open');
+        if (!joinModal || !joinModal.classList.contains('is-open')) return;
+        if (window.prepareTimeboxDialogClose) window.prepareTimeboxDialogClose(joinModal);
         joinModal.classList.remove('is-open');
         joinModal.setAttribute('aria-hidden', 'true');
+        if (window.syncTimeboxModalState) window.syncTimeboxModalState();
     }
 
     function readJoinSubmissions() {
@@ -493,13 +515,17 @@
 
             var filesToUpload = selectedMomentsFiles.slice();
             momentsUploading = true;
+            momentsUploadController = window.AbortController ? new AbortController() : null;
+            var batchTimer = setTimeout(function () {
+                if (momentsUploadController) momentsUploadController.abort();
+            }, 120000);
             momentsSendBtn.disabled = true;
             // Ẩn nút X và vô hiệu overlay click khi đang upload
             if (closeBtn) closeBtn.disabled = true;
 
             setMomentsStatus('Đang gửi ' + filesToUpload.length + ' ảnh...');
 
-            uploadMomentsWithLimit(filesToUpload).then(function (results) {
+            uploadMomentsWithLimit(filesToUpload, momentsUploadController ? momentsUploadController.signal : undefined).then(function (results) {
                 var succeeded = results.filter(function (r) { return r.status === 'fulfilled'; }).length;
                 var failed = results.length - succeeded;
 
@@ -525,6 +551,8 @@
                 renderMomentsPreview();
                 setMomentsStatus('Có lỗi khi gửi ảnh, thử lại nhé!', 3000);
             }).finally(function () {
+                clearTimeout(batchTimer);
+                momentsUploadController = null;
                 momentsUploading = false;
                 momentsSendBtn.disabled = false;
                 if (closeBtn) closeBtn.disabled = false;

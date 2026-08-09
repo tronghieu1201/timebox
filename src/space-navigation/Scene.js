@@ -139,7 +139,11 @@ export class SpaceScene {
     this.handleMotionChange = (event) => {
       this.reducedMotion = event.matches;
       this.navigation.reducedMotion = event.matches;
-      if (event.matches) this.navigation.resumeAt = Number.POSITIVE_INFINITY;
+      if (event.matches) {
+        this.navigation.resumeAt = Number.POSITIVE_INFINITY;
+      } else if (this.navigation.activeIndex < 0) {
+        this.navigation.resumeAt = performance.now() + this.settings.resumeDelay;
+      }
     };
     this.handleVisibility = () => this.syncRunningState();
     this.handleBeforeUnload = () => this.destroy({ preserveLayout: true });

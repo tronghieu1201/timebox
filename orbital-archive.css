@@ -397,6 +397,28 @@ body.timebox-cinematic .world-album .photo-card.is-loaded {
     animation: archiveCardIn 0.5s var(--archive-ease) var(--card-delay, 0ms) both;
 }
 
+body.timebox-cinematic .world-album .photo-card__open {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    display: block;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: inherit;
+    color: inherit;
+    font: inherit;
+    background: transparent;
+    appearance: none;
+    cursor: pointer;
+}
+
+body.timebox-cinematic .world-album .photo-card__open:focus {
+    outline: none;
+}
+
 body.timebox-cinematic .world-album .photo-card:hover {
     transform: translateY(-3px);
     border-color: rgba(var(--world-rgb), 0.62);
@@ -519,6 +541,17 @@ body.timebox-cinematic .world-album .photo-pager__btn.is-active {
     background: rgba(var(--world-rgb), 0.2);
     color: var(--archive-text);
     box-shadow: 0 0 22px rgba(var(--world-rgb), 0.11);
+}
+
+body.timebox-cinematic .world-album .photo-pager__ellipsis {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    min-width: 22px;
+    color: var(--archive-muted);
+    font-size: 12px;
+    user-select: none;
 }
 
 body.timebox-cinematic .family-upload-mobile {
@@ -1080,6 +1113,7 @@ body.timebox-cinematic .upload-modal__close {
 }
 
 body.timebox-cinematic .upload-modal__dropzone {
+    width: 100%;
     min-height: 178px;
     padding: 26px 18px;
     display: flex;
@@ -1093,6 +1127,9 @@ body.timebox-cinematic .upload-modal__dropzone {
         radial-gradient(circle at 50% 42%, rgba(var(--world-rgb), 0.1), transparent 42%),
         rgba(255, 255, 255, 0.025);
     color: var(--archive-text);
+    font: inherit;
+    appearance: none;
+    cursor: pointer;
     box-shadow: none;
 }
 
@@ -1242,6 +1279,7 @@ body.timebox-cinematic .life-back:focus-visible,
 body.timebox-cinematic .family-upload-fab:focus-visible,
 body.timebox-cinematic .family-upload-mobile__btn:focus-visible,
 body.timebox-cinematic .photo-card:focus-visible,
+body.timebox-cinematic .photo-card:focus-within,
 body.timebox-cinematic .photo-pager__btn:focus-visible,
 body.timebox-cinematic .gallery-panel__close:focus-visible,
 body.timebox-cinematic .join-modal__close:focus-visible,
@@ -1256,6 +1294,11 @@ body.timebox-cinematic .upload-modal__dropzone:focus-visible {
     outline: 2px solid rgba(var(--world-rgb), 0.88);
     outline-offset: 3px;
     box-shadow: 0 0 0 5px rgba(var(--world-rgb), 0.13);
+}
+
+body.timebox-cinematic .world-heading .life-title[tabindex="-1"]:focus,
+body.timebox-cinematic .world-album .photo-gallery[tabindex="-1"]:focus {
+    outline: none;
 }
 
 /* ---------- Responsive ---------- */
@@ -1497,6 +1540,10 @@ body.timebox-cinematic .upload-modal__dropzone:focus-visible {
         border-radius: 13px;
     }
 
+    body.timebox-cinematic .world-album .photo-gallery {
+        scroll-margin-top: calc(76px + env(safe-area-inset-top, 0px));
+    }
+
     body.timebox-cinematic .family-upload-mobile {
         display: block;
         margin-top: 16px;
@@ -1528,80 +1575,200 @@ body.timebox-cinematic .upload-modal__dropzone:focus-visible {
     }
 }
 
+@media (min-width: 700px) and (max-width: 899px) {
+    body.timebox-cinematic .world-album .photo-gallery {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    body.timebox-cinematic .world-header__actions {
+        display: flex;
+        flex-flow: row wrap;
+        align-items: center;
+        gap: 8px;
+    }
+}
+
+@media (min-width: 700px) and (max-width: 899px) and (max-height: 760px) {
+    body.timebox-cinematic .world-album {
+        --archive-tablet-thumb: clamp(
+            92px,
+            min(calc((100dvh - 232px) / 3), calc((100vw - 72px) / 4)),
+            170px
+        );
+        width: fit-content;
+        max-width: calc(100vw - 24px);
+        padding-top: 14px;
+        padding-bottom: 14px;
+    }
+
+    body.timebox-cinematic .world-header {
+        margin-bottom: 10px;
+        padding-bottom: 10px;
+    }
+
+    body.timebox-cinematic .world-album .photo-gallery {
+        width: auto;
+        grid-template-columns: repeat(4, var(--archive-tablet-thumb));
+        justify-content: center;
+        gap: 7px;
+    }
+
+    body.timebox-cinematic .world-album .photo-card {
+        width: var(--archive-tablet-thumb);
+        height: var(--archive-tablet-thumb);
+    }
+
+    body.timebox-cinematic .world-album .photo-pager {
+        margin-top: 10px;
+    }
+}
+
 @media (max-width: 639px) {
+    html,
+    body.timebox-cinematic {
+        width: 100%;
+        min-width: 0;
+        max-width: 100%;
+        overflow-x: clip;
+    }
+
     body.timebox-cinematic[data-space-view]:not([data-space-view="home"]) {
         padding: 0;
+    }
+
+    body.timebox-cinematic[data-space-view]:not([data-space-view="home"]) .spa-shell,
+    body.timebox-cinematic .spa-view:not(#view-home) {
+        min-width: 0;
+        max-width: 100%;
+        overflow-x: clip;
     }
 
     body.timebox-cinematic .world-album {
         width: 100%;
         max-width: none;
+        min-width: 0;
         min-height: 100dvh;
-        padding: 18px 12px max(18px, env(safe-area-inset-bottom));
+        padding:
+            max(14px, env(safe-area-inset-top))
+            max(12px, env(safe-area-inset-right))
+            max(18px, env(safe-area-inset-bottom))
+            max(12px, env(safe-area-inset-left));
         border-width: 0;
         border-radius: 0;
         background:
             radial-gradient(circle at 95% 0, rgba(var(--world-rgb), 0.12), transparent 26%),
             rgba(5, 8, 12, 0.94);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
         overflow: visible;
     }
 
     body.timebox-cinematic .world-header {
         position: sticky;
-        top: 0;
+        top: env(safe-area-inset-top, 0px);
         z-index: 20;
-        grid-template-columns: 44px minmax(0, 1fr);
-        gap: 12px;
-        margin: -6px -2px 18px;
-        padding: 6px 2px 16px;
+        grid-template-columns: minmax(0, 1fr);
+        justify-content: stretch;
+        gap: 0;
+        margin: -2px 0 14px;
+        padding: 4px 0 13px;
         background: linear-gradient(180deg, rgba(5, 8, 12, 0.96) 65%, rgba(5, 8, 12, 0));
         backdrop-filter: blur(10px);
         -webkit-backdrop-filter: blur(10px);
     }
 
     body.timebox-cinematic .world-header .life-back {
+        position: absolute;
+        top: 4px;
+        left: 0;
+        grid-column: auto;
+        grid-row: auto;
         width: 44px;
         min-width: 44px;
         height: 44px;
     }
 
     .world-heading__eyebrow {
-        margin-bottom: 5px;
-        font-size: 8.5px;
-        letter-spacing: 0.16em;
+        margin-bottom: 4px;
+        font-size: 7.5px;
+        letter-spacing: 0.12em;
+        text-align: center;
+    }
+
+    body.timebox-cinematic .world-heading {
+        grid-column: 1;
+        grid-row: 1;
+        align-self: center;
+        box-sizing: border-box;
+        width: 100%;
+        max-width: none;
+        padding: 0 52px;
+        text-align: center;
+        transform: none;
     }
 
     body.timebox-cinematic .world-heading .life-title {
-        font-size: clamp(22px, 7vw, 28px);
-        letter-spacing: -0.04em;
+        width: 100%;
+        max-width: none;
+        font-size: clamp(16px, 4.6vw, 19px);
+        line-height: 1.2;
+        letter-spacing: 0;
+        text-align: center;
+        overflow-wrap: anywhere;
     }
 
     .world-heading__subtitle {
-        margin-top: 7px;
-        font-size: 11.5px;
-        line-height: 1.55;
+        display: none;
     }
 
     .world-header__actions {
         grid-column: 1 / -1;
         grid-row: auto;
+        width: 100%;
         margin-top: 2px;
     }
 
     .world-header__count {
-        min-height: 26px;
-        font-size: 9px;
+        display: none;
     }
 
     body.timebox-cinematic .world-album .photo-gallery {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 9px;
+        width: 100%;
+        min-width: 0;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 6px;
     }
 
     body.timebox-cinematic .world-album .photo-card {
-        border-radius: 12px;
+        min-width: 0;
+        aspect-ratio: 1 / 1;
+        border-radius: 8px;
+        box-shadow: 0 7px 18px rgba(0, 0, 0, 0.28);
+    }
+
+    body.timebox-cinematic .world-album .photo-card img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    body.timebox-cinematic .world-album .photo-card__pin {
+        top: 8px;
+        right: 8px;
+        width: 28px;
+        height: 28px;
+    }
+
+    body.timebox-cinematic .world-album .photo-card__pin::after,
+    body.timebox-cinematic .key-modal__close::after {
+        content: "";
+        position: absolute;
+        inset: -8px;
+        border-radius: inherit;
+    }
+
+    body.timebox-cinematic .world-album .photo-card__pin i {
+        font-size: 9px;
     }
 
     body.timebox-cinematic .world-album .photo-pager {
@@ -1609,10 +1776,10 @@ body.timebox-cinematic .upload-modal__dropzone:focus-visible {
     }
 
     body.timebox-cinematic .world-album .photo-pager__btn {
-        width: 40px;
-        height: 40px;
-        min-width: 40px;
-        min-height: 40px;
+        width: 44px;
+        height: 44px;
+        min-width: 44px;
+        min-height: 44px;
     }
 
     body.timebox-cinematic .gallery-overlay,
@@ -1620,7 +1787,11 @@ body.timebox-cinematic .upload-modal__dropzone:focus-visible {
     body.timebox-cinematic .key-modal,
     body.timebox-cinematic .upload-modal,
     body.timebox-cinematic .thoughts-confirm {
-        padding: 8px;
+        padding:
+            max(8px, env(safe-area-inset-top, 0px))
+            max(8px, env(safe-area-inset-right, 0px))
+            max(8px, env(safe-area-inset-bottom, 0px))
+            max(8px, env(safe-area-inset-left, 0px));
     }
 
     body.timebox-cinematic .gallery-panel,
@@ -1636,6 +1807,70 @@ body.timebox-cinematic .upload-modal__dropzone:focus-visible {
         -webkit-backdrop-filter: blur(12px);
     }
 
+    body.timebox-cinematic .key-modal {
+        align-items: center;
+        padding:
+            max(12px, env(safe-area-inset-top))
+            max(12px, env(safe-area-inset-right))
+            max(12px, env(safe-area-inset-bottom))
+            max(12px, env(safe-area-inset-left));
+    }
+
+    body.timebox-cinematic .key-modal__card {
+        width: min(100%, 270px);
+        max-width: calc(100vw - 40px);
+        padding: 13px 11px 11px;
+        border-radius: 12px;
+    }
+
+    body.timebox-cinematic .key-modal__card::before {
+        left: 11px;
+    }
+
+    body.timebox-cinematic .key-modal .dialog-heading__eyebrow {
+        max-width: calc(100% - 34px);
+        margin-bottom: 3px;
+        font-size: 6.5px;
+        letter-spacing: 0.12em;
+    }
+
+    body.timebox-cinematic .key-modal__title {
+        margin: 0 34px 3px 0;
+        font-size: 18px;
+        line-height: 1.25;
+        letter-spacing: 0;
+    }
+
+    body.timebox-cinematic .key-modal__note {
+        margin-bottom: 9px;
+        font-size: 10px;
+        line-height: 1.45;
+    }
+
+    body.timebox-cinematic .key-modal__close {
+        top: 7px;
+        right: 7px;
+        width: 36px;
+        height: 36px;
+        flex-basis: 36px;
+        font-size: 16px;
+    }
+
+    body.timebox-cinematic .key-form {
+        gap: 6px;
+    }
+
+    body.timebox-cinematic .key-form input,
+    body.timebox-cinematic .key-form button {
+        min-height: 44px;
+        border-radius: 9px;
+        font-size: 13px;
+    }
+
+    body.timebox-cinematic .key-form button {
+        font-size: 12px;
+    }
+
     body.timebox-cinematic .gallery-panel__header,
     body.timebox-cinematic .upload-modal__header {
         gap: 12px;
@@ -1645,8 +1880,7 @@ body.timebox-cinematic .upload-modal__dropzone:focus-visible {
 
     body.timebox-cinematic .gallery-panel__title,
     body.timebox-cinematic .upload-modal__title,
-    body.timebox-cinematic .join-modal__title,
-    body.timebox-cinematic .key-modal__title {
+    body.timebox-cinematic .join-modal__title {
         font-size: 24px;
     }
 
@@ -1669,8 +1903,7 @@ body.timebox-cinematic .upload-modal__dropzone:focus-visible {
         grid-template-columns: 1fr;
     }
 
-    body.timebox-cinematic .join-modal__close,
-    body.timebox-cinematic .key-modal__close {
+    body.timebox-cinematic .join-modal__close {
         top: 14px;
         right: 14px;
     }
@@ -1694,6 +1927,119 @@ body.timebox-cinematic .upload-modal__dropzone:focus-visible {
         width: 44px;
         height: 44px;
     }
+
+    /* One compact mobile scale for every archive dialog. */
+    body.timebox-cinematic .gallery-panel,
+    body.timebox-cinematic .join-modal__card,
+    body.timebox-cinematic .upload-modal__card,
+    body.timebox-cinematic .thoughts-confirm__card {
+        width: min(100%, 360px);
+        max-width: calc(100vw - 32px);
+        max-height: calc(100dvh - 32px);
+        padding: 14px;
+        border-radius: 14px;
+    }
+
+    body.timebox-cinematic .join-modal__card,
+    body.timebox-cinematic .thoughts-confirm__card {
+        width: min(100%, 320px);
+        overflow-y: auto;
+        overscroll-behavior: contain;
+    }
+
+    body.timebox-cinematic .gallery-panel__title,
+    body.timebox-cinematic .upload-modal__title,
+    body.timebox-cinematic .join-modal__title,
+    body.timebox-cinematic .thoughts-confirm__title {
+        font-size: 19px;
+        line-height: 1.25;
+        letter-spacing: 0;
+    }
+
+    body.timebox-cinematic .join-modal__title {
+        margin: 0 44px 5px 0;
+    }
+
+    body.timebox-cinematic .join-modal__note,
+    body.timebox-cinematic .thoughts-confirm__message {
+        margin-bottom: 14px;
+        font-size: 11.5px;
+        line-height: 1.55;
+    }
+
+    body.timebox-cinematic .gallery-panel__close,
+    body.timebox-cinematic .join-modal__close,
+    body.timebox-cinematic .upload-modal__close {
+        width: 44px;
+        height: 44px;
+        flex-basis: 44px;
+        font-size: 18px;
+    }
+
+    body.timebox-cinematic .gallery-panel__header,
+    body.timebox-cinematic .upload-modal__header {
+        gap: 10px;
+        margin-bottom: 14px;
+        padding-bottom: 13px;
+    }
+
+    body.timebox-cinematic .join-form__field textarea {
+        min-height: 120px;
+        padding: 12px 13px;
+        border-radius: 11px;
+    }
+
+    /* iOS zooms the whole page when a focused field is below 16px. */
+    body.timebox-cinematic .key-form input,
+    body.timebox-cinematic .join-form input,
+    body.timebox-cinematic .join-form textarea,
+    body.timebox-cinematic .upload-modal input,
+    body.timebox-cinematic .upload-modal textarea,
+    body.timebox-cinematic .upload-modal select {
+        font-size: 16px;
+    }
+
+    body.timebox-cinematic .join-form__submit,
+    body.timebox-cinematic .upload-modal__send,
+    body.timebox-cinematic .thoughts-confirm__accept,
+    body.timebox-cinematic .thoughts-confirm__decline {
+        min-height: 46px;
+        border-radius: 11px;
+        font-size: 13px;
+    }
+
+    body.timebox-cinematic .upload-modal__dropzone {
+        min-height: 112px;
+        padding: 16px 10px;
+        border-radius: 13px;
+    }
+
+    body.timebox-cinematic .upload-modal__dropzone-icon {
+        width: 42px;
+        height: 42px;
+    }
+
+    body.timebox-cinematic .gallery-panel__quote {
+        margin-top: 12px;
+        padding: 14px;
+        border-radius: 12px;
+        font-size: 12px;
+        line-height: 1.65;
+    }
+
+    body.timebox-cinematic .pin-action-modal__card {
+        width: min(300px, calc(100vw - 24px));
+        max-width: calc(100vw - 24px);
+        border-radius: 14px;
+    }
+
+    body.timebox-cinematic .toast,
+    body.timebox-cinematic .life-toast {
+        width: auto;
+        max-width: calc(100vw - 24px) !important;
+        font-size: 12px !important;
+        line-height: 1.45;
+    }
 }
 
 @media (max-width: 480px) {
@@ -1708,11 +2054,39 @@ body.timebox-cinematic .upload-modal__dropzone:focus-visible {
     }
 
     body.timebox-cinematic .world-album .photo-gallery {
-        gap: 8px;
+        gap: 5px;
     }
 
     body.timebox-cinematic .family-upload-mobile {
         margin-top: 12px;
+    }
+}
+
+@media (hover: none) {
+    body.timebox-cinematic .world-album .photo-card:hover,
+    body.timebox-cinematic .world-header .life-back:hover,
+    body.timebox-cinematic .world-header .family-upload-fab:hover {
+        transform: none;
+    }
+
+    body.timebox-cinematic .world-album .photo-card:hover img {
+        transform: none;
+    }
+}
+
+@media (hover: none) and (pointer: coarse) and (min-width: 640px) and (max-width: 899px) {
+    body.timebox-cinematic .world-album .photo-card__pin::after {
+        content: "";
+        position: absolute;
+        inset: -5px;
+        border-radius: inherit;
+    }
+
+    body.timebox-cinematic .world-album .photo-pager__btn {
+        width: 44px;
+        height: 44px;
+        min-width: 44px;
+        min-height: 44px;
     }
 }
 
@@ -1723,11 +2097,23 @@ body.timebox-cinematic .upload-modal__dropzone:focus-visible {
     }
 
     body.timebox-cinematic .world-album .photo-gallery {
-        gap: 7px;
+        gap: 4px;
     }
 
     body.timebox-cinematic .world-heading .life-title {
-        font-size: 22px;
+        font-size: 17px;
+    }
+
+    body.timebox-cinematic .key-modal__card {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+}
+
+@media (max-width: 699px) and (orientation: landscape) {
+    body.timebox-cinematic .world-album .photo-gallery {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 6px;
     }
 }
 

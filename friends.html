@@ -4,9 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script>window.location.replace('./?view=friends');</script>
     <title>Friends – Trọng Hiếu</title>
     <meta name="description" content="Best Friends – Trọng Hiếu.">
-    <link rel="canonical" href="https://tronghieu1201.github.io/timebox/friends.html">
+    <link rel="canonical" href="https://tronghieu1201.github.io/timebox/?view=friends">
     <link rel="icon" type="image/webp" href="https://res.cloudinary.com/dtpw5htqs/image/upload/v1782711381/43b58650-6952-47b7-9bac-94918d6b54a6_fcvxaq.webp">
     <link rel="apple-touch-icon" href="https://res.cloudinary.com/dtpw5htqs/image/upload/v1782711381/43b58650-6952-47b7-9bac-94918d6b54a6_fcvxaq.webp">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -15,16 +16,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="life.css">
-    <script>
-        (function () {
-            var filename = window.location.pathname.split('/').filter(Boolean).pop() || 'friends.html';
-            var unlockKey = 'life-unlocked:' + filename;
-            try {
-                if (sessionStorage.getItem(unlockKey) === '1') return;
-            } catch (e) {}
-            window.location.replace('./?view=moments');
-        })();
-    </script></head>
+    </head>
 
 <body>
     <main class="bio-card album-page">

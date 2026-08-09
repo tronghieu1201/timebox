@@ -10,7 +10,7 @@ await build({
   format: 'iife',
   outfile: 'space-navigation.bundle.js',
   legalComments: 'none',
-  banner: { js: '/* Timebox 3D navigation — Three.js + GSAP */' }
+  banner: { js: '/* Timebox 3D navigation - Three.js + GSAP */' }
 });
 
 console.log('Built space-navigation.bundle.js');

@@ -3,7 +3,9 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#010205">
+    <meta name="color-scheme" content="dark">
     <title>Trọng Hiếu – Timebox</title>
     <meta name="description"
         content="Timebox – Nơi lưu giữ kỷ niệm của Trọng Hiếu. Gia đình, bạn bè, sinh viên và những khoảnh khắc đáng nhớ.">
@@ -18,10 +20,9 @@
         href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css?v=27">
-    <link rel="stylesheet" href="life.css?v=27">
-    <link rel="stylesheet" href="space-navigation.css?v=27">
-    <link rel="preload" as="image" href="images/space/earth_day.webp" fetchpriority="high">
+    <link rel="stylesheet" href="style.css?v=36">
+    <link rel="stylesheet" href="life.css?v=36">
+    <link rel="stylesheet" href="space-navigation.css?v=36">
     <style>
         .spa-shell {
             position: relative;
@@ -70,7 +71,7 @@
             animation: slideInLeft 0.24s cubic-bezier(0.22, 1, 0.36, 1) both;
         }
     </style>
-    <link rel="stylesheet" href="orbital-archive.css?v=27">
+    <link rel="stylesheet" href="orbital-archive.css?v=36">
 </head>
 
 <body class="timebox-cinematic space-nav-home-visible" data-space-view="home">
@@ -99,6 +100,19 @@
                     <div class="space-navigation__stage" data-space-stage tabindex="-1">
                         <div class="space-navigation__nodes" data-space-nodes aria-label="Các thiên thể điều hướng"></div>
                     </div>
+                    <nav class="space-navigation__fallback" aria-label="Điều hướng dự phòng">
+                        <p class="space-navigation__fallback-title">Chọn một thế giới</p>
+                        <div class="space-navigation__fallback-grid">
+                            <button type="button" class="space-navigation__fallback-btn" data-space-action="family">Gia đình</button>
+                            <button type="button" class="space-navigation__fallback-btn" data-space-action="thoughts">Lăng kính của Hiếu</button>
+                            <button type="button" class="space-navigation__fallback-btn" data-space-action="keepsakes">Tạm lưu tạm giữ</button>
+                            <button type="button" class="space-navigation__fallback-btn" data-space-action="friends">Những thằng cốt đột</button>
+                            <button type="button" class="space-navigation__fallback-btn" data-space-action="campus">Sinh viên</button>
+                            <button type="button" class="space-navigation__fallback-btn" data-space-action="cooking">Nấu ăn</button>
+                            <button type="button" class="space-navigation__fallback-btn" data-space-action="upload">Upload</button>
+                            <button type="button" class="space-navigation__fallback-btn" data-space-action="feedback">Feedback</button>
+                        </div>
+                    </nav>
                 </section>
             </main>
         </div><!-- /view-home -->
@@ -329,7 +343,7 @@
             <h2 class="key-modal__title" id="key-modal-title">Mở kho ký ức</h2>
             <p class="key-modal__note">Nhập mã truy cập để tiếp tục đến thế giới này.</p>
             <form class="key-form" id="key-form">
-                <input type="password" id="key-input" autocomplete="off" placeholder="">
+                <input type="password" id="key-input" autocomplete="off" aria-label="Mã truy cập" placeholder="">
                 <button type="submit"><i class="fas fa-lock-open" aria-hidden="true"></i> Mở kho</button>
                 <p class="key-modal__error" id="key-error" aria-live="polite"></p>
             </form>
@@ -351,11 +365,11 @@
             </div>
 
             <!-- Hint / drop zone -->
-            <div class="upload-modal__dropzone" id="upload-dropzone">
+            <button type="button" class="upload-modal__dropzone" id="upload-dropzone" data-dialog-focus>
                 <i class="fas fa-camera upload-modal__dropzone-icon" aria-hidden="true"></i>
                 <span class="upload-modal__dropzone-label">Chọn ảnh để gửi</span>
                 <span class="upload-modal__dropzone-sub">JPG, PNG, WEBP, GIF hoặc HEIC · có thể kéo và thả</span>
-            </div>
+            </button>
 
             <div class="upload-modal__pin-options" id="upload-pin-options" aria-label="Pin image" hidden>
                 <label class="upload-modal__pin-choice">
@@ -386,8 +400,8 @@
     <!-- Toast notification -->
     <div class="toast" id="toast" aria-live="polite"></div>
 
-    <script src="theme.js?v=27"></script>
-    <script src="life.js?v=27"></script>
+    <script src="theme.js?v=36"></script>
+    <script src="life.js?v=36"></script>
     <script>
         (function () {
             var views = {
@@ -428,6 +442,7 @@
 
             function setView(id, direction) {
                 if (!views[id] || id === currentView) return;
+                var isInitialView = currentView === null;
                 if (currentView && window.suspendTimeboxGallery) {
                     window.suspendTimeboxGallery(currentView);
                 }
@@ -453,6 +468,17 @@
                 window.scrollTo(0, 0);
                 if (window.ensureTimeboxGallery) {
                     window.ensureTimeboxGallery(id);
+                }
+                if (!isInitialView) {
+                    var focusTarget = id === 'home'
+                        ? views.home.querySelector('[data-space-stage]')
+                        : views[id].querySelector('.life-title');
+                    if (focusTarget) {
+                        focusTarget.setAttribute('tabindex', '-1');
+                        window.requestAnimationFrame(function () {
+                            focusTarget.focus({ preventScroll: true });
+                        });
+                    }
                 }
             }
 
@@ -480,6 +506,15 @@
             }
 
             window.addEventListener('popstate', function (e) {
+                if (e.state && (e.state.qrLightbox || e.state.bioPanel)) return;
+                if (window.closeTimeboxDialogsForNavigation && !window.closeTimeboxDialogsForNavigation()) {
+                    history.pushState(
+                        { spaView: currentView, spaDepth: currentDepth },
+                        '',
+                        getViewUrl(currentView)
+                    );
+                    return;
+                }
                 var nextView = e.state && e.state.spaView ? e.state.spaView : getViewFromUrl();
                 var nextDepth = e.state && typeof e.state.spaDepth === 'number' ? e.state.spaDepth : 0;
                 var direction = nextDepth < currentDepth ? 'back' : 'forward';
@@ -631,10 +666,28 @@
             var MAX_CONCURRENT_UPLOADS = 2;
             var selected = [];
             var uploading = false;
+            var uploadController = null;
             var activeUploadScope = '';
             var activeUploadPreset = UPLOAD_PRESET;
             var statusTimer = null;
             var previewUrls = [];
+
+            function fetchWithTimeout(url, options, timeoutMs) {
+                if (!window.AbortController) return fetch(url, options);
+                var controller = new AbortController();
+                var timer = setTimeout(function () { controller.abort(); }, timeoutMs);
+                var externalSignal = options && options.signal;
+                var abortFromExternal = function () { controller.abort(); };
+                if (externalSignal) {
+                    if (externalSignal.aborted) controller.abort();
+                    else externalSignal.addEventListener('abort', abortFromExternal, { once: true });
+                }
+                var requestOptions = Object.assign({}, options, { signal: controller.signal });
+                return fetch(url, requestOptions).finally(function () {
+                    clearTimeout(timer);
+                    if (externalSignal) externalSignal.removeEventListener('abort', abortFromExternal);
+                });
+            }
 
             function releasePreviewUrls() {
                 previewUrls.forEach(function (url) {
@@ -658,10 +711,12 @@
             }
 
             function closeModal(force) {
+                if (!modal.classList.contains('is-open')) return;
                 if (uploading && force !== true) return;
-                document.body.classList.remove('is-modal-open');
+                if (window.prepareTimeboxDialogClose) window.prepareTimeboxDialogClose(modal);
                 modal.classList.remove('is-open');
                 modal.setAttribute('aria-hidden', 'true');
+                if (window.syncTimeboxModalState) window.syncTimeboxModalState();
                 selected = [];
                 fileInput.value = '';
                 renderPreview();
@@ -750,12 +805,13 @@
                 return Boolean(activeUploadScope && checked && checked.value === 'pinned');
             }
 
-            function getUploadSignature(scope, pinned) {
-                return fetch(GALLERY_API + '/gallery/upload-signature', {
+            function getUploadSignature(scope, pinned, signal) {
+                return fetchWithTimeout(GALLERY_API + '/gallery/upload-signature', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ scope: scope, pinned: pinned === true })
-                }).then(function (response) {
+                    body: JSON.stringify({ scope: scope, pinned: pinned === true }),
+                    signal: signal
+                }, 30000).then(function (response) {
                     return response.json().catch(function () {
                         return { ok: false, message: 'Máy chủ trả dữ liệu không hợp lệ' };
                     }).then(function (data) {
@@ -767,7 +823,7 @@
                 });
             }
 
-            function uploadOne(file, signed) {
+            function uploadOne(file, signed, signal) {
                 var fd = new FormData();
                 fd.append('file', file);
                 var uploadUrl;
@@ -784,9 +840,9 @@
                     uploadUrl = 'https://api.cloudinary.com/v1_1/' + CLOUD_NAME + '/image/upload';
                 }
 
-                return fetch(uploadUrl, {
-                    method: 'POST', body: fd
-                }).then(function (r) { return r.json(); }).then(function (d) {
+                return fetchWithTimeout(uploadUrl, {
+                    method: 'POST', body: fd, signal: signal
+                }, 90000).then(function (r) { return r.json(); }).then(function (d) {
                     if (!d.secure_url) {
                         throw new Error(d && d.error && d.error.message ? d.error.message : 'Upload thất bại');
                     }
@@ -794,7 +850,7 @@
                 });
             }
 
-            function uploadFilesWithLimit(files, signed) {
+            function uploadFilesWithLimit(files, signed, signal) {
                 var results = new Array(files.length);
                 var nextIndex = 0;
 
@@ -803,7 +859,7 @@
                     nextIndex += 1;
                     if (index >= files.length) return Promise.resolve();
 
-                    return uploadOne(files[index], signed).then(function (value) {
+                    return uploadOne(files[index], signed, signal).then(function (value) {
                         results[index] = { status: 'fulfilled', value: value };
                     }).catch(function (reason) {
                         results[index] = { status: 'rejected', reason: reason };
@@ -856,16 +912,20 @@
                 var uploadScope = activeUploadScope;
                 var pinUpload = isPinnedUpload();
                 uploading = true;
+                uploadController = window.AbortController ? new AbortController() : null;
+                var batchTimer = setTimeout(function () {
+                    if (uploadController) uploadController.abort();
+                }, 120000);
                 sendBtn.disabled = true;
                 closeBtn.disabled = true;
                 setStatus('Đang gửi ' + files.length + ' ảnh...');
 
                 var signaturePromise = uploadScope
-                    ? getUploadSignature(uploadScope, pinUpload)
+                    ? getUploadSignature(uploadScope, pinUpload, uploadController ? uploadController.signal : undefined)
                     : Promise.resolve(null);
 
                 signaturePromise.then(function (signed) {
-                    return uploadFilesWithLimit(files, signed);
+                    return uploadFilesWithLimit(files, signed, uploadController ? uploadController.signal : undefined);
                 }).then(function (results) {
                     var ok = results.filter(function (r) { return r.status === 'fulfilled'; }).length;
                     var fail = files.length - ok;
@@ -899,8 +959,13 @@
                 }).catch(function (error) {
                     selected = files;
                     renderPreview();
-                    setStatus(error.message || 'Gửi thất bại, thử lại nhé!', 3000);
+                    var uploadError = error && error.name === 'AbortError'
+                        ? 'Kết nối quá lâu, vui lòng thử lại.'
+                        : (error.message || 'Gửi thất bại, thử lại nhé!');
+                    setStatus(uploadError, 3000);
                 }).finally(function () {
+                    clearTimeout(batchTimer);
+                    uploadController = null;
                     uploading = false;
                     sendBtn.disabled = false;
                     closeBtn.disabled = false;
@@ -919,6 +984,8 @@
             var targetHref = '';
             var targetErrorMsg = '';
             var defaultPlaceholder = '';
+            var authController = null;
+            var authRequestId = 0;
 
             function getUnlockStorageKey(url) {
                 var targetUrl = new URL(url, window.location.href);
@@ -931,11 +998,16 @@
             }
 
             function openModal(card) {
+                authRequestId += 1;
+                if (authController) authController.abort();
+                authController = null;
                 targetHref = card ? card.getAttribute('data-locked-href') || '' : '';
                 targetErrorMsg = 'X\u00e1c nh\u1eadn kh\u00f4ng th\u00e0nh c\u00f4ng';
                 if (input) input.setAttribute('placeholder', card ? card.getAttribute('data-key-placeholder') || defaultPlaceholder : defaultPlaceholder);
                 if (error) error.textContent = '';
                 if (input) input.value = '';
+                var submitButton = form.querySelector('button[type="submit"]');
+                if (submitButton) submitButton.disabled = false;
                 document.body.classList.add('is-modal-open');
                 modal.classList.add('is-open');
                 modal.setAttribute('aria-hidden', 'false');
@@ -943,12 +1015,19 @@
             }
 
             function closeModal() {
-                document.body.classList.remove('is-modal-open');
+                if (!modal.classList.contains('is-open')) return;
+                authRequestId += 1;
+                if (authController) authController.abort();
+                authController = null;
+                if (window.prepareTimeboxDialogClose) window.prepareTimeboxDialogClose(modal);
                 modal.classList.remove('is-open');
                 modal.setAttribute('aria-hidden', 'true');
+                if (window.syncTimeboxModalState) window.syncTimeboxModalState();
                 targetHref = '';
                 targetErrorMsg = '';
                 if (input) input.setAttribute('placeholder', defaultPlaceholder);
+                var submitButton = form.querySelector('button[type="submit"]');
+                if (submitButton) submitButton.disabled = false;
             }
 
             document.querySelectorAll('[data-locked-href]').forEach(function (card) {
@@ -967,6 +1046,9 @@
                 }
                 var submitBtn = form.querySelector('button[type="submit"]');
                 if (submitBtn) submitBtn.disabled = true;
+                var requestId = ++authRequestId;
+                if (authController) authController.abort();
+                authController = window.AbortController ? new AbortController() : null;
                 var action = modal._targetAction || '';
                 var scope = action === 'friends' || /friends/i.test(targetHref)
                     ? 'friends'
@@ -975,12 +1057,15 @@
                 fetch(AUTH_API, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ password: keyValue, scope: scope })
+                    body: JSON.stringify({ password: keyValue, scope: scope }),
+                    signal: authController ? authController.signal : undefined
                 }).then(function (response) {
                     return response.json().catch(function () { return { ok: false }; });
                 }).then(function (result) {
+                    if (requestId !== authRequestId || !modal.classList.contains('is-open')) return;
                     var checkErr = modal._targetErr || targetErrorMsg;
                     if (result.ok) {
+                        var unlockedHref = targetHref;
                         closeModal();
                         if (action === 'family' || action === 'friends') {
                             if (action === 'family' && window._rememberFamilyUnlock) {
@@ -991,19 +1076,23 @@
                             }
                             // Family/Friends được nhớ tạm 7 phút; mật khẩu không được lưu ở trình duyệt.
                             window._spaGoForward && window._spaGoForward(action);
-                        } else if (targetHref) {
-                            rememberUnlockedPage(targetHref);
-                            window.location.href = targetHref;
+                        } else if (unlockedHref) {
+                            rememberUnlockedPage(unlockedHref);
+                            window.location.href = unlockedHref;
                         }
                     } else {
                         error.textContent = checkErr || targetErrorMsg;
                         input.select();
                     }
                 }).catch(function () {
+                    if (requestId !== authRequestId) return;
                     error.textContent = 'Kh\u00f4ng th\u1ec3 k\u1ebft n\u1ed1i m\u00e1y ch\u1ee7';
                     input.select();
                 }).finally(function () {
-                    if (submitBtn) submitBtn.disabled = false;
+                    if (requestId === authRequestId) {
+                        authController = null;
+                        if (submitBtn) submitBtn.disabled = false;
+                    }
                 });
             });
 
@@ -1014,7 +1103,56 @@
             });
         })();
     </script>
-    <script src="space-navigation.bundle.js?v=27"></script>
+    <script>
+        (function () {
+            var homeView = document.getElementById('view-home');
+            var navigationRoot = document.querySelector('[data-space-navigation]');
+            var bundleRequested = false;
+
+            function showFallback() {
+                if (navigationRoot) navigationRoot.classList.add('is-unavailable');
+            }
+
+            function loadSpaceNavigation() {
+                if (bundleRequested || !homeView || homeView.classList.contains('is-hidden')) return;
+                bundleRequested = true;
+                if (homeObserver) homeObserver.disconnect();
+
+                var preload = document.createElement('link');
+                preload.rel = 'preload';
+                preload.as = 'image';
+                preload.href = 'images/space/earth_day.webp';
+                preload.fetchPriority = 'high';
+                document.head.appendChild(preload);
+
+                var script = document.createElement('script');
+                script.src = 'space-navigation.bundle.js?v=36';
+                script.async = true;
+                script.addEventListener('error', showFallback, { once: true });
+                document.body.appendChild(script);
+            }
+
+            document.querySelectorAll('[data-space-action]').forEach(function (button) {
+                button.addEventListener('click', function () {
+                    window.dispatchEvent(new CustomEvent('timebox:navigate', {
+                        detail: { id: button.getAttribute('data-space-action') }
+                    }));
+                });
+            });
+
+            if (homeView) {
+                var homeObserver = new MutationObserver(function () {
+                    if (!homeView.classList.contains('is-hidden')) {
+                        loadSpaceNavigation();
+                        if (bundleRequested) homeObserver.disconnect();
+                    }
+                });
+                homeObserver.observe(homeView, { attributes: true, attributeFilter: ['class'] });
+            }
+
+            loadSpaceNavigation();
+        })();
+    </script>
 </body>
 
 </html>

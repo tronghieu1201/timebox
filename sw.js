@@ -1,47 +1,39 @@
 // Timebox service worker: fast shell, bounded image cache, fresh API data.
 var CACHE_PREFIX = 'timebox-';
-var SHELL_CACHE = CACHE_PREFIX + 'shell-v27';
+var SHELL_CACHE = CACHE_PREFIX + 'shell-v36';
+var STATIC_CACHE = CACHE_PREFIX + 'static-v36';
 var IMAGE_CACHE = CACHE_PREFIX + 'images-v2';
 var ASSET_CACHE = CACHE_PREFIX + 'assets-v2';
 var MAX_IMAGE_ENTRIES = 80;
 var MAX_ASSET_ENTRIES = 50;
+var MAX_STATIC_ENTRIES = 80;
 
 var SHELL_URLS = [
     './',
-    './index.html',
-    './life.html',
-    './moments.html',
-    './cooking.html',
-    './campus.html',
-    './keepsakes.html',
-    './friends.html',
-    './family.html',
-    './style.css?v=27',
-    './life.css?v=27',
-    './space-navigation.css?v=27',
-    './orbital-archive.css?v=27',
-    './theme.js?v=27',
-    './life.js?v=27',
-    './space-navigation.bundle.js?v=27',
-    './images/space/earth_day.webp',
-    './images/space/earth_night.webp',
-    './images/space/earth_normal.png',
-    './images/space/earth_roughness.png',
-    './images/space/earth_specular.png',
-    './images/space/earth_clouds.webp',
-    './images/space/milky_way.webp'
+    './index.html'
+];
+
+var STATIC_URLS = [
+    './style.css?v=36',
+    './life.css?v=36',
+    './space-navigation.css?v=36',
+    './orbital-archive.css?v=36',
+    './theme.js?v=36',
+    './life.js?v=36'
 ];
 
 self.addEventListener('install', function (event) {
     event.waitUntil(
-        caches.open(SHELL_CACHE)
-            .then(function (cache) { return cache.addAll(SHELL_URLS); })
+        Promise.all([
+            caches.open(SHELL_CACHE).then(function (cache) { return cache.addAll(SHELL_URLS); }),
+            caches.open(STATIC_CACHE).then(function (cache) { return cache.addAll(STATIC_URLS); })
+        ])
             .then(function () { return self.skipWaiting(); })
     );
 });
 
 self.addEventListener('activate', function (event) {
-    var activeCaches = [SHELL_CACHE, IMAGE_CACHE, ASSET_CACHE];
+    var activeCaches = [SHELL_CACHE, STATIC_CACHE, IMAGE_CACHE, ASSET_CACHE];
     event.waitUntil(
         caches.keys().then(function (keys) {
             return Promise.all(keys.map(function (key) {
@@ -147,6 +139,15 @@ self.addEventListener('fetch', function (event) {
     }
 
     if (url.origin === self.location.origin) {
+        var isVersionedAsset = url.searchParams.has('v');
+        var isSpaceAsset = url.pathname.indexOf('/images/space/') !== -1;
+        var isStaticDestination = ['style', 'script', 'image', 'font'].indexOf(request.destination) !== -1;
+
+        if (isVersionedAsset || isSpaceAsset || isStaticDestination) {
+            event.respondWith(cacheFirst(request, STATIC_CACHE, MAX_STATIC_ENTRIES));
+            return;
+        }
+
         event.respondWith(freshNetworkFirst(request));
     }
 });

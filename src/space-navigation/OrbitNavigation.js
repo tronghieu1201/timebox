@@ -22,6 +22,7 @@ export class OrbitNavigation {
     this.system = new THREE.Group();
     this.nodes = [];
     this.domButtons = [];
+    this.pickSurfaces = [];
     this.isDragging = false;
     this.dragMoved = false;
     this.hoverCount = 0;
@@ -31,9 +32,16 @@ export class OrbitNavigation {
     this.resumeAt = 0;
     this.activeIndex = -1;
     this.pointerStartX = 0;
+    this.pointerStartY = 0;
     this.rotationStart = 0;
+    this.hoverFrame = 0;
+    this.pendingHoverEvent = null;
     this.parallaxTarget = new THREE.Vector2();
     this.pointerNdc = new THREE.Vector2();
+    this.projectedPosition = new THREE.Vector3();
+    this.worldPosition = new THREE.Vector3();
+    this.rayToNode = new THREE.Vector3();
+    this.closestPoint = new THREE.Vector3();
     this.raycaster = new THREE.Raycaster();
     this.earthOcclusionRadius = settings.earthRadius;
     this.scene.add(this.system);
@@ -140,6 +148,7 @@ export class OrbitNavigation {
         occluded: false,
         mobileHidden: false
       });
+      this.pickSurfaces.push(node.surface);
       this.domButtons.push(button);
     });
   }
@@ -161,7 +170,7 @@ export class OrbitNavigation {
     this.camera.updateMatrixWorld();
     this.system.updateMatrixWorld(true);
     this.raycaster.setFromCamera(this.pointerNdc, this.camera);
-    const intersections = this.raycaster.intersectObjects(this.nodes.map((entry) => entry.node.surface), false);
+    const intersections = this.raycaster.intersectObjects(this.pickSurfaces, false);
     const match = intersections.find((intersection) => {
       const index = intersection.object.userData.navigationIndex;
       const entry = this.nodes[index];
@@ -213,28 +222,56 @@ export class OrbitNavigation {
       if (this.isInterfaceTarget(event.target)) return;
       this.isDragging = true;
       this.dragMoved = false;
+      this.pendingHoverEvent = null;
+      if (this.hoverFrame) cancelAnimationFrame(this.hoverFrame);
+      this.hoverFrame = 0;
       this.pressedNodeIndex = this.pickNodeIndex(event);
       this.setPointerHoveredIndex(this.pressedNodeIndex);
       this.pointerStartX = event.clientX;
+      this.pointerStartY = event.clientY;
       this.rotationStart = this.system.rotation.y;
       this.stage.classList.add('is-dragging');
       gsap.killTweensOf(this.system.rotation);
       if (this.stage.setPointerCapture) this.stage.setPointerCapture(event.pointerId);
     };
+    this.queuePointerHover = (event) => {
+      this.pendingHoverEvent = {
+        clientX: event.clientX,
+        clientY: event.clientY,
+        target: event.target
+      };
+      if (this.hoverFrame) return;
+      this.hoverFrame = requestAnimationFrame(() => {
+        this.hoverFrame = 0;
+        const pointer = this.pendingHoverEvent;
+        this.pendingHoverEvent = null;
+        if (!pointer || this.isDragging) return;
+        const rect = this.stage.getBoundingClientRect();
+        if (!this.reducedMotion && rect.width > 0 && rect.height > 0) {
+          this.parallaxTarget.set(
+            ((pointer.clientX - rect.left) / rect.width - 0.5) * 0.42,
+            -((pointer.clientY - rect.top) / rect.height - 0.5) * 0.24
+          );
+        }
+        this.setPointerHoveredIndex(this.pickNodeIndex(pointer));
+      });
+    };
     this.handlePointerMove = (event) => {
+      if (!this.isDragging) {
+        this.queuePointerHover(event);
+        return;
+      }
       const rect = this.stage.getBoundingClientRect();
-      if (!this.reducedMotion) {
+      if (!this.reducedMotion && rect.width > 0 && rect.height > 0) {
         this.parallaxTarget.set(
           ((event.clientX - rect.left) / rect.width - 0.5) * 0.42,
           -((event.clientY - rect.top) / rect.height - 0.5) * 0.24
         );
       }
-      if (!this.isDragging) {
-        this.setPointerHoveredIndex(this.pickNodeIndex(event));
-        return;
-      }
       const deltaX = event.clientX - this.pointerStartX;
-      if (Math.abs(deltaX) > 5) {
+      const deltaY = event.clientY - this.pointerStartY;
+      const dragThreshold = event.pointerType === 'touch' ? 10 : 5;
+      if (Math.hypot(deltaX, deltaY) > dragThreshold) {
         this.dragMoved = true;
         this.setPointerHoveredIndex(-1);
       }
@@ -258,7 +295,12 @@ export class OrbitNavigation {
     this.handlePointerUp = (event) => finishPointer(event, true);
     this.handlePointerCancel = (event) => finishPointer(event, false);
     this.handlePointerLeave = () => {
-      if (!this.isDragging) this.setPointerHoveredIndex(-1);
+      if (!this.isDragging) {
+        this.pendingHoverEvent = null;
+        if (this.hoverFrame) cancelAnimationFrame(this.hoverFrame);
+        this.hoverFrame = 0;
+        this.setPointerHoveredIndex(-1);
+      }
     };
     this.handleStageKeydown = (event) => {
       if (event.key === 'Escape' && this.activeIndex >= 0) this.clearSelection();
@@ -343,8 +385,8 @@ export class OrbitNavigation {
     this.camera.position.y += (this.parallaxTarget.y - this.camera.position.y) * Math.min(1, delta * 2.5);
     this.camera.lookAt(0, 0, 0);
 
-    const projected = new THREE.Vector3();
-    const world = new THREE.Vector3();
+    const projected = this.projectedPosition;
+    const world = this.worldPosition;
 
     this.nodes.forEach((entry, index) => {
       entry.node.group.getWorldPosition(world);
@@ -379,17 +421,20 @@ export class OrbitNavigation {
   }
 
   isOccludedByEarth(worldPosition) {
-    const rayToNode = worldPosition.clone().sub(this.camera.position);
+    const rayToNode = this.rayToNode.copy(worldPosition).sub(this.camera.position);
     const nodeDistance = rayToNode.length();
     if (nodeDistance <= 0) return false;
     const direction = rayToNode.multiplyScalar(1 / nodeDistance);
     const closestDistance = -this.camera.position.dot(direction);
     if (closestDistance <= 0 || closestDistance >= nodeDistance) return false;
-    const closestPoint = this.camera.position.clone().addScaledVector(direction, closestDistance);
+    const closestPoint = this.closestPoint.copy(this.camera.position).addScaledVector(direction, closestDistance);
     return closestPoint.lengthSq() < this.earthOcclusionRadius * this.earthOcclusionRadius;
   }
 
   destroy() {
+    if (this.hoverFrame) cancelAnimationFrame(this.hoverFrame);
+    this.hoverFrame = 0;
+    this.pendingHoverEvent = null;
     gsap.killTweensOf(this.system.rotation);
     gsap.killTweensOf(this.camera.position);
     this.stage.removeEventListener('pointerdown', this.handlePointerDown);
@@ -416,5 +461,6 @@ export class OrbitNavigation {
     });
     this.scene.remove(this.system);
     this.system.clear();
+    this.pickSurfaces.length = 0;
   }
 }

@@ -362,6 +362,7 @@ export class NavigationNode {
     this.group.userData.navigationNode = this;
     this.hovered = false;
     this.active = false;
+    this.reducedMotion = false;
     this.lowPower = lowPower;
     this.baseScale = lowPower ? 0.94 : 1;
     this.disposables = [];
@@ -585,29 +586,42 @@ export class NavigationNode {
     const emphasized = this.hovered || this.active;
     const scaleMultiplier = this.active ? 1.19 : (this.hovered ? 1.07 : 1);
     const targetScale = this.baseScale * scaleMultiplier;
+    const motionDuration = this.reducedMotion ? 0 : 0.42;
+    const materialDuration = this.reducedMotion ? 0 : 0.3;
     gsap.to(this.model.scale, {
       x: targetScale,
       y: targetScale,
       z: targetScale,
-      duration: 0.42,
+      duration: motionDuration,
       ease: 'power3.out',
       overwrite: true
     });
     gsap.to(this.surfaceMaterial, {
       emissiveIntensity: this.baseEmissiveIntensity + (emphasized ? 0.055 : 0),
-      duration: 0.3,
+      duration: materialDuration,
       overwrite: true
     });
     if (this.atmosphereMaterial) {
       gsap.to(this.atmosphereMaterial.uniforms.atmosphereIntensity, {
         value: this.baseAtmosphereIntensity + (emphasized ? 0.025 : 0),
-        duration: 0.3,
+        duration: materialDuration,
         overwrite: true
       });
     }
   }
 
   update(delta, depthFactor, reducedMotion) {
+    if (this.reducedMotion !== reducedMotion) {
+      this.reducedMotion = reducedMotion;
+      if (reducedMotion) {
+        gsap.killTweensOf(this.model.scale);
+        gsap.killTweensOf(this.surfaceMaterial);
+        if (this.atmosphereMaterial) {
+          gsap.killTweensOf(this.atmosphereMaterial.uniforms.atmosphereIntensity);
+        }
+        this.updateState();
+      }
+    }
     this.depthGroup.scale.setScalar(0.94 + depthFactor * 0.06);
     const elapsed = performance.now() * 0.001;
     if (this.signalWaves) {
