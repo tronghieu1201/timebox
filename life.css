@@ -137,6 +137,18 @@
     animation-delay: 0.65s;
 }
 
+.life-card:nth-child(6) {
+    animation-delay: 0.75s;
+}
+
+.life-card:nth-child(7) {
+    animation-delay: 0.85s;
+}
+
+.life-card:nth-child(8) {
+    animation-delay: 0.95s;
+}
+
 .life-card:hover {
     transform: translateY(-2px);
     box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);

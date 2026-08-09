@@ -1,8 +1,8 @@
 // Timebox service worker: fast shell, bounded image cache, fresh API data.
 var CACHE_PREFIX = 'timebox-';
-var SHELL_CACHE = CACHE_PREFIX + 'shell-v21';
-var IMAGE_CACHE = CACHE_PREFIX + 'images-v1';
-var ASSET_CACHE = CACHE_PREFIX + 'assets-v1';
+var SHELL_CACHE = CACHE_PREFIX + 'shell-v27';
+var IMAGE_CACHE = CACHE_PREFIX + 'images-v2';
+var ASSET_CACHE = CACHE_PREFIX + 'assets-v2';
 var MAX_IMAGE_ENTRIES = 80;
 var MAX_ASSET_ENTRIES = 50;
 
@@ -16,11 +16,20 @@ var SHELL_URLS = [
     './keepsakes.html',
     './friends.html',
     './family.html',
-    './style.css',
-    './life.css',
-    './theme.js',
-    './life.js',
-    './images/backgrod.webp'
+    './style.css?v=27',
+    './life.css?v=27',
+    './space-navigation.css?v=27',
+    './orbital-archive.css?v=27',
+    './theme.js?v=27',
+    './life.js?v=27',
+    './space-navigation.bundle.js?v=27',
+    './images/space/earth_day.webp',
+    './images/space/earth_night.webp',
+    './images/space/earth_normal.png',
+    './images/space/earth_roughness.png',
+    './images/space/earth_specular.png',
+    './images/space/earth_clouds.webp',
+    './images/space/milky_way.webp'
 ];
 
 self.addEventListener('install', function (event) {
@@ -77,14 +86,15 @@ function cacheFirst(request, cacheName, maxEntries) {
     });
 }
 
-function staleWhileRevalidate(request) {
-    return caches.open(SHELL_CACHE).then(function (cache) {
-        return cache.match(request).then(function (cached) {
-            var network = fetch(request).then(function (response) {
-                if (canCache(response)) cache.put(request, response.clone()).catch(function () {});
-                return response;
-            }).catch(function () { return cached; });
-            return cached || network;
+function freshNetworkFirst(request) {
+    return fetch(request, { cache: 'no-store' }).then(function (response) {
+        if (!canCache(response)) return response;
+        return caches.open(SHELL_CACHE).then(function (cache) {
+            return cache.put(request, response.clone()).catch(function () {});
+        }).then(function () { return response; });
+    }).catch(function () {
+        return caches.open(SHELL_CACHE).then(function (cache) {
+            return cache.match(request);
         });
     });
 }
@@ -93,13 +103,11 @@ function navigationNetworkFirst(request) {
     var cacheUrl = new URL(request.url);
     cacheUrl.search = '';
     cacheUrl.hash = '';
-    return fetch(request).then(function (response) {
-        if (canCache(response)) {
-            caches.open(SHELL_CACHE).then(function (cache) {
-                cache.put(cacheUrl.toString(), response.clone()).catch(function () {});
-            });
-        }
-        return response;
+    return fetch(request, { cache: 'no-store' }).then(function (response) {
+        if (!canCache(response)) return response;
+        return caches.open(SHELL_CACHE).then(function (cache) {
+            return cache.put(cacheUrl.toString(), response.clone()).catch(function () {});
+        }).then(function () { return response; });
     }).catch(function () {
         return caches.open(SHELL_CACHE).then(function (cache) {
             return cache.match(cacheUrl.toString()).then(function (cached) {
@@ -139,6 +147,6 @@ self.addEventListener('fetch', function (event) {
     }
 
     if (url.origin === self.location.origin) {
-        event.respondWith(staleWhileRevalidate(request));
+        event.respondWith(freshNetworkFirst(request));
     }
 });

@@ -37,7 +37,6 @@
     --qr-border: rgba(255, 255, 255, 0.45);
     --toggle-bg: rgba(255, 248, 235, 0.35);
     --toggle-color: #f0f4ff;
-    --page-bg-image: url("images/backgrod.webp");
     --page-bg-overlay: rgba(4, 9, 26, 0.82);
     --blob-1: rgba(200, 185, 160, 0.08);
     --blob-2: rgba(220, 205, 180, 0.06);
@@ -53,9 +52,7 @@ html {
 
 body {
     font-family: 'Be Vietnam Pro', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    background:
-        var(--page-bg-image) center / cover fixed no-repeat,
-        linear-gradient(135deg, var(--bg-start), var(--bg-end));
+    background: linear-gradient(135deg, var(--bg-start), var(--bg-end));
     color: var(--text-primary);
     min-height: 100vh;
     min-height: 100dvh;

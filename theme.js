@@ -3,7 +3,11 @@
     /* ---- Service Worker Registration ---- */
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', function () {
-            navigator.serviceWorker.register('./sw.js').catch(function () {});
+            navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' })
+                .then(function (registration) { return registration.update(); })
+                .catch(function (error) {
+                    console.warn('[Timebox] Service worker update failed:', error);
+                });
         });
     }
 
@@ -630,6 +634,7 @@
 
         card.className = 'photo-card';
         card.type = 'button';
+        card.style.setProperty('--card-delay', Math.min(gallery.children.length, 11) * 35 + 'ms');
         card.setAttribute('data-full', fullSrc || src);
         if (fullSrcset) {
             card.setAttribute('data-full-srcset', fullSrcset);
@@ -640,12 +645,12 @@
 
         if (thumbSrcset) {
             img.srcset = thumbSrcset;
-            img.sizes = '(max-width: 480px) calc((100vw - 44px) / 3), (max-width: 820px) calc((100vw - 58px) / 2), 244px';
+            img.sizes = '(max-width: 639px) calc((100vw - 34px) / 2), (max-width: 899px) calc((100vw - 68px) / 3), 210px';
         }
         img.src = src;
         img.alt = name || 'Anh nau an';
-        img.width = 360;
-        img.height = 450;
+        img.width = 420;
+        img.height = 420;
         img.loading = isPriority ? 'eager' : 'lazy';
         img.decoding = 'async';
         if (isPriority) {
@@ -755,7 +760,7 @@
     }
 
     function getPerPage() {
-        return window.innerWidth >= 768 ? 12 : 9;
+        return 12;
     }
 
     function renderPhotoGalleryPage(gallery, photos, page) {
@@ -763,6 +768,13 @@
         var pageCount = Math.max(1, Math.ceil(photos.length / perPage));
         var currentPage = Math.min(Math.max(page || 1, 1), pageCount);
         var visiblePhotos = photos.slice((currentPage - 1) * perPage, currentPage * perPage);
+        var activeView = gallery.closest('.spa-view');
+        var countTarget = activeView && activeView.querySelector('[data-gallery-count]');
+
+        if (countTarget) {
+            countTarget.textContent = photos.length + (photos.length === 1 ? ' ký ức' : ' ký ức');
+        }
+        gallery.classList.toggle('is-empty', photos.length === 0);
 
         gallery.innerHTML = '';
         gallery._currentPage = currentPage;
@@ -775,7 +787,7 @@
                 photo.src,
                 photo.thumbSrcset,
                 photo.fullSrcset,
-                index < 3,
+                index < 4,
                 photo.isPinnedUpload === true,
                 photo
             );

@@ -22,7 +22,7 @@ timebox/
 ├── README.md           (File hướng dẫn này)
 ├── HUONG-DAN.md        (Tài liệu chi tiết)
 └── images/
-    └── backgrod.webp   (Ảnh nền)
+    └── space/           (Texture không gian và hành tinh)
 ```
 
 ## ✨ Tính năng

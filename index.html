@@ -18,8 +18,10 @@
         href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="life.css">
+    <link rel="stylesheet" href="style.css?v=27">
+    <link rel="stylesheet" href="life.css?v=27">
+    <link rel="stylesheet" href="space-navigation.css?v=27">
+    <link rel="preload" as="image" href="images/space/earth_day.webp" fetchpriority="high">
     <style>
         .spa-shell {
             position: relative;
@@ -68,9 +70,19 @@
             animation: slideInLeft 0.24s cubic-bezier(0.22, 1, 0.36, 1) both;
         }
     </style>
+    <link rel="stylesheet" href="orbital-archive.css?v=27">
 </head>
 
-<body>
+<body class="timebox-cinematic space-nav-home-visible" data-space-view="home">
+    <script>
+        (function () {
+            var requestedView = new URLSearchParams(window.location.search).get('view');
+            if (['family', 'friends', 'keepsakes', 'cooking', 'campus'].indexOf(requestedView) !== -1) {
+                document.body.setAttribute('data-space-view', requestedView);
+                document.body.classList.remove('space-nav-home-visible');
+            }
+        })();
+    </script>
     <!-- Background blobs -->
     <div class="blob blob--1" aria-hidden="true"></div>
     <div class="blob blob--2" aria-hidden="true"></div>
@@ -78,51 +90,38 @@
 
     <div class="spa-shell">
         <div class="spa-view" id="view-home">
-            <main class="bio-card life-page archive-page">
-                <header class="life-header">
-                    <h1 class="life-title">Kho lưu trữ</h1>
+            <main class="bio-card life-page archive-page space-home">
+                <header class="space-home__header">
+                    <h1 class="space-home__eyebrow">Timebox</h1>
                 </header>
 
-                <section class="life-grid" id="link-hub" aria-label="Danh mục kỷ niệm">
-                    <!-- Gia đình (locked → SPA) -->
-                    <button type="button" class="life-card life-card--button life-card--family" id="btn-go-family"
-                        data-key-error="Mở vô hiệu">
-                        <div class="life-card__icon"><i class="fas fa-house-user" aria-hidden="true"></i></div>
-                        <div class="life-card__body">
-                            <h2 class="life-card__title">Gia đình</h2>
-                        </div>
-                        <i class="fas fa-chevron-right life-card__arrow" aria-hidden="true"></i>
-                    </button>
-
-                    <!-- Góc riêng -->
-                    <button type="button" class="life-card life-card--button" id="btn-go-life">
-                        <div class="life-card__icon"><i class="fas fa-compass" aria-hidden="true"></i></div>
-                        <div class="life-card__body">
-                            <h2 class="life-card__title">Góc riêng</h2>
-                        </div>
-                        <i class="fas fa-chevron-right life-card__arrow" aria-hidden="true"></i>
-                    </button>
-
-                    <!-- Upload -->
-                    <button type="button" class="life-card life-card--button" id="btn-upload-open">
-                        <div class="life-card__icon"><i class="fas fa-upload" aria-hidden="true"></i></div>
-                        <div class="life-card__body">
-                            <h2 class="life-card__title">Upload</h2>
-                        </div>
-                        <i class="fas fa-chevron-right life-card__arrow" aria-hidden="true"></i>
-                    </button>
+                <section class="space-navigation" data-space-navigation aria-label="Điều hướng vũ trụ ký ức">
+                    <div class="space-navigation__stage" data-space-stage tabindex="-1">
+                        <div class="space-navigation__nodes" data-space-nodes aria-label="Các thiên thể điều hướng"></div>
+                    </div>
                 </section>
             </main>
         </div><!-- /view-home -->
 
         <!-- ════ VIEW: FAMILY (Gia đình) ════ -->
         <div class="spa-view is-hidden" id="view-family">
-            <main class="bio-card album-page" style="position:relative;">
-                <header class="life-header">
-                    <button type="button" class="life-back" id="btn-back-family" aria-label="Quay lại">
+            <main class="bio-card album-page world-album" data-world="family">
+                <header class="life-header world-header">
+                    <button type="button" class="life-back" id="btn-back-family" aria-label="Về quỹ đạo chính">
                         <i class="fas fa-arrow-left" aria-hidden="true"></i>
+                        <span>Về quỹ đạo</span>
                     </button>
-                    <h1 class="life-title">Gia đình mình</h1>
+                    <div class="world-heading">
+                        <p class="world-heading__eyebrow">Quỹ đạo 01 · Gia đình</p>
+                        <h1 class="life-title">Gia đình mình</h1>
+                        <p class="world-heading__subtitle">Những điều bình yên vẫn luôn tìm được đường quay về.</p>
+                    </div>
+                    <div class="world-header__actions">
+                        <span class="world-header__count"><i class="fas fa-satellite-dish" aria-hidden="true"></i><span data-gallery-count>Đang đồng bộ</span></span>
+                        <button type="button" class="family-upload-fab" id="family-upload-open-desktop" aria-label="Thêm ảnh vào album gia đình">
+                            <i class="fas fa-camera" aria-hidden="true"></i><span>Thêm ký ức</span>
+                        </button>
+                    </div>
                 </header>
                 <section class="photo-gallery" aria-label="Album gia dinh" data-live-scope="family"
                     data-gallery-cloudinary="https://res.cloudinary.com/dtpw5htqs/image/upload/v1782843231/474919975_620365200643532_1969014067725644935_n_gw5f4v.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782843229/405002857_858864052679605_2321506920921441389_n_ufzq4h.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782843228/419461838_427518506294410_7497663406157582344_n_axfccp.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782843227/420557200_1803026840198809_5054056938182832634_n_cbfe4e.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782843224/352840803_632090475516819_2496629704571334396_n_ufypg3.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782843224/364198136_2563393060478451_202851886270146469_n_b7ypjs.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782843226/353404349_1224884841558866_4655714473081427073_n_lhcoda.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782843232/476880045_1586477362010710_1731960998613157307_n_hgf2bw.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782843235/553895920_1133959295471819_8286816900586390701_n_sspwb8.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782843237/613354640_889209363703149_4987623942501048444_n_atcr3h.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782843234/495071579_2058007294689282_3395155635642199359_n_ln8u1r.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782843238/637974375_802482968854487_6559249715192562672_n_cjut6w.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782843240/672755822_938016605883494_8900332934448303080_n_yunvox.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782445536/z7977421421246_e1124cbeb01bdb34a57c1b077465222e_agkjdu.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782445536/z7977421190637_fd1aa95fddd59c6c41e1dc721e89be34_bimxxf.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782290358/z7971162030633_114dd7da15988c7204cdd879387cd095_uhobb6.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782481059/727082953_985291301003447_1485165696336316805_n_hp0zu1.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782452992/IMG_3079_h55rhc.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782452991/1I7O035HN_807RV1_m1ornz.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782452992/1I7O0PVMM_807RV1_h7vzhi.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782486601/Screenshot_73_q5i56e.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782486602/z4553161299473_3f97a24e42cd38c04e78510dd95b58d7_n2as0x.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782486601/dff29471-428f-47db-949b-02dc94200ac1_lugtnv.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782486602/352955887_966768314472029_8758201426811431935_n_vi9hwj.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782486603/353087561_1298057061094554_7317470717430735685_n_wmab8a.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782445536/z7977421444455_a21e501c170541f1d34032ef67b0a1f0_yhcej7.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782445535/z7977421292225_6b6f207c5780ea01a503a54867d179cf_tkjagg.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782445535/z7977421059680_1f57d410e0e99619dc962b0c500de3bd_i1q3e8.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782445535/z7977420740452_790bca5b19d1d6fa0d528b875835eaa9_mzryvu.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782445535/z7977420575747_97bee961346dc4cd995811d24d0fbf9d_ceqgjf.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782445535/z7977420494936_1cb1dba9e59702e6694801deb4e0d734_k00mfr.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782445534/z7977420352216_c3fb25dd953b4b1135ef07f7fe107aea_xfdrfk.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782445534/z7977420352012_a32e431e3f1dddf1aa6fc60f7405804f_wzhsdc.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782290356/z7971158903452_ae4c5d419cd2c043a4d05c41aa762375_t00an1.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782290354/z7971158843659_d670b24c4ebb0ea39b11e313c00cad7f_yfltee.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782290353/z7971158795148_c6546e3736bc6a663191966181d77ff8_iugooi.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782290351/z7971158767549_155a33db166cc729c5270fe5052616e1_dxomsa.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782290349/z7971158701287_623a8aa558c66c2fc78f8f6c3abcd115_igekpp.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782290347/z7971158651332_c87f84fcf2f0c2340259f4def8efd2f8_mwzinp.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782290345/z7971158618450_d731f856eb52387589e617ffbe9cecff_belygp.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782290339/z7971158592791_396af9fb702d13c08d280b225bec0604_lmviww.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782290327/IMG_5341_chkbwj.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782290325/IMG_5332_y7l7fx.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782290320/IMG_5308_wxnmw4.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782290322/IMG_5309_nvhklv.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782290312/IMG_3004_cb4bzj.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782290318/IMG_5307_cfhl00.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782290311/IMG_2846_crvxqc.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782289943/IMG_3123_pj5e7d.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782289937/z4553161151438_edad6dd155c1094bdefeeabeaf459486_lyeg4g.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782289935/z4553161119313_6b143769903ceb4efc0a1e7742d0a6f5_grxg2b.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782289930/IMG_5331_habq8x.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782289927/IMG_3124_nhruqe.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782743446/1I7O09M3V_807RV1_bslr3j.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782743445/1I7O0PV7N_807RV1_snod3h.webp"
@@ -133,67 +132,17 @@
                         <i class="fas fa-camera" aria-hidden="true"></i><span>Upload</span>
                     </button>
                 </div>
-                <button type="button" class="family-upload-fab" id="family-upload-open-desktop" aria-label="Upload ảnh">
-                    <i class="fas fa-camera" aria-hidden="true"></i>
-                </button>
             </main>
         </div><!-- /view-family -->
 
-        <div class="spa-view is-hidden" id="view-life">
-            <main class="bio-card life-page">
-                <header class="life-header">
-                    <button type="button" class="life-back" id="life-back" aria-label="Quay lại trang bio">
-                        <i class="fas fa-arrow-left" aria-hidden="true"></i>
-                    </button>
-                    <h1 class="life-title">G&oacute;c ri&ecirc;ng</h1>
-                </header>
-
-                <section class="life-grid" aria-label="Danh mục">
-                    <button type="button" class="life-card life-card--button" id="btn-go-moments">
-                        <div class="life-card__icon"><i class="fas fa-images" aria-hidden="true"></i></div>
-                        <div class="life-card__body">
-                            <h2 class="life-card__title">Kỷ niệm</h2>
-                        </div>
-                        <i class="fas fa-chevron-right life-card__arrow" aria-hidden="true"></i>
-                    </button>
-
-                    <a href="#" class="life-card" id="card-thoughts" data-category="thoughts">
-                        <div class="life-card__icon"><i class="fas fa-eye" aria-hidden="true"></i></div>
-                        <div class="life-card__body">
-                            <h2 class="life-card__title">Lăng k&iacute;nh của Hiếu</h2>
-                        </div>
-                        <i class="fas fa-chevron-right life-card__arrow" aria-hidden="true"></i>
-                    </a>
-
-                    <button type="button" class="life-card life-card--button" id="btn-go-campus">
-                        <div class="life-card__icon"><i class="fas fa-graduation-cap" aria-hidden="true"></i></div>
-                        <div class="life-card__body">
-                            <h2 class="life-card__title">Sinh vi&ecirc;n</h2>
-                        </div>
-                        <i class="fas fa-chevron-right life-card__arrow" aria-hidden="true"></i>
-                    </button>
-
-                    <button type="button" class="life-card life-card--button" id="btn-go-cooking">
-                        <div class="life-card__icon"><i class="fas fa-utensils" aria-hidden="true"></i></div>
-                        <div class="life-card__body">
-                            <h2 class="life-card__title">Nấu ăn</h2>
-                        </div>
-                        <i class="fas fa-chevron-right life-card__arrow" aria-hidden="true"></i>
-                    </button>
-
-                    <button type="button" class="life-card life-card--button" id="card-join">
-                        <div class="life-card__icon"><i class="fas fa-comment-dots" aria-hidden="true"></i></div>
-                        <div class="life-card__body">
-                            <h2 class="life-card__title">Feedback</h2>
-                        </div>
-                        <i class="fas fa-chevron-right life-card__arrow" aria-hidden="true"></i>
-                    </button>
-                </section>
-
-                <div class="gallery-overlay" id="gallery-overlay" aria-hidden="true">
+        <div class="gallery-overlay orbital-dialog" id="gallery-overlay" data-world="thoughts" role="dialog" aria-modal="true" aria-labelledby="gallery-title" aria-hidden="true">
                     <div class="gallery-panel">
                         <div class="gallery-panel__header">
-                            <h2 class="gallery-panel__title" id="gallery-title"></h2>
+                            <div class="dialog-heading">
+                                <p class="dialog-heading__eyebrow">Quỹ đạo 02 · Lăng kính của Hiếu</p>
+                                <h2 class="gallery-panel__title" id="gallery-title"></h2>
+                                <p class="dialog-heading__subtitle">Mỗi chiếc hộp là một góc nhìn. Chạm để mở tín hiệu.</p>
+                            </div>
                             <button class="gallery-panel__close" id="gallery-close" aria-label="Đóng">&times;</button>
                         </div>
                         <div class="gallery-panel__grid" id="gallery-grid"></div>
@@ -218,61 +167,43 @@
                     </div>
                 </div>
 
-                <div class="join-modal" id="join-modal" role="dialog" aria-label="Feedback" aria-hidden="true">
+        <div class="join-modal orbital-dialog" id="join-modal" data-world="feedback" role="dialog" aria-modal="true" aria-labelledby="join-title" aria-hidden="true">
                     <div class="join-modal__backdrop"></div>
-                    <button type="button" class="join-modal__close" id="join-close" aria-label="Đóng">&times;</button>
                     <article class="join-modal__card">
+                        <button type="button" class="join-modal__close" id="join-close" aria-label="Đóng">&times;</button>
+                        <p class="dialog-heading__eyebrow">Quỹ đạo 08 · Feedback</p>
+                        <h2 class="join-modal__title" id="join-title">Gửi một tín hiệu</h2>
+                        <p class="join-modal__note">Mọi góp ý đều được giữ lại để Timebox trở nên rõ ràng và gần gũi hơn.</p>
                         <form class="join-form" id="join-form">
                             <input type="hidden" name="createdAt" id="join-created-at">
                             <label class="join-form__field">
-                                <input type="text" id="join-content" name="content" placeholder="Nhập suy nghĩ..."
-                                    required>
+                                <span class="sr-only">Nội dung góp ý</span>
+                                <textarea id="join-content" name="content" rows="5" placeholder="Viết điều bạn muốn nhắn với Hiếu..." required></textarea>
                             </label>
-                            <button type="submit" class="join-form__submit">Gửi</button>
+                            <button type="submit" class="join-form__submit"><i class="fas fa-paper-plane" aria-hidden="true"></i> Gửi tín hiệu</button>
                         </form>
                     </article>
-                </div>
-            </main>
-        </div><!-- /view-life -->
-
-        <div class="spa-view is-hidden" id="view-moments">
-            <main class="bio-card life-page">
-                <header class="life-header">
-                    <button type="button" class="life-back" id="btn-back-life" aria-label="Quay lại Góc riêng">
-                        <i class="fas fa-arrow-left" aria-hidden="true"></i>
-                    </button>
-                    <h1 class="life-title">Kỷ niệm</h1>
-                </header>
-
-                <section class="life-grid" aria-label="Danh mục kỷ niệm">
-                    <button type="button" class="life-card life-card--button" id="btn-go-keepsakes">
-                        <div class="life-card__icon"><i class="fas fa-infinity" aria-hidden="true"></i></div>
-                        <div class="life-card__body">
-                            <h2 class="life-card__title">Tạm lưu tạm giữ</h2>
-                        </div>
-                        <i class="fas fa-chevron-right life-card__arrow" aria-hidden="true"></i>
-                    </button>
-
-                    <button type="button" class="life-card life-card--button" id="btn-go-friends"
-                        data-key-error="Mở vô hiệu">
-                        <div class="life-card__icon"><i class="fas fa-users" aria-hidden="true"></i></div>
-                        <div class="life-card__body">
-                            <h2 class="life-card__title">Những thằng cốt đột</h2>
-                        </div>
-                        <i class="fas fa-chevron-right life-card__arrow" aria-hidden="true"></i>
-                    </button>
-                </section>
-            </main>
-        </div><!-- /view-moments -->
+        </div>
 
         <!-- ════ VIEW: FRIENDS (Những thằng ở tuổi 16) ════ -->
         <div class="spa-view is-hidden" id="view-friends">
-            <main class="bio-card album-page" style="position:relative;">
-                <header class="life-header">
-                    <button type="button" class="life-back" id="btn-back-friends" aria-label="Quay lại">
+            <main class="bio-card album-page world-album" data-world="friends">
+                <header class="life-header world-header">
+                    <button type="button" class="life-back" id="btn-back-friends" aria-label="Về quỹ đạo chính">
                         <i class="fas fa-arrow-left" aria-hidden="true"></i>
+                        <span>Về quỹ đạo</span>
                     </button>
-                    <h1 class="life-title">Những thằng ở tuổi 16</h1>
+                    <div class="world-heading">
+                        <p class="world-heading__eyebrow">Quỹ đạo 04 · Những thằng cốt đột</p>
+                        <h1 class="life-title">Những thằng ở tuổi 16</h1>
+                        <p class="world-heading__subtitle">Một quỹ đạo được giữ lại bằng tiếng cười và những ngày rất trẻ.</p>
+                    </div>
+                    <div class="world-header__actions">
+                        <span class="world-header__count"><i class="fas fa-satellite-dish" aria-hidden="true"></i><span data-gallery-count>Đang đồng bộ</span></span>
+                        <button type="button" class="family-upload-fab" id="friends-upload-open-desktop" aria-label="Thêm ảnh vào album bạn bè">
+                            <i class="fas fa-camera" aria-hidden="true"></i><span>Thêm ký ức</span>
+                        </button>
+                    </div>
                 </header>
                 <section class="photo-gallery" aria-label="Album Best Friends" data-live-scope="friends"
                     data-gallery-cloudinary="https://res.cloudinary.com/dtpw5htqs/image/upload/v1783095792/IMG_6447_u8p06h.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1783095792/IMG_6441_boqnbv.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1783095792/IMG_6453_rwdkfp.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1783095792/IMG_6452_bgerog.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782285735/z7970828591662_7287208052dbaa6a8a1637bec96113f7_ggy62w.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782285193/IMG_1458_qexx6a.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782285192/IMG_1457_juqln5.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782285191/df711c41-215c-40da-9737-0fe450b9be96_whjnnx.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782285190/cf891f1f-21f1-440d-b49f-2d86efa462ea_ubvgwp.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782285188/cd942cc0-cf13-4e00-ba61-65a0e5435340_r94gy3.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782285187/643c91de-691e-4ba4-8ef3-ceb05b586c5c_bawxlb.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782285185/z7968429834343_5b9e8278fc949764c79f2744244c449e_vh9pcp.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782285186/0d1d757b-1e88-4f78-bc10-613370b6b7ce_tihgyu.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782285183/z7968429774386_c18dda87d14938d0c632f4e15391a9dc_s6oq3y.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782285181/z7961712141973_cdc3cbe101365e1b34abe5ffdaf78a4d_e2jtbp.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782285180/z7429701366088_8556aaaf9a0a19a2b05ce342b7e6fec2_piqmpy.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782285179/IMG_4147_vmjxjx.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782285178/IMG_3753_rlcxk9.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782285176/IMG_3720_poncwz.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782285176/IMG_3718_sxxsqt.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782285175/IMG_3072_ncbq6o.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782486552/IMG_4092_xhwkzn.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782486552/1I7O0NQQP_807RV1_svpax3.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782486553/IMG_4820_zqplz5.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782486553/1I7O06786_807RV1_lqjk83.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782486553/z7961689553601_d263b055bf8c8e0c1af4e74a1bf11eee_aucfws.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782486553/z7961689256587_c4cff1c9c413393e53a65d97ebde9ff6_brxmhu.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782743476/1I7O0NQN1_807RV1_z6wcmi.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782743475/IMG_5967_wlnv0k.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782743472/1I7O09LTP_807RV1_h2fgca.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782743472/1I7O035LG_807RV1_oghhv3.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782743474/IMG_3717_p0lwff.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782743487/1I7O11BT7_807RV1_nezlw2.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782743486/1I7O11BG6_807RV1_lytavf.webp"
@@ -283,19 +214,27 @@
                         <i class="fas fa-camera" aria-hidden="true"></i><span>Upload</span>
                     </button>
                 </div>
-                <button type="button" class="family-upload-fab" id="friends-upload-open-desktop" aria-label="Upload ảnh">
-                    <i class="fas fa-camera" aria-hidden="true"></i>
-                </button>
             </main>
         </div><!-- /view-friends -->
 
         <div class="spa-view is-hidden" id="view-keepsakes">
-            <main class="bio-card album-page" style="position:relative;">
-                <header class="life-header">
-                    <button type="button" class="life-back" id="btn-back-keepsakes" aria-label="Quay lại Kỷ niệm">
+            <main class="bio-card album-page world-album" data-world="keepsakes">
+                <header class="life-header world-header">
+                    <button type="button" class="life-back" id="btn-back-keepsakes" aria-label="Về quỹ đạo chính">
                         <i class="fas fa-arrow-left" aria-hidden="true"></i>
+                        <span>Về quỹ đạo</span>
                     </button>
-                    <h1 class="life-title">⭐</h1>
+                    <div class="world-heading">
+                        <p class="world-heading__eyebrow">Quỹ đạo 03 · Kho tạm lưu</p>
+                        <h1 class="life-title">Tạm lưu tạm giữ</h1>
+                        <p class="world-heading__subtitle">Những mảnh ký ức chưa muốn gọi tên là đã qua.</p>
+                    </div>
+                    <div class="world-header__actions">
+                        <span class="world-header__count"><i class="fas fa-satellite-dish" aria-hidden="true"></i><span data-gallery-count>Đang đồng bộ</span></span>
+                        <button type="button" class="family-upload-fab" id="keepsakes-upload-open-desktop" aria-label="Thêm ảnh vào kho tạm lưu">
+                            <i class="fas fa-camera" aria-hidden="true"></i><span>Thêm ký ức</span>
+                        </button>
+                    </div>
                 </header>
 
                 <section class="photo-gallery" aria-label="Album Keepsakes" data-live-scope="keepsakes"
@@ -306,19 +245,27 @@
                         <i class="fas fa-camera" aria-hidden="true"></i><span>Upload</span>
                     </button>
                 </div>
-                <button type="button" class="family-upload-fab" id="keepsakes-upload-open-desktop" aria-label="Upload ảnh">
-                    <i class="fas fa-camera" aria-hidden="true"></i>
-                </button>
             </main>
         </div><!-- /view-keepsakes -->
 
         <div class="spa-view is-hidden" id="view-cooking">
-            <main class="bio-card album-page" style="position:relative;">
-                <header class="life-header">
-                    <button type="button" class="life-back" id="btn-back-cooking" aria-label="Quay lại Góc riêng">
+            <main class="bio-card album-page world-album" data-world="cooking">
+                <header class="life-header world-header">
+                    <button type="button" class="life-back" id="btn-back-cooking" aria-label="Về quỹ đạo chính">
                         <i class="fas fa-arrow-left" aria-hidden="true"></i>
+                        <span>Về quỹ đạo</span>
                     </button>
-                    <h1 class="life-title">Cơm sinh viên</h1>
+                    <div class="world-heading">
+                        <p class="world-heading__eyebrow">Quỹ đạo 06 · Nhật ký căn bếp</p>
+                        <h1 class="life-title">Cơm sinh viên</h1>
+                        <p class="world-heading__subtitle">Bữa cơm nhỏ, câu chuyện dài và hơi ấm còn ở lại.</p>
+                    </div>
+                    <div class="world-header__actions">
+                        <span class="world-header__count"><i class="fas fa-satellite-dish" aria-hidden="true"></i><span data-gallery-count>Đang đồng bộ</span></span>
+                        <button type="button" class="family-upload-fab" id="cooking-upload-open-desktop" aria-label="Thêm ảnh vào nhật ký nấu ăn">
+                            <i class="fas fa-camera" aria-hidden="true"></i><span>Thêm ký ức</span>
+                        </button>
+                    </div>
                 </header>
 
                 <section class="photo-gallery" aria-label="Album ảnh nấu ăn" data-live-scope="cooking"
@@ -331,19 +278,27 @@
                         <i class="fas fa-camera" aria-hidden="true"></i><span>Upload</span>
                     </button>
                 </div>
-                <button type="button" class="family-upload-fab" id="cooking-upload-open-desktop" aria-label="Upload ảnh">
-                    <i class="fas fa-camera" aria-hidden="true"></i>
-                </button>
             </main>
         </div><!-- /view-cooking -->
 
         <div class="spa-view is-hidden" id="view-campus">
-            <main class="bio-card album-page" style="position:relative;">
-                <header class="life-header">
-                    <button type="button" class="life-back" id="btn-back-campus" aria-label="Quay lại Góc riêng">
+            <main class="bio-card album-page world-album" data-world="campus">
+                <header class="life-header world-header">
+                    <button type="button" class="life-back" id="btn-back-campus" aria-label="Về quỹ đạo chính">
                         <i class="fas fa-arrow-left" aria-hidden="true"></i>
+                        <span>Về quỹ đạo</span>
                     </button>
-                    <h1 class="life-title">Những thằng GAY</h1>
+                    <div class="world-heading">
+                        <p class="world-heading__eyebrow">Quỹ đạo 05 · Nhật ký sinh viên</p>
+                        <h1 class="life-title">Những thằng GAY</h1>
+                        <p class="world-heading__subtitle">Giảng đường, bạn bè và những ngày không thể lặp lại.</p>
+                    </div>
+                    <div class="world-header__actions">
+                        <span class="world-header__count"><i class="fas fa-satellite-dish" aria-hidden="true"></i><span data-gallery-count>Đang đồng bộ</span></span>
+                        <button type="button" class="family-upload-fab" id="campus-upload-open-desktop" aria-label="Thêm ảnh vào nhật ký sinh viên">
+                            <i class="fas fa-camera" aria-hidden="true"></i><span>Thêm ký ức</span>
+                        </button>
+                    </div>
                 </header>
 
                 <section class="photo-gallery" aria-label="Album sinh viên" data-live-scope="campus"></section>
@@ -352,14 +307,11 @@
                         <i class="fas fa-camera" aria-hidden="true"></i><span>Upload</span>
                     </button>
                 </div>
-                <button type="button" class="family-upload-fab" id="campus-upload-open-desktop" aria-label="Upload ảnh">
-                    <i class="fas fa-camera" aria-hidden="true"></i>
-                </button>
             </main>
         </div><!-- /view-campus -->
     </div><!-- /spa-shell -->
 
-    <div class="photo-lightbox" id="photo-lightbox" role="dialog" aria-label="Ảnh phóng to" aria-hidden="true">
+    <div class="photo-lightbox" id="photo-lightbox" role="dialog" aria-modal="true" aria-label="Ảnh phóng to" aria-hidden="true">
         <div class="photo-lightbox__backdrop"></div>
         <div class="photo-lightbox__content">
             <button class="photo-lightbox__close" id="photo-lightbox-close" aria-label="Đóng">&times;</button>
@@ -369,24 +321,31 @@
     </div>
 
     <!-- Key modal -->
-    <div class="key-modal" id="key-modal" role="dialog" aria-label="Nhap key" aria-hidden="true">
+    <div class="key-modal orbital-dialog" id="key-modal" role="dialog" aria-modal="true" aria-labelledby="key-modal-title" aria-hidden="true">
         <div class="key-modal__backdrop"></div>
         <article class="key-modal__card">
-            <button type="button" class="key-modal__close" id="key-close" aria-label="Dong">&times;</button>
-            <h2 class="key-modal__title">Xác nhận</h2>
+            <button type="button" class="key-modal__close" id="key-close" aria-label="Đóng">&times;</button>
+            <p class="dialog-heading__eyebrow">Kho lưu trữ riêng tư</p>
+            <h2 class="key-modal__title" id="key-modal-title">Mở kho ký ức</h2>
+            <p class="key-modal__note">Nhập mã truy cập để tiếp tục đến thế giới này.</p>
             <form class="key-form" id="key-form">
                 <input type="password" id="key-input" autocomplete="off" placeholder="">
-                <button type="submit">Mở</button>
+                <button type="submit"><i class="fas fa-lock-open" aria-hidden="true"></i> Mở kho</button>
                 <p class="key-modal__error" id="key-error" aria-live="polite"></p>
             </form>
         </article>
     </div>
 
     <!-- Upload Modal -->
-    <div class="upload-modal" id="upload-modal" role="dialog" aria-label="Upload ảnh" aria-hidden="true">
+    <div class="upload-modal orbital-dialog" id="upload-modal" data-world="upload" role="dialog" aria-modal="true" aria-labelledby="upload-modal-title" aria-hidden="true">
         <div class="upload-modal__backdrop" id="upload-modal-backdrop"></div>
         <article class="upload-modal__card">
             <div class="upload-modal__header">
+                <div class="dialog-heading">
+                    <p class="dialog-heading__eyebrow">Quỹ đạo 07 · Trạm Upload</p>
+                    <h2 class="upload-modal__title" id="upload-modal-title">Đưa ký ức lên quỹ đạo</h2>
+                    <p class="dialog-heading__subtitle">Chọn tối đa 10 ảnh, mỗi ảnh không quá 10MB.</p>
+                </div>
                 <button type="button" class="upload-modal__close" id="upload-modal-close"
                     aria-label="Đóng">&times;</button>
             </div>
@@ -395,6 +354,7 @@
             <div class="upload-modal__dropzone" id="upload-dropzone">
                 <i class="fas fa-camera upload-modal__dropzone-icon" aria-hidden="true"></i>
                 <span class="upload-modal__dropzone-label">Chọn ảnh để gửi</span>
+                <span class="upload-modal__dropzone-sub">JPG, PNG, WEBP, GIF hoặc HEIC · có thể kéo và thả</span>
             </div>
 
             <div class="upload-modal__pin-options" id="upload-pin-options" aria-label="Pin image" hidden>
@@ -426,15 +386,13 @@
     <!-- Toast notification -->
     <div class="toast" id="toast" aria-live="polite"></div>
 
-    <script src="theme.js"></script>
-    <script src="life.js"></script>
+    <script src="theme.js?v=27"></script>
+    <script src="life.js?v=27"></script>
     <script>
         (function () {
             var views = {
                 home: document.getElementById('view-home'),
                 family: document.getElementById('view-family'),
-                life: document.getElementById('view-life'),
-                moments: document.getElementById('view-moments'),
                 friends: document.getElementById('view-friends'),
                 keepsakes: document.getElementById('view-keepsakes'),
                 cooking: document.getElementById('view-cooking'),
@@ -442,9 +400,7 @@
             };
             var titles = {
                 home: 'Trọng Hiếu - Timebox',
-                family: 'Gia đình - Trọng Hiếu',
-                life: 'Góc riêng - Trọng Hiếu',
-                moments: 'Kỷ niệm - Trọng Hiếu'
+                family: 'Gia đình - Trọng Hiếu'
             };
             titles.campus = 'Sinh viên - Trọng Hiếu';
             titles.keepsakes = 'Tạm lưu tạm giữ - Trọng Hiếu';
@@ -492,6 +448,7 @@
                     views[id].classList.remove('anim-enter-right', 'anim-enter-left');
                 }, { once: true });
                 currentView = id;
+                document.body.setAttribute('data-space-view', id);
                 document.title = titles[id] || 'Timebox';
                 window.scrollTo(0, 0);
                 if (window.ensureTimeboxGallery) {
@@ -507,9 +464,8 @@
             }
 
             function goToParent() {
-                var parent = currentView === 'keepsakes' || currentView === 'friends' ? 'moments' :
-                    (currentView === 'moments' || currentView === 'campus' || currentView === 'cooking' ? 'life' :
-                        currentView === 'family' ? 'home' : 'home');
+                // Tất cả danh mục hiện nằm trực tiếp trên trang chủ vũ trụ.
+                var parent = 'home';
                 currentDepth = 0;
                 history.replaceState({ spaView: parent, spaDepth: currentDepth }, '', getViewUrl(parent));
                 setView(parent, 'back');
@@ -531,19 +487,11 @@
                 setView(nextView, direction);
             });
 
-            var btnGoLife = document.getElementById('btn-go-life');
-            var btnGoMoments = document.getElementById('btn-go-moments');
-            var btnGoKeepsakes = document.getElementById('btn-go-keepsakes');
-            var btnGoCooking = document.getElementById('btn-go-cooking');
-            var btnGoCampus = document.getElementById('btn-go-campus');
-            var btnGoFamily = document.getElementById('btn-go-family');
-            var btnBackLife = document.getElementById('btn-back-life');
             var btnBackKeepsakes = document.getElementById('btn-back-keepsakes');
             var btnBackCooking = document.getElementById('btn-back-cooking');
             var btnBackCampus = document.getElementById('btn-back-campus');
             var btnBackFamily = document.getElementById('btn-back-family');
 
-            var btnGoFriends = document.getElementById('btn-go-friends');
             var btnBackFriends = document.getElementById('btn-back-friends');
             var FAMILY_UNLOCK_KEY = 'timebox-family-unlocked-until';
             var FAMILY_UNLOCK_MS = 7 * 60 * 1000;
@@ -592,12 +540,6 @@
                 } catch (e) { }
             };
 
-            if (btnGoLife) btnGoLife.addEventListener('click', function () { goForward('life'); });
-            if (btnGoMoments) btnGoMoments.addEventListener('click', function () { goForward('moments'); });
-            if (btnGoKeepsakes) btnGoKeepsakes.addEventListener('click', function () { goForward('keepsakes'); });
-            if (btnGoCooking) btnGoCooking.addEventListener('click', function () { goForward('cooking'); });
-            if (btnGoCampus) btnGoCampus.addEventListener('click', function () { goForward('campus'); });
-            if (btnBackLife) btnBackLife.addEventListener('click', goBack);
             if (btnBackKeepsakes) btnBackKeepsakes.addEventListener('click', goBack);
             if (btnBackCooking) btnBackCooking.addEventListener('click', goBack);
             if (btnBackCampus) btnBackCampus.addEventListener('click', goBack);
@@ -613,31 +555,27 @@
                 input.value = ''; if (error) error.textContent = '';
                 modal._targetErr = errMsg;
                 modal._targetAction = targetView;
+                modal.setAttribute('data-world', targetView || 'family');
                 document.body.classList.add('is-modal-open');
                 modal.classList.add('is-open');
                 modal.setAttribute('aria-hidden', 'false');
                 setTimeout(function () { input.focus(); }, 60);
             }
 
-            // Gia đình — hỏi key mỗi lần
-            if (btnGoFamily) {
-                btnGoFamily.addEventListener('click', function () {
-                    openKeyModalForView(
-                        btnGoFamily.getAttribute('data-key-error') || 'Mở vô hiệu',
-                        'family'
-                    );
-                });
-            }
-
-            // Những thằng cốt đột — hỏi key mỗi lần
-            if (btnGoFriends) {
-                btnGoFriends.addEventListener('click', function () {
-                    openKeyModalForView(
-                        btnGoFriends.getAttribute('data-key-error') || 'Mở vô hiệu',
-                        'friends'
-                    );
-                });
-            }
+            window.addEventListener('timebox:navigate', function (event) {
+                var navigationId = event.detail && event.detail.id;
+                if (navigationId === 'family') {
+                    openKeyModalForView('Mở vô hiệu', 'family');
+                } else if (navigationId === 'friends') {
+                    openKeyModalForView('Mở vô hiệu', 'friends');
+                } else if (navigationId === 'keepsakes') {
+                    goForward('keepsakes');
+                } else if (navigationId === 'cooking') {
+                    goForward('cooking');
+                } else if (navigationId === 'campus') {
+                    goForward('campus');
+                }
+            });
 
             window._spaGoBack = goBack;
             window._spaGoForward = goForward;
@@ -653,10 +591,10 @@
                 : (protectedInitialView ? 'home' : requestedView);
             history.replaceState({ spaView: initialView, spaDepth: currentDepth }, '', getViewUrl(initialView));
             setView(initialView, 'forward');
-            if (!familyAlreadyUnlocked && protectedInitialView === 'family' && btnGoFamily) {
-                setTimeout(function () { btnGoFamily.click(); }, 0);
-            } else if (!friendsAlreadyUnlocked && protectedInitialView === 'friends' && btnGoFriends) {
-                setTimeout(function () { btnGoFriends.click(); }, 0);
+            if (!familyAlreadyUnlocked && protectedInitialView === 'family') {
+                setTimeout(function () { openKeyModalForView('Mở vô hiệu', 'family'); }, 0);
+            } else if (!friendsAlreadyUnlocked && protectedInitialView === 'friends') {
+                setTimeout(function () { openKeyModalForView('Mở vô hiệu', 'friends'); }, 0);
             }
         })();
     </script>
@@ -673,7 +611,6 @@
             var fileInput = document.getElementById('upload-input');
             var pinOptions = document.getElementById('upload-pin-options');
             var pinInputs = document.querySelectorAll('input[name="upload-pin"]');
-            var openBtn = document.getElementById('btn-upload-open');
             var familyDesktopBtn = document.getElementById('family-upload-open-desktop');
             var familyMobileBtn = document.getElementById('family-upload-open-mobile');
             var keepsakesDesktopBtn = document.getElementById('keepsakes-upload-open-desktop');
@@ -709,6 +646,7 @@
             function openModal(scope, uploadPreset) {
                 activeUploadScope = scope || '';
                 activeUploadPreset = uploadPreset || UPLOAD_PRESET;
+                modal.setAttribute('data-world', activeUploadScope || 'upload');
                 setStatus('');
                 if (pinOptions) pinOptions.hidden = !activeUploadScope;
                 Array.prototype.forEach.call(pinInputs, function (input) {
@@ -879,7 +817,10 @@
             }
 
             /* open */
-            if (openBtn) openBtn.addEventListener('click', function () { openModal('', 'Upload_img'); });
+            window.addEventListener('timebox:navigate', function (event) {
+                var navigationId = event.detail && event.detail.id;
+                if (navigationId === 'upload') openModal('', 'Upload_img');
+            });
             if (familyDesktopBtn) familyDesktopBtn.addEventListener('click', function () { openModal('family'); });
             if (familyMobileBtn) familyMobileBtn.addEventListener('click', function () { openModal('family'); });
             if (keepsakesDesktopBtn) keepsakesDesktopBtn.addEventListener('click', function () { openModal('keepsakes'); });
@@ -1073,6 +1014,7 @@
             });
         })();
     </script>
+    <script src="space-navigation.bundle.js?v=27"></script>
 </body>
 
 </html>

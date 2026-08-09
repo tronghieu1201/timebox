@@ -6,13 +6,20 @@
     var quoteEl = document.getElementById('gallery-quote');
     var emptyEl = document.getElementById('gallery-empty');
     var closeBtn = document.getElementById('gallery-close');
-    var backBtn = document.getElementById('life-back');
-    var toast = document.getElementById('life-toast');
-    var joinBtn = document.getElementById('card-join');
+    var toast = document.getElementById('life-toast') || document.getElementById('toast');
     var joinModal = document.getElementById('join-modal');
     var joinClose = document.getElementById('join-close');
     var joinForm = document.getElementById('join-form');
     var joinCreatedAt = document.getElementById('join-created-at');
+
+    // Modal là lớp toàn trang nên được đưa ra body, độc lập với các SPA view.
+    if (overlay && overlay.parentNode !== document.body) {
+        document.body.appendChild(overlay);
+    }
+    if (joinModal && joinModal.parentNode !== document.body) {
+        document.body.appendChild(joinModal);
+    }
+
     var momentsUploadWidget = document.getElementById('moments-upload-widget');
     var momentsUploadInput = document.getElementById('moments-upload-input');
     var momentsUploadHint = document.getElementById('moments-upload-hint');
@@ -62,7 +69,7 @@
             images: []
         },
         thoughts: {
-            title: 'Sai số thứ...',
+            title: 'Lăng kính của Hiếu',
             images: []
         },
         connections: {
@@ -128,7 +135,7 @@
             btn.setAttribute('data-index', String(index));
             btn.setAttribute('aria-label', 'Mở chiếc hộp bí ẩn ' + (index + 1));
             btn.setAttribute('title', 'Chiếc hộp bí ẩn');
-            btn.innerHTML = '<i class="fas fa-box" aria-hidden="true"></i>';
+            btn.innerHTML = '<span class="thoughts-number-btn__index">' + String(index + 1).padStart(2, '0') + '</span><i class="fas fa-box" aria-hidden="true"></i>';
             btn.addEventListener('click', function () {
                 setThoughtQuote(index);
             });
@@ -141,6 +148,7 @@
         if (!cat || !overlay) return;
 
         titleEl.textContent = cat.title;
+        overlay.setAttribute('data-world', categoryKey === 'daily' ? 'upload' : 'thoughts');
         overlay.classList.toggle('is-upload-mode', categoryKey === 'daily');
         gridEl.innerHTML = '';
         gridEl.dataset.mode = '';
@@ -340,15 +348,18 @@
         if (thoughtsConfirmModal) return thoughtsConfirmModal;
 
         thoughtsConfirmModal = document.createElement('div');
-        thoughtsConfirmModal.className = 'thoughts-confirm';
+        thoughtsConfirmModal.className = 'thoughts-confirm orbital-dialog';
+        thoughtsConfirmModal.setAttribute('data-world', 'thoughts');
         thoughtsConfirmModal.setAttribute('aria-hidden', 'true');
         thoughtsConfirmModal.innerHTML =
             '<div class="thoughts-confirm__backdrop"></div>' +
             '<article class="thoughts-confirm__card" role="dialog" aria-modal="true" aria-label="X&aacute;c nh&#7853;n L&#259;ng k&iacute;nh">' +
+                '<p class="dialog-heading__eyebrow">Quỹ đạo 02 · Lăng kính của Hiếu</p>' +
+                '<h2 class="thoughts-confirm__title">Trước khi nhìn qua lăng kính</h2>' +
                 '<p class="thoughts-confirm__message">Có thể bạn đã nghe - đã thấy và có thể chưa đúng với bạn, nhưng đó là góc nhìn từng trải của mình.</p>' +
                 '<div class="thoughts-confirm__actions">' +
-                    '<button type="button" class="thoughts-confirm__accept">Ch&#7845;p nh&#7853;n</button>' +
-                    '<button type="button" class="thoughts-confirm__decline">Kh&ocirc;ng</button>' +
+                    '<button type="button" class="thoughts-confirm__accept"><i class="fas fa-eye" aria-hidden="true"></i> Ch&#7845;p nh&#7853;n</button>' +
+                    '<button type="button" class="thoughts-confirm__decline">Quay lại</button>' +
                 '</div>' +
             '</article>';
 
@@ -454,33 +465,14 @@
     function isValidGmail(email) {
         return /^[a-zA-Z0-9._%+-]+@gmail\.com$/i.test(email);
     }
-    // Attach click to each category card
-    document.querySelectorAll('.life-card').forEach(function (card) {
-        card.addEventListener('click', function (e) {
-            var category = card.getAttribute('data-category');
-            if (!category) return;
-            e.preventDefault();
-
-            if (category === 'thoughts') {
-                openThoughtsConfirm();
-                return;
-            }
-
-            if (category) openGallery(category);
-        });
+    window.addEventListener('timebox:navigate', function (event) {
+        var navigationId = event.detail && event.detail.id;
+        if (navigationId === 'thoughts') {
+            openThoughtsConfirm();
+        } else if (navigationId === 'feedback') {
+            openJoinModal();
+        }
     });
-
-    if (backBtn) {
-        backBtn.addEventListener('click', function (e) {
-            e.preventDefault();
-            // SPA mode: dùng _spaGoBack nếu có, fallback về navigate
-            if (window._spaGoBack) {
-                window._spaGoBack();
-            } else {
-                navigateWithTransition('./');
-            }
-        });
-    }
 
     if (momentsUploadHint && momentsUploadInput) {
         momentsUploadHint.addEventListener('click', function () {
@@ -539,10 +531,6 @@
             });
         });
     }
-    if (joinBtn) {
-        joinBtn.addEventListener('click', openJoinModal);
-    }
-
     if (joinClose) {
         joinClose.addEventListener('click', closeJoinModal);
     }
@@ -611,7 +599,9 @@
         if (e.key === 'Escape') {
             if (!momentsUploading) closeGallery();
             closeJoinModal();
-            closeThoughtsGuideNotice();
+            if (thoughtsConfirmModal && thoughtsConfirmModal.classList.contains('is-open')) {
+                closeThoughtsConfirm(false);
+            }
         }
     });
     window.addEventListener('pagehide', releaseMomentsPreviewUrls);
