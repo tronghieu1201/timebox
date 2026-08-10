@@ -2,7 +2,7 @@ export const NAV_ITEMS = Object.freeze([
   {
     id: 'family',
     label: 'Gia đình',
-    description: 'Những khoảnh khắc bình yên cùng gia đình.',
+    description: 'Những khoảnh khắc bình yên cùng gia đình...',
     iconClass: 'fas fa-house-user',
     color: '#ff4d8d',
     orbitSpeed: 0.72,
@@ -12,7 +12,7 @@ export const NAV_ITEMS = Object.freeze([
   {
     id: 'thoughts',
     label: 'Lăng kính của Hiếu',
-    description: 'Nhìn thế giới qua những suy nghĩ rất riêng.',
+    description: 'Nhìn thế giới qua những suy nghĩ...',
     iconClass: 'fas fa-eye',
     color: '#8b5cf6',
     orbitSpeed: 0.83,
@@ -22,7 +22,7 @@ export const NAV_ITEMS = Object.freeze([
   {
     id: 'keepsakes',
     label: 'Tạm lưu tạm giữ',
-    description: 'Một khoảng nhỏ dành cho điều chưa muốn quên.',
+    description: 'Cái này thì khó nói quá...',
     iconClass: 'fas fa-infinity',
     color: '#14b8a6',
     orbitSpeed: 0.91,
@@ -31,8 +31,8 @@ export const NAV_ITEMS = Object.freeze([
   },
   {
     id: 'friends',
-    label: 'Những thằng cốt đột',
-    description: 'Tuổi trẻ, tình bạn và những lần cười hết cỡ.',
+    label: 'Tuổi trẻ năm 16',
+    description: 'Một khoảnh khắc nhỏ cũng đủ biến một ngày bình thường thành kỷ niệm...',
     iconClass: 'fas fa-users',
     color: '#38bdf8',
     orbitSpeed: 1.02,
@@ -42,7 +42,7 @@ export const NAV_ITEMS = Object.freeze([
   {
     id: 'campus',
     label: 'Sinh viên',
-    description: 'Nhật ký của những tháng ngày trên giảng đường.',
+    description: 'Nhật ký bốn mùa...',
     iconClass: 'fas fa-graduation-cap',
     color: '#cbd5e1',
     orbitSpeed: 1.11,
@@ -52,7 +52,7 @@ export const NAV_ITEMS = Object.freeze([
   {
     id: 'cooking',
     label: 'Nấu ăn',
-    description: 'Những bữa cơm giản dị và đầy câu chuyện.',
+    description: 'Không cần chứng minh bạn nấu nếu bạn đã rửa...',
     iconClass: 'fas fa-utensils',
     color: '#fb923c',
     orbitSpeed: 0.78,
@@ -62,7 +62,7 @@ export const NAV_ITEMS = Object.freeze([
   {
     id: 'upload',
     label: 'Upload',
-    description: 'Gửi thêm một tấm ảnh vào dòng ký ức.',
+    description: 'Gửi thêm một tấm ảnh vào dòng ký ức...',
     iconClass: 'fas fa-upload',
     color: '#60a5fa',
     orbitSpeed: 0.96,
@@ -72,7 +72,7 @@ export const NAV_ITEMS = Object.freeze([
   {
     id: 'feedback',
     label: 'Feedback',
-    description: 'Để lại một suy nghĩ dành cho Timebox.',
+    description: 'Để lại một suy nghĩ dành cho tôi...',
     iconClass: 'fas fa-comment-dots',
     color: '#f8fafc',
     orbitSpeed: 1.16,

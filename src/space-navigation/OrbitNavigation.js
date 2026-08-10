@@ -97,10 +97,6 @@ export class OrbitNavigation {
       button.setAttribute('aria-label', item.label);
       button.setAttribute('aria-pressed', 'false');
       button.style.setProperty('--node-color', item.color);
-      button.innerHTML = `
-        <span class="space-node__core" aria-hidden="true"><i class="${item.iconClass}"></i></span>
-        <span class="space-node__label">${item.label}</span>
-      `;
       this.nodeLayer.appendChild(button);
       node.surface.userData.navigationIndex = index;
 
