@@ -850,7 +850,7 @@ body.timebox-cinematic .thoughts-confirm__title {
 }
 
 body.timebox-cinematic .thoughts-confirm__message {
-    margin: 13px 0 24px;
+    margin: 13px 0 20px;
     color: var(--archive-muted);
     font-size: 14px;
     font-weight: 450;
@@ -860,14 +860,18 @@ body.timebox-cinematic .thoughts-confirm__message {
 
 body.timebox-cinematic .thoughts-confirm__actions {
     display: grid;
-    grid-template-columns: 1.35fr 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 10px;
+    width: min(100%, 300px);
+    margin: 0 auto;
 }
 
 body.timebox-cinematic .thoughts-confirm__accept,
 body.timebox-cinematic .thoughts-confirm__decline {
-    min-height: 48px;
-    border-radius: 13px;
+    width: 100%;
+    min-height: 40px;
+    padding: 8px 12px;
+    border-radius: 11px;
     font: inherit;
     font-size: 13px;
     font-weight: 650;
@@ -891,9 +895,9 @@ body.timebox-cinematic .join-modal {
 }
 
 body.timebox-cinematic .join-modal__card {
-    width: min(560px, 100%);
-    padding: clamp(24px, 4vw, 38px);
-    border-radius: 24px;
+    width: min(380px, 100%);
+    padding: 22px;
+    border-radius: 19px;
     transform: translateY(14px) scale(0.97);
 }
 
@@ -902,15 +906,17 @@ body.timebox-cinematic .join-modal.is-open .join-modal__card {
 }
 
 body.timebox-cinematic .join-modal__close {
-    top: 20px;
-    right: 20px;
+    top: 16px;
+    right: 16px;
+    width: 36px;
+    height: 36px;
 }
 
 body.timebox-cinematic .join-modal__title {
     margin: 0 52px 8px 0;
     padding: 0;
     color: var(--archive-text);
-    font-size: clamp(25px, 4vw, 34px);
+    font-size: 22px;
     font-weight: 600;
     line-height: 1.2;
     letter-spacing: -0.04em;
@@ -918,29 +924,29 @@ body.timebox-cinematic .join-modal__title {
 
 body.timebox-cinematic .join-modal__note {
     max-width: 440px;
-    margin: 0 0 24px;
+    margin: 0 0 17px;
     color: var(--archive-muted);
     opacity: 1;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 450;
     line-height: 1.7;
 }
 
 body.timebox-cinematic .join-form {
-    gap: 12px;
+    gap: 9px;
 }
 
 body.timebox-cinematic .join-form__field textarea {
     width: 100%;
-    min-height: 150px;
+    min-height: 96px;
     resize: vertical;
-    padding: 15px 16px;
+    padding: 12px 13px;
     border: 1px solid var(--archive-line);
     border-radius: 15px;
     background: rgba(255, 255, 255, 0.035);
     color: var(--archive-text);
     font: inherit;
-    font-size: 14px;
+    font-size: 13px;
     line-height: 1.65;
     outline: none;
     transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
@@ -961,7 +967,7 @@ body.timebox-cinematic .join-form__submit {
     align-items: center;
     justify-content: center;
     gap: 9px;
-    min-height: 50px;
+    min-height: 40px;
     margin: 0;
     border: 1px solid rgba(var(--world-rgb), 0.46);
     border-radius: 14px;
@@ -984,9 +990,9 @@ body.timebox-cinematic .key-modal {
 }
 
 body.timebox-cinematic .key-modal__card {
-    width: min(440px, 100%);
-    padding: clamp(24px, 4vw, 34px);
-    border-radius: 22px;
+    width: min(380px, 100%);
+    padding: 22px;
+    border-radius: 19px;
     transform: translateY(14px) scale(0.97);
     overflow: hidden;
 }
@@ -1008,14 +1014,16 @@ body.timebox-cinematic .key-modal__card::after {
 }
 
 body.timebox-cinematic .key-modal__close {
-    top: 18px;
-    right: 18px;
+    top: 16px;
+    right: 16px;
+    width: 36px;
+    height: 36px;
 }
 
 body.timebox-cinematic .key-modal__title {
     margin: 0 54px 8px 0;
     color: var(--archive-text);
-    font-size: clamp(24px, 4vw, 31px);
+    font-size: 22px;
     font-weight: 600;
     line-height: 1.22;
     letter-spacing: -0.04em;
@@ -1023,9 +1031,9 @@ body.timebox-cinematic .key-modal__title {
 }
 
 body.timebox-cinematic .key-modal__note {
-    margin: 0 0 22px;
+    margin: 0 0 16px;
     color: var(--archive-muted);
-    font-size: 13px;
+    font-size: 12px;
     line-height: 1.65;
 }
 
@@ -1034,13 +1042,13 @@ body.timebox-cinematic .key-form {
 }
 
 body.timebox-cinematic .key-form input {
-    min-height: 50px;
+    min-height: 40px;
     padding: 0 15px;
     border: 1px solid var(--archive-line);
     border-radius: 13px;
     background: rgba(255, 255, 255, 0.035);
     color: var(--archive-text);
-    font-size: 14px;
+    font-size: 13px;
 }
 
 body.timebox-cinematic .key-form input:focus {
@@ -1054,7 +1062,7 @@ body.timebox-cinematic .key-form button {
     align-items: center;
     justify-content: center;
     gap: 8px;
-    min-height: 50px;
+    min-height: 40px;
     border: 1px solid rgba(var(--world-rgb), 0.46);
     border-radius: 13px;
     background: rgba(var(--world-rgb), 0.16);
@@ -1074,11 +1082,11 @@ body.timebox-cinematic .upload-modal {
 }
 
 body.timebox-cinematic .upload-modal__card {
-    width: min(680px, 100%);
-    max-width: 680px;
+    width: min(380px, 100%);
+    max-width: 380px;
     max-height: min(88dvh, 820px);
-    padding: clamp(20px, 3.5vw, 34px);
-    border-radius: 24px;
+    padding: 22px;
+    border-radius: 19px;
     transform: translateY(14px) scale(0.97);
     overflow-y: auto;
     scrollbar-color: rgba(var(--world-rgb), 0.42) transparent;
@@ -1094,15 +1102,15 @@ body.timebox-cinematic .upload-modal__header {
     justify-content: space-between;
     gap: 22px;
     min-height: 0;
-    margin: 0 0 22px;
-    padding: 0 0 20px;
+    margin: 0 0 16px;
+    padding: 0 0 14px;
     border-bottom: 1px solid var(--archive-line);
 }
 
 body.timebox-cinematic .upload-modal__title {
     margin: 0;
     color: var(--archive-text);
-    font-size: clamp(23px, 3.5vw, 32px);
+    font-size: 22px;
     font-weight: 600;
     line-height: 1.22;
     letter-spacing: -0.04em;
@@ -1110,12 +1118,15 @@ body.timebox-cinematic .upload-modal__title {
 
 body.timebox-cinematic .upload-modal__close {
     position: static;
+    width: 36px;
+    height: 36px;
+    flex-basis: 36px;
 }
 
 body.timebox-cinematic .upload-modal__dropzone {
     width: 100%;
-    min-height: 178px;
-    padding: 26px 18px;
+    min-height: 102px;
+    padding: 14px 12px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -1143,18 +1154,18 @@ body.timebox-cinematic .upload-modal__dropzone.is-drag {
 body.timebox-cinematic .upload-modal__dropzone-icon {
     display: grid;
     place-items: center;
-    width: 48px;
-    height: 48px;
+    width: 40px;
+    height: 40px;
     border: 1px solid rgba(var(--world-rgb), 0.36);
     border-radius: 50%;
     background: rgba(var(--world-rgb), 0.1);
     color: var(--world-accent);
-    font-size: 18px;
+    font-size: 15px;
 }
 
 body.timebox-cinematic .upload-modal__dropzone-label {
     color: var(--archive-text);
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 650;
 }
 
@@ -1222,7 +1233,7 @@ body.timebox-cinematic .upload-modal__preview-remove {
 
 body.timebox-cinematic .upload-modal__send {
     width: 100%;
-    min-height: 50px;
+    min-height: 40px;
     margin-top: 14px;
     border: 1px solid rgba(var(--world-rgb), 0.48);
     border-radius: 14px;
@@ -1321,11 +1332,28 @@ body.timebox-cinematic .world-album .photo-gallery[tabindex="-1"]:focus {
     }
 
     body.timebox-cinematic .world-header {
-        grid-template-columns: auto minmax(280px, 1fr) auto;
+        grid-template-columns: 1fr minmax(280px, 520px) 1fr;
         align-items: center;
         gap: 16px;
         margin-bottom: clamp(12px, 1.8vh, 18px);
         padding-bottom: clamp(12px, 1.8vh, 18px);
+    }
+
+    body.timebox-cinematic .world-heading {
+        grid-column: 2;
+        justify-self: center;
+        width: 100%;
+        text-align: center;
+    }
+
+    body.timebox-cinematic .world-header .life-back {
+        grid-column: 1;
+        justify-self: start;
+    }
+
+    body.timebox-cinematic .world-header__actions {
+        grid-column: 3;
+        justify-self: end;
     }
 
     body.timebox-cinematic .world-header .life-back {
@@ -1338,17 +1366,23 @@ body.timebox-cinematic .world-album .photo-gallery[tabindex="-1"]:focus {
     .world-heading__eyebrow {
         margin-bottom: 4px;
         font-size: 9px;
+        text-align: center;
     }
 
     body.timebox-cinematic .world-heading .life-title {
-        font-size: clamp(27px, 2.4vw, 36px);
+        font-size: clamp(22px, 2vw, 28px);
         line-height: 1.08;
+        max-width: none;
+        text-align: center;
     }
 
     .world-heading__subtitle {
         margin-top: 5px;
         font-size: 11.5px;
         line-height: 1.45;
+        margin-right: auto;
+        margin-left: auto;
+        text-align: center;
     }
 
     .world-header__actions {
@@ -1413,7 +1447,7 @@ body.timebox-cinematic .world-album .photo-gallery[tabindex="-1"]:focus {
     }
 
     body.timebox-cinematic .world-header {
-        grid-template-columns: 42px minmax(220px, 1fr) auto;
+        grid-template-columns: 1fr minmax(220px, 520px) 1fr;
         margin-bottom: 10px;
         padding-bottom: 10px;
     }
@@ -1430,7 +1464,7 @@ body.timebox-cinematic .world-album .photo-gallery[tabindex="-1"]:focus {
     }
 
     body.timebox-cinematic .world-heading .life-title {
-        font-size: 28px;
+        font-size: 24px;
     }
 
     body.timebox-cinematic .world-header .family-upload-fab {
@@ -1459,7 +1493,7 @@ body.timebox-cinematic .world-album .photo-gallery[tabindex="-1"]:focus {
     }
 
     body.timebox-cinematic .world-heading .life-title {
-        font-size: 25px;
+        font-size: 22px;
     }
 
     body.timebox-cinematic .world-header .family-upload-fab {
@@ -1710,7 +1744,7 @@ body.timebox-cinematic .world-album .photo-gallery[tabindex="-1"]:focus {
     body.timebox-cinematic .world-heading .life-title {
         width: 100%;
         max-width: none;
-        font-size: clamp(16px, 4.6vw, 19px);
+        font-size: clamp(15px, 4.2vw, 17px);
         line-height: 1.2;
         letter-spacing: 0;
         text-align: center;
@@ -1900,7 +1934,7 @@ body.timebox-cinematic .world-album .photo-gallery[tabindex="-1"]:focus {
     }
 
     body.timebox-cinematic .thoughts-confirm__actions {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
     body.timebox-cinematic .join-modal__close {
@@ -2003,7 +2037,7 @@ body.timebox-cinematic .world-album .photo-gallery[tabindex="-1"]:focus {
     body.timebox-cinematic .upload-modal__send,
     body.timebox-cinematic .thoughts-confirm__accept,
     body.timebox-cinematic .thoughts-confirm__decline {
-        min-height: 46px;
+        min-height: 40px;
         border-radius: 11px;
         font-size: 13px;
     }
@@ -2101,7 +2135,7 @@ body.timebox-cinematic .world-album .photo-gallery[tabindex="-1"]:focus {
     }
 
     body.timebox-cinematic .world-heading .life-title {
-        font-size: 17px;
+        font-size: 16px;
     }
 
     body.timebox-cinematic .key-modal__card {
@@ -2114,6 +2148,102 @@ body.timebox-cinematic .world-album .photo-gallery[tabindex="-1"]:focus {
     body.timebox-cinematic .world-album .photo-gallery {
         grid-template-columns: repeat(4, minmax(0, 1fr));
         gap: 6px;
+    }
+}
+
+/* Keep desktop album headings centered independently of the side controls. */
+@media (min-width: 900px) {
+    body.timebox-cinematic .world-header > .world-heading {
+        grid-column: 2;
+        width: 100%;
+        max-width: 520px;
+        margin: 0 auto;
+        justify-self: center;
+        text-align: center;
+    }
+
+    body.timebox-cinematic .world-header > .world-heading .world-heading__eyebrow,
+    body.timebox-cinematic .world-header > .world-heading .life-title,
+    body.timebox-cinematic .world-header > .world-heading .world-heading__subtitle {
+        width: 100%;
+        max-width: none;
+        margin-right: auto;
+        margin-left: auto;
+        text-align: center;
+    }
+}
+
+/* One compact desktop scale for every step dialog. */
+@media (min-width: 700px) {
+    body.timebox-cinematic .join-modal__card,
+    body.timebox-cinematic .key-modal__card,
+    body.timebox-cinematic .upload-modal__card,
+    body.timebox-cinematic .thoughts-confirm__card {
+        box-sizing: border-box;
+        width: 380px;
+        max-width: calc(100vw - 32px);
+        padding: 22px;
+        border-radius: 19px;
+    }
+
+    body.timebox-cinematic .join-modal__card .dialog-heading__eyebrow,
+    body.timebox-cinematic .key-modal__card .dialog-heading__eyebrow,
+    body.timebox-cinematic .upload-modal__card .dialog-heading__eyebrow,
+    body.timebox-cinematic .thoughts-confirm__card .dialog-heading__eyebrow {
+        margin-bottom: 6px;
+        font-size: 8px;
+        line-height: 1.4;
+        letter-spacing: 0.16em;
+    }
+
+    body.timebox-cinematic .join-modal__title,
+    body.timebox-cinematic .key-modal__title,
+    body.timebox-cinematic .upload-modal__title {
+        font-size: 21px;
+        line-height: 1.2;
+        letter-spacing: -0.025em;
+    }
+
+    body.timebox-cinematic .join-modal__note,
+    body.timebox-cinematic .key-modal__note,
+    body.timebox-cinematic .thoughts-confirm__message {
+        font-size: 11px;
+        line-height: 1.55;
+    }
+
+    body.timebox-cinematic .join-modal__close,
+    body.timebox-cinematic .key-modal__close,
+    body.timebox-cinematic .upload-modal__close {
+        width: 36px;
+        height: 36px;
+        flex-basis: 36px;
+        font-size: 16px;
+    }
+
+    body.timebox-cinematic .join-form__submit,
+    body.timebox-cinematic .key-form input,
+    body.timebox-cinematic .key-form button,
+    body.timebox-cinematic .upload-modal__send,
+    body.timebox-cinematic .thoughts-confirm__accept,
+    body.timebox-cinematic .thoughts-confirm__decline {
+        min-height: 40px;
+        border-radius: 10px;
+        font-size: 12px;
+    }
+
+    body.timebox-cinematic .join-form__field textarea,
+    body.timebox-cinematic .upload-modal__dropzone-label {
+        font-size: 12px;
+    }
+
+    body.timebox-cinematic .thoughts-confirm__message {
+        margin: 8px 0 16px;
+        text-align: left;
+    }
+
+    body.timebox-cinematic .thoughts-confirm__actions {
+        width: 100%;
+        gap: 8px;
     }
 }
 

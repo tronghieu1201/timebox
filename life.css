@@ -694,11 +694,14 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 10px;
+    width: min(100%, 300px);
+    margin: 0 auto;
 }
 
 .thoughts-confirm__actions button {
-    min-height: 42px;
-    padding: 9px 12px;
+    width: 100%;
+    min-height: 38px;
+    padding: 7px 10px;
     border-radius: 12px;
     border: 1px solid rgba(0, 0, 0, 0.12);
     color: #111827;

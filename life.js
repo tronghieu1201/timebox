@@ -44,23 +44,24 @@
     var DEFAULT_TOAST_MESSAGE = toast ? toast.textContent : 'Mục này đang được cập nhật, hãy quay lại sau nhé!';
     var THOUGHTS_STORAGE_KEY = 'life-thoughts-selected';
     var thoughtsQuotes = [
-        'Nghe hàng nghìn đạo lý, nhưng vẫn chưa học được cách sống trọn vẹn với hiện tại.',
-        'Những điều giản dị tạo nên tình yêu, và sau cùng, tình yêu cũng chỉ còn lại trong những điều giản dị ấy.',
-        'Không còn cô đơn vì đã biết đủ, hay chỉ vì chưa từng biết mình đang thiếu điều gì?',
-        'Ánh mắt chỉ dành cho một người, nhưng nếu mãi đứng nhìn từ xa, liệu sau này có hối tiếc?',
-        'Biết đủ, nên có những điều không còn cần phải nói ra.',
-        'Ai cũng nghĩ mình là nạn nhân, nhưng ít ai chịu nhìn lại phần lỗi của chính mình.',
-        'Chỉ một khoảnh khắc nhỏ cũng đủ biến một ngày bình thường thành kỷ niệm.',
-        'Không thể cho em quá nhiều, nên cũng chẳng dám đòi hỏi em phải đáp lại bao nhiêu.',
-        'Có những khởi đầu đã mang theo quá nhiều lời tạm biệt.',
         'Hãy học cách chấp nhận góc nhìn của người khác mà không nhất thiết phải chứng minh mình đúng.',
-        'Mình đang yêu người ấy trong hiện tại, hay chỉ đang níu giữ một phần của chính mình thuộc về quá khứ?',
+        'Không còn cô đơn vì đã biết đủ, hay chỉ vì chưa từng biết mình đang thiếu điều gì?',
+        'Khi tình cảm vừa nảy sinh, điều đầu tiên xuất hiện trong đầu lại là làm thế nào để cả hai phớt lờ nó.',
+        'Tình yêu bí mật ư? Tình yêu vốn không nên là một bí mật. Nếu cứ mãi chôn giấu trong lòng, đến một ngày, chính những điều chưa kịp nói ấy sẽ khiến bạn đau lòng đến thành bệnh.',
+        'Ai cũng nghĩ mình là nạn nhân, nhưng ít ai chịu nhìn lại phần lỗi của chính mình.',
         'Anh học thêm để có nhiều điều kể em nghe; em học thêm để hiểu được những điều anh kể.',
-        'Dù là mối quan hệ nào, khi người khác không còn cần, hãy thu lại sự nhiệt tình và lịch sự rời đi.',
+        'Nghe hàng nghìn đạo lý, nhưng vẫn chưa học được cách sống trọn vẹn với hiện tại.',
         'Đừng mãi tiếc nuối một mặt trời đã lặn mà quên ngước nhìn bầu trời vẫn còn đầy sao.',
-        'Khi tình cảm vừa nảy sinh, điều đầu tiên xuất hiện trong đầu lại là làm thế nào để cả hai phớt lờ nó.'
+        'Chỉ một khoảnh khắc nhỏ cũng đủ biến một ngày bình thường thành kỷ niệm.',
+        'Ánh mắt chỉ dành cho một người, nhưng nếu mãi đứng nhìn từ xa, liệu sau này có hối tiếc?',
+        'Dù là mối quan hệ nào, khi người khác không còn cần, hãy thu lại sự nhiệt tình và lịch sự rời đi.',
+        'Có những khởi đầu đã mang theo quá nhiều lời tạm biệt.',
+        'Những điều giản dị tạo nên tình yêu, và sau cùng, tình yêu cũng chỉ còn lại trong những điều giản dị ấy.',
+        'Mình đang yêu người ấy trong hiện tại, hay chỉ đang níu giữ một phần của chính mình thuộc về quá khứ?',
+        'Biết đủ, nên có những điều không còn cần phải nói ra.',
+        'Không thể cho em quá nhiều, nên cũng chẳng dám đòi hỏi em phải đáp lại bao nhiêu.'
     ];
-    var specialThoughtIndexes = [1, 7, 11];
+    var specialThoughtIndexes = [5, 12, 15];
 
 
     // Category config: map category key → display name
@@ -122,6 +123,7 @@
 
     function renderThoughtsQuotes() {
         titleEl.textContent = categories.thoughts.title;
+        titleEl.hidden = true;
         gridEl.innerHTML = '';
         gridEl.dataset.mode = 'thoughts';
         emptyEl.hidden = true;
@@ -134,9 +136,9 @@
             btn.type = 'button';
             btn.className = 'thoughts-number-btn';
             btn.setAttribute('data-index', String(index));
-            btn.setAttribute('aria-label', 'Mở chiếc hộp bí ẩn ' + (index + 1));
+            btn.setAttribute('aria-label', 'Mở chiếc hộp bí ẩn');
             btn.setAttribute('title', 'Chiếc hộp bí ẩn');
-            btn.innerHTML = '<span class="thoughts-number-btn__index">' + String(index + 1).padStart(2, '0') + '</span><i class="fas fa-box" aria-hidden="true"></i>';
+            btn.innerHTML = '<i class="fas fa-box" aria-hidden="true"></i>';
             btn.addEventListener('click', function () {
                 setThoughtQuote(index);
             });
@@ -149,6 +151,7 @@
         if (!cat || !overlay) return;
 
         titleEl.textContent = cat.title;
+        titleEl.hidden = false;
         overlay.setAttribute('data-world', categoryKey === 'daily' ? 'upload' : 'thoughts');
         overlay.classList.toggle('is-upload-mode', categoryKey === 'daily');
         gridEl.innerHTML = '';
@@ -374,7 +377,6 @@
             '<div class="thoughts-confirm__backdrop"></div>' +
             '<article class="thoughts-confirm__card" role="dialog" aria-modal="true" aria-label="X&aacute;c nh&#7853;n L&#259;ng k&iacute;nh">' +
                 '<p class="dialog-heading__eyebrow">Quỹ đạo 02 · Lăng kính của Hiếu</p>' +
-                '<h2 class="thoughts-confirm__title">Trước khi nhìn qua lăng kính</h2>' +
                 '<p class="thoughts-confirm__message">Có thể bạn đã nghe - đã thấy và có thể chưa đúng với bạn, nhưng đó là góc nhìn từng trải của mình.</p>' +
                 '<div class="thoughts-confirm__actions">' +
                     '<button type="button" class="thoughts-confirm__accept"><i class="fas fa-eye" aria-hidden="true"></i> Ch&#7845;p nh&#7853;n</button>' +

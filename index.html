@@ -20,9 +20,9 @@
         href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css?v=36">
-    <link rel="stylesheet" href="life.css?v=36">
-    <link rel="stylesheet" href="space-navigation.css?v=36">
+    <link rel="stylesheet" href="style.css?v=41">
+    <link rel="stylesheet" href="life.css?v=41">
+    <link rel="stylesheet" href="space-navigation.css?v=41">
     <style>
         .spa-shell {
             position: relative;
@@ -71,7 +71,7 @@
             animation: slideInLeft 0.24s cubic-bezier(0.22, 1, 0.36, 1) both;
         }
     </style>
-    <link rel="stylesheet" href="orbital-archive.css?v=36">
+    <link rel="stylesheet" href="orbital-archive.css?v=41">
 </head>
 
 <body class="timebox-cinematic space-nav-home-visible" data-space-view="home">
@@ -155,7 +155,7 @@
                             <div class="dialog-heading">
                                 <p class="dialog-heading__eyebrow">Quỹ đạo 02 · Lăng kính của Hiếu</p>
                                 <h2 class="gallery-panel__title" id="gallery-title"></h2>
-                                <p class="dialog-heading__subtitle">Mỗi chiếc hộp là một góc nhìn. Chạm để mở tín hiệu.</p>
+                                <p class="dialog-heading__subtitle">Mỗi chiếc hộp là một góc nhìn. Nếu tò mò hãy chạm lấy.</p>
                             </div>
                             <button class="gallery-panel__close" id="gallery-close" aria-label="Đóng">&times;</button>
                         </div>
@@ -187,12 +187,11 @@
                         <button type="button" class="join-modal__close" id="join-close" aria-label="Đóng">&times;</button>
                         <p class="dialog-heading__eyebrow">Quỹ đạo 08 · Feedback</p>
                         <h2 class="join-modal__title" id="join-title">Gửi một tín hiệu</h2>
-                        <p class="join-modal__note">Mọi góp ý đều được giữ lại để Timebox trở nên rõ ràng và gần gũi hơn.</p>
                         <form class="join-form" id="join-form">
                             <input type="hidden" name="createdAt" id="join-created-at">
                             <label class="join-form__field">
                                 <span class="sr-only">Nội dung góp ý</span>
-                                <textarea id="join-content" name="content" rows="5" placeholder="Viết điều bạn muốn nhắn với Hiếu..." required></textarea>
+                                <textarea id="join-content" name="content" rows="5" placeholder="Nhập lời nhắn..." required></textarea>
                             </label>
                             <button type="submit" class="join-form__submit"><i class="fas fa-paper-plane" aria-hidden="true"></i> Gửi tín hiệu</button>
                         </form>
@@ -358,7 +357,6 @@
                 <div class="dialog-heading">
                     <p class="dialog-heading__eyebrow">Quỹ đạo 07 · Trạm Upload</p>
                     <h2 class="upload-modal__title" id="upload-modal-title">Đưa ký ức lên quỹ đạo</h2>
-                    <p class="dialog-heading__subtitle">Chọn tối đa 10 ảnh, mỗi ảnh không quá 10MB.</p>
                 </div>
                 <button type="button" class="upload-modal__close" id="upload-modal-close"
                     aria-label="Đóng">&times;</button>
@@ -368,7 +366,6 @@
             <button type="button" class="upload-modal__dropzone" id="upload-dropzone" data-dialog-focus>
                 <i class="fas fa-camera upload-modal__dropzone-icon" aria-hidden="true"></i>
                 <span class="upload-modal__dropzone-label">Chọn ảnh để gửi</span>
-                <span class="upload-modal__dropzone-sub">JPG, PNG, WEBP, GIF hoặc HEIC · có thể kéo và thả</span>
             </button>
 
             <div class="upload-modal__pin-options" id="upload-pin-options" aria-label="Pin image" hidden>
@@ -400,8 +397,8 @@
     <!-- Toast notification -->
     <div class="toast" id="toast" aria-live="polite"></div>
 
-    <script src="theme.js?v=36"></script>
-    <script src="life.js?v=36"></script>
+    <script src="theme.js?v=41"></script>
+    <script src="life.js?v=41"></script>
     <script>
         (function () {
             var views = {
@@ -1126,7 +1123,7 @@
                 document.head.appendChild(preload);
 
                 var script = document.createElement('script');
-                script.src = 'space-navigation.bundle.js?v=36';
+                script.src = 'space-navigation.bundle.js?v=41';
                 script.async = true;
                 script.addEventListener('error', showFallback, { once: true });
                 document.body.appendChild(script);
