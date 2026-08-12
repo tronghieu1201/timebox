@@ -487,27 +487,160 @@
     /* ---- Photo Gallery Lightbox ---- */
     var photoLightbox = document.getElementById('photo-lightbox');
     var photoLightboxImg = document.getElementById('photo-lightbox-img');
+    var photoLightboxStage = document.getElementById('photo-lightbox-stage');
     var photoLightboxCaption = document.getElementById('photo-lightbox-caption');
     var photoLightboxClose = document.getElementById('photo-lightbox-close');
+    var photoLightboxOrbitRects = photoLightbox
+        ? photoLightbox.querySelectorAll('.photo-lightbox__orbit rect')
+        : [];
     var photoLightboxReleaseTimer = null;
     var photoLightboxPinAction = null;
+    var photoLightboxZoom = { scale: 1, x: 0, y: 0 };
+    var photoLightboxTouch = null;
+    var PHOTO_LIGHTBOX_MAX_ZOOM = 4;
+
+    function clearPhotoLightboxFrame() {
+        if (!photoLightbox) return;
+        ['--lightbox-frame-width', '--lightbox-frame-height', '--lightbox-frame-radius'].forEach(function (name) {
+            photoLightbox.style.removeProperty(name);
+        });
+    }
+
+    function setPhotoLightboxFrame(width, height) {
+        if (!photoLightbox || !width || !height) return;
+        var shortestSide = Math.min(width, height);
+        var radius = Math.max(10, Math.min(20, Math.round(shortestSide * 0.055)));
+        var radiusX = (radius / width) * 100;
+        var radiusY = (radius / height) * 100;
+
+        photoLightbox.style.setProperty('--lightbox-frame-width', width + 'px');
+        photoLightbox.style.setProperty('--lightbox-frame-height', height + 'px');
+        photoLightbox.style.setProperty('--lightbox-frame-radius', radius + 'px');
+
+        Array.prototype.forEach.call(photoLightboxOrbitRects, function (rect) {
+            rect.setAttribute('rx', radiusX.toFixed(3));
+            rect.setAttribute('ry', radiusY.toFixed(3));
+        });
+    }
+
+    function clampPhotoLightboxZoomPosition(x, y, scale) {
+        if (!photoLightboxStage) return { x: 0, y: 0 };
+        var bounds = photoLightboxStage.getBoundingClientRect();
+        var maxX = Math.max(0, (bounds.width * (scale - 1)) / 2);
+        var maxY = Math.max(0, (bounds.height * (scale - 1)) / 2);
+        return {
+            x: Math.max(-maxX, Math.min(maxX, x)),
+            y: Math.max(-maxY, Math.min(maxY, y))
+        };
+    }
+
+    function applyPhotoLightboxZoom() {
+        if (!photoLightboxImg) return;
+        var position = clampPhotoLightboxZoomPosition(
+            photoLightboxZoom.x,
+            photoLightboxZoom.y,
+            photoLightboxZoom.scale
+        );
+        photoLightboxZoom.x = position.x;
+        photoLightboxZoom.y = position.y;
+        photoLightboxImg.style.transform = 'translate3d(' + position.x + 'px, ' + position.y + 'px, 0) scale(' + photoLightboxZoom.scale + ')';
+        if (photoLightbox) photoLightbox.classList.toggle('is-zoomed', photoLightboxZoom.scale > 1.01);
+    }
+
+    function resetPhotoLightboxZoom() {
+        photoLightboxZoom.scale = 1;
+        photoLightboxZoom.x = 0;
+        photoLightboxZoom.y = 0;
+        photoLightboxTouch = null;
+        if (photoLightboxImg) photoLightboxImg.style.removeProperty('transform');
+        if (photoLightbox) photoLightbox.classList.remove('is-zoomed');
+    }
+
+    function getTouchDistance(first, second) {
+        var deltaX = second.clientX - first.clientX;
+        var deltaY = second.clientY - first.clientY;
+        return Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+    }
+
+    function getTouchMidpoint(first, second) {
+        return {
+            x: (first.clientX + second.clientX) / 2,
+            y: (first.clientY + second.clientY) / 2
+        };
+    }
+
+    function beginPhotoLightboxTouch(touches) {
+        if (!touches || !touches.length) return;
+        if (touches.length >= 2) {
+            photoLightboxTouch = {
+                mode: 'pinch',
+                distance: getTouchDistance(touches[0], touches[1]),
+                midpoint: getTouchMidpoint(touches[0], touches[1]),
+                scale: photoLightboxZoom.scale,
+                x: photoLightboxZoom.x,
+                y: photoLightboxZoom.y
+            };
+            return;
+        }
+        photoLightboxTouch = {
+            mode: 'pan',
+            x: touches[0].clientX,
+            y: touches[0].clientY,
+            offsetX: photoLightboxZoom.x,
+            offsetY: photoLightboxZoom.y
+        };
+    }
+
+    function movePhotoLightboxTouch(touches) {
+        if (!photoLightboxTouch || !touches || !touches.length || !photoLightboxStage) return;
+        if (touches.length >= 2) {
+            if (photoLightboxTouch.mode !== 'pinch') {
+                beginPhotoLightboxTouch(touches);
+                return;
+            }
+            var distance = getTouchDistance(touches[0], touches[1]);
+            var scale = Math.max(1, Math.min(PHOTO_LIGHTBOX_MAX_ZOOM,
+                photoLightboxTouch.scale * (distance / Math.max(1, photoLightboxTouch.distance))));
+            var midpoint = getTouchMidpoint(touches[0], touches[1]);
+            var bounds = photoLightboxStage.getBoundingClientRect();
+            var startX = photoLightboxTouch.midpoint.x - bounds.left - (bounds.width / 2);
+            var startY = photoLightboxTouch.midpoint.y - bounds.top - (bounds.height / 2);
+            var currentX = midpoint.x - bounds.left - (bounds.width / 2);
+            var currentY = midpoint.y - bounds.top - (bounds.height / 2);
+            photoLightboxZoom.scale = scale;
+            photoLightboxZoom.x = currentX - ((startX - photoLightboxTouch.x) / photoLightboxTouch.scale) * scale;
+            photoLightboxZoom.y = currentY - ((startY - photoLightboxTouch.y) / photoLightboxTouch.scale) * scale;
+            applyPhotoLightboxZoom();
+            return;
+        }
+        if (photoLightboxTouch.mode !== 'pan') {
+            beginPhotoLightboxTouch(touches);
+            return;
+        }
+        if (photoLightboxZoom.scale <= 1.01) return;
+        photoLightboxZoom.x = photoLightboxTouch.offsetX + touches[0].clientX - photoLightboxTouch.x;
+        photoLightboxZoom.y = photoLightboxTouch.offsetY + touches[0].clientY - photoLightboxTouch.y;
+        applyPhotoLightboxZoom();
+    }
 
     function fitPhotoLightboxImage() {
         if (!photoLightboxImg || !photoLightboxImg.naturalWidth || !photoLightboxImg.naturalHeight) return;
         var viewport = window.visualViewport;
         var viewportWidth = viewport ? viewport.width : window.innerWidth;
         var viewportHeight = viewport ? viewport.height : window.innerHeight;
-        var horizontalSpace = viewportWidth <= 480 ? 32 : 48;
-        var verticalSpace = viewportWidth <= 480 ? 140 : 110;
-        var maxWidth = Math.max(160, Math.min(960, viewportWidth - horizontalSpace));
-        var maxHeight = Math.max(120, viewportHeight - verticalSpace);
+        var horizontalSpace = viewportWidth <= 640 ? 20 : 52;
+        var verticalSpace = viewportWidth <= 640 ? 132 : 122;
+        var maxWidth = Math.max(144, Math.min(1180, viewportWidth - horizontalSpace));
+        var maxHeight = Math.max(144, viewportHeight - verticalSpace);
         var scale = Math.min(
             maxWidth / photoLightboxImg.naturalWidth,
             maxHeight / photoLightboxImg.naturalHeight
         );
+        var width = Math.max(1, Math.round(photoLightboxImg.naturalWidth * scale));
+        var height = Math.max(1, Math.round(photoLightboxImg.naturalHeight * scale));
 
-        photoLightboxImg.style.width = Math.round(photoLightboxImg.naturalWidth * scale) + 'px';
-        photoLightboxImg.style.height = Math.round(photoLightboxImg.naturalHeight * scale) + 'px';
+        setPhotoLightboxFrame(width, height);
+        applyPhotoLightboxZoom();
     }
 
     if (photoLightbox) {
@@ -534,6 +667,7 @@
     function openPhotoLightbox(card) {
         if (!photoLightbox || !photoLightboxImg) return;
         clearTimeout(photoLightboxReleaseTimer);
+        resetPhotoLightboxZoom();
         var src = card.getAttribute('data-full');
         var title = card.getAttribute('data-title') || '';
         var meta = card.getAttribute('data-meta') || '';
@@ -545,9 +679,12 @@
         photoLightbox.classList.add('is-loading');
         photoLightboxImg.removeAttribute('srcset');
         photoLightboxImg.removeAttribute('src');
-        photoLightboxImg.style.removeProperty('width');
-        photoLightboxImg.style.removeProperty('height');
+        clearPhotoLightboxFrame();
         photoLightboxImg.alt = title || (img ? img.alt : '');
+
+        // Khóa scroll body
+        document.body.style.overflow = 'hidden';
+        document.body.style.touchAction = 'none';
 
         photoLightboxImg.onload = function () {
             if (photoLightboxImg.dataset.requestId !== requestId) return;
@@ -559,7 +696,7 @@
             photoLightbox.classList.remove('is-loading');
         };
 
-        photoLightboxImg.sizes = '(max-width: 1000px) calc(100vw - 44px), 960px';
+        photoLightboxImg.sizes = '(max-width: 1200px) 100vw, 1180px';
         photoLightboxImg.srcset = card.getAttribute('data-full-srcset') || '';
         photoLightboxImg.src = nextSrc;
         if (photoLightboxImg.complete && photoLightboxImg.naturalWidth) {
@@ -573,6 +710,9 @@
         }
         photoLightbox._activeGallery = card._gallery || null;
         photoLightbox._activePhoto = card._photo || null;
+        var lightboxWorld = photoLightbox._activeGallery && photoLightbox._activeGallery.getAttribute('data-live-scope');
+        if (lightboxWorld) photoLightbox.setAttribute('data-world', lightboxWorld);
+        else photoLightbox.removeAttribute('data-world');
         updatePhotoLightboxPinAction();
         document.body.classList.add('is-modal-open');
         photoLightbox.classList.add('is-open');
@@ -582,21 +722,27 @@
     function closePhotoLightbox() {
         if (!photoLightbox || !photoLightbox.classList.contains('is-open')) return;
         closeUnpinDialog();
+        resetPhotoLightboxZoom();
         prepareDialogClose(photoLightbox);
         photoLightbox.classList.remove('is-open', 'is-loading');
         photoLightbox.setAttribute('aria-hidden', 'true');
         syncModalState();
         photoLightbox._activeGallery = null;
         photoLightbox._activePhoto = null;
+        photoLightbox.removeAttribute('data-world');
         if (photoLightboxPinAction) photoLightboxPinAction.hidden = true;
         photoLightboxImg.dataset.requestId = '';
+        
+        // Mở khóa scroll body
+        document.body.style.removeProperty('overflow');
+        document.body.style.removeProperty('touch-action');
+        
         photoLightboxReleaseTimer = setTimeout(function () {
             photoLightboxImg.onload = null;
             photoLightboxImg.onerror = null;
             photoLightboxImg.removeAttribute('srcset');
             photoLightboxImg.removeAttribute('src');
-            photoLightboxImg.style.removeProperty('width');
-            photoLightboxImg.style.removeProperty('height');
+            clearPhotoLightboxFrame();
             if (photoLightboxCaption) photoLightboxCaption.textContent = '';
         }, 220);
     }
@@ -1457,6 +1603,35 @@
         photoLightbox.querySelector('.photo-lightbox__backdrop').addEventListener('click', closePhotoLightbox);
         document.addEventListener('keydown', function (e) {
             if (e.key === 'Escape') closePhotoLightbox();
+        });
+    }
+
+    if (photoLightboxStage) {
+        photoLightboxStage.addEventListener('touchstart', function (event) {
+            event.preventDefault();
+            beginPhotoLightboxTouch(event.touches);
+        }, { passive: false });
+        photoLightboxStage.addEventListener('touchmove', function (event) {
+            event.preventDefault();
+            movePhotoLightboxTouch(event.touches);
+        }, { passive: false });
+        photoLightboxStage.addEventListener('touchend', function (event) {
+            event.preventDefault();
+            if (event.touches.length) {
+                beginPhotoLightboxTouch(event.touches);
+            } else {
+                photoLightboxTouch = null;
+            }
+        }, { passive: false });
+        photoLightboxStage.addEventListener('touchcancel', function () {
+            photoLightboxTouch = null;
+        }, { passive: true });
+
+        // iOS Safari emits these legacy gesture events in addition to touch events.
+        ['gesturestart', 'gesturechange', 'gestureend'].forEach(function (eventName) {
+            photoLightboxStage.addEventListener(eventName, function (event) {
+                event.preventDefault();
+            }, { passive: false });
         });
     }
 

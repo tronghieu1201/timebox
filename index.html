@@ -20,7 +20,7 @@
         href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css?v=41">
+    <link rel="stylesheet" href="style.css?v=44">
     <link rel="stylesheet" href="life.css?v=41">
     <link rel="stylesheet" href="space-navigation.css?v=42">
     <style>
@@ -71,7 +71,7 @@
             animation: slideInLeft 0.24s cubic-bezier(0.22, 1, 0.36, 1) both;
         }
     </style>
-    <link rel="stylesheet" href="orbital-archive.css?v=41">
+    <link rel="stylesheet" href="orbital-archive.css?v=44">
 </head>
 
 <body class="timebox-cinematic space-nav-home-visible" data-space-view="home">
@@ -328,7 +328,13 @@
         <div class="photo-lightbox__backdrop"></div>
         <div class="photo-lightbox__content">
             <button class="photo-lightbox__close" id="photo-lightbox-close" aria-label="Đóng">&times;</button>
-            <img class="photo-lightbox__img" id="photo-lightbox-img" src="" alt="" loading="lazy" decoding="async">
+            <div class="photo-lightbox__stage" id="photo-lightbox-stage">
+                <img class="photo-lightbox__img" id="photo-lightbox-img" src="" alt="" loading="lazy" decoding="async">
+                <svg class="photo-lightbox__orbit" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+                    <rect class="photo-lightbox__orbit-track" x="1.2" y="1.2" width="97.6" height="97.6" rx="4.5" pathLength="100"></rect>
+                    <rect class="photo-lightbox__orbit-beam" x="1.2" y="1.2" width="97.6" height="97.6" rx="4.5" pathLength="100"></rect>
+                </svg>
+            </div>
             <div class="photo-lightbox__caption" id="photo-lightbox-caption"></div>
         </div>
     </div>
@@ -397,7 +403,7 @@
     <!-- Toast notification -->
     <div class="toast" id="toast" aria-live="polite"></div>
 
-    <script src="theme.js?v=41"></script>
+    <script src="theme.js?v=44"></script>
     <script src="life.js?v=41"></script>
     <script>
         (function () {

@@ -75,7 +75,7 @@ if (!html.includes('class="timebox-cinematic space-nav-home-visible"') ||
   throw new Error('Initial home loading state or compact Timebox wordmark is missing');
 }
 
-for (const required of ['style.css?v=36', 'life.css?v=36', 'space-navigation.css?v=36', 'orbital-archive.css?v=36', 'theme.js?v=36', 'life.js?v=36', 'space-navigation.bundle.js?v=36', 'images/space/earth_day.webp']) {
+for (const required of ['style.css?v=43', 'life.css?v=41', 'space-navigation.css?v=42', 'orbital-archive.css?v=41', 'theme.js?v=43', 'life.js?v=41', 'space-navigation.bundle.js?v=42', 'images/space/earth_day.webp']) {
   if (!html.includes(required)) throw new Error(`index.html is missing ${required}`);
 }
 
@@ -93,8 +93,8 @@ for (const legacyMarker of ['data-space-fallback', 'view-life', 'view-moments', 
 }
 
 const shellUrls = serviceWorker.match(/var SHELL_URLS = \[([\s\S]*?)\];/);
-if (!serviceWorker.includes("shell-v36") ||
-    !serviceWorker.includes("static-v36") ||
+if (!serviceWorker.includes("shell-v43") ||
+    !serviceWorker.includes("static-v43") ||
     !serviceWorker.includes("images-v2") ||
     !serviceWorker.includes("assets-v2") ||
     !serviceWorker.includes('cacheFirst(request, STATIC_CACHE') ||
