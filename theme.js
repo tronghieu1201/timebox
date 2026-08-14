@@ -498,6 +498,8 @@
     var photoLightboxZoom = { scale: 1, x: 0, y: 0 };
     var photoLightboxTouch = null;
     var PHOTO_LIGHTBOX_MAX_ZOOM = 4;
+    var PHOTO_LIGHTBOX_MIN_ZOOM = 1;
+    var PHOTO_LIGHTBOX_ZOOM_STEP = 0.15;
 
     function clearPhotoLightboxFrame() {
         if (!photoLightbox) return;
@@ -544,7 +546,11 @@
         photoLightboxZoom.x = position.x;
         photoLightboxZoom.y = position.y;
         photoLightboxImg.style.transform = 'translate3d(' + position.x + 'px, ' + position.y + 'px, 0) scale(' + photoLightboxZoom.scale + ')';
+        photoLightboxImg.style.objectFit = photoLightboxZoom.scale > 1.01 ? 'contain' : 'cover';
         if (photoLightbox) photoLightbox.classList.toggle('is-zoomed', photoLightboxZoom.scale > 1.01);
+        if (photoLightboxStage) {
+            photoLightboxStage.style.cursor = photoLightboxZoom.scale > 1.01 ? 'grab' : 'default';
+        }
     }
 
     function resetPhotoLightboxZoom() {
@@ -1632,6 +1638,62 @@
             photoLightboxStage.addEventListener(eventName, function (event) {
                 event.preventDefault();
             }, { passive: false });
+        });
+
+        // Desktop: Wheel scroll để zoom trong khung ảnh
+        photoLightboxStage.addEventListener('wheel', function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            
+            if (!photoLightboxImg) return;
+            
+            var delta = event.deltaY;
+            var zoomChange = delta > 0 ? -PHOTO_LIGHTBOX_ZOOM_STEP : PHOTO_LIGHTBOX_ZOOM_STEP;
+            var newScale = Math.max(PHOTO_LIGHTBOX_MIN_ZOOM, 
+                Math.min(PHOTO_LIGHTBOX_MAX_ZOOM, photoLightboxZoom.scale + zoomChange));
+            
+            // Lấy vị trí chuột trong khung ảnh
+            var bounds = photoLightboxStage.getBoundingClientRect();
+            var mouseX = event.clientX - bounds.left - (bounds.width / 2);
+            var mouseY = event.clientY - bounds.top - (bounds.height / 2);
+            
+            // Tính toán zoom origin tại vị trí chuột
+            var scaleRatio = newScale / photoLightboxZoom.scale;
+            photoLightboxZoom.x = mouseX - (mouseX - photoLightboxZoom.x) * scaleRatio;
+            photoLightboxZoom.y = mouseY - (mouseY - photoLightboxZoom.y) * scaleRatio;
+            photoLightboxZoom.scale = newScale;
+            
+            applyPhotoLightboxZoom();
+        }, { passive: false });
+
+        // Desktop: Click và drag để pan khi đã zoom
+        var isDragging = false;
+        var dragStart = { x: 0, y: 0 };
+        var dragOffset = { x: 0, y: 0 };
+
+        photoLightboxStage.addEventListener('mousedown', function (event) {
+            if (photoLightboxZoom.scale <= 1.01) return;
+            isDragging = true;
+            dragStart.x = event.clientX;
+            dragStart.y = event.clientY;
+            dragOffset.x = photoLightboxZoom.x;
+            dragOffset.y = photoLightboxZoom.y;
+            photoLightboxStage.style.cursor = 'grabbing';
+            event.preventDefault();
+        });
+
+        document.addEventListener('mousemove', function (event) {
+            if (!isDragging) return;
+            photoLightboxZoom.x = dragOffset.x + (event.clientX - dragStart.x);
+            photoLightboxZoom.y = dragOffset.y + (event.clientY - dragStart.y);
+            applyPhotoLightboxZoom();
+        });
+
+        document.addEventListener('mouseup', function () {
+            if (isDragging) {
+                isDragging = false;
+                photoLightboxStage.style.cursor = photoLightboxZoom.scale > 1.01 ? 'grab' : 'default';
+            }
         });
     }
 
