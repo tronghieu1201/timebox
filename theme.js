@@ -1307,10 +1307,10 @@
             var time = versionMatch ? parseInt(versionMatch[1], 10) : (urls.length - index);
             return {
                 src: url,
-                thumb: getCloudinaryVariant(url, 'f_auto,q_auto:good,c_limit,w_720'),
-                thumbSrcset: getCloudinarySrcset(url, [360, 540, 720, 960], 'q_auto:good'),
-                full: getCloudinaryVariant(url, 'f_auto,q_auto:best,c_limit,w_2400'),
-                fullSrcset: getCloudinarySrcset(url, [1200, 1800, 2400], 'q_auto:best'),
+                thumb: getCloudinaryVariant(url, 'f_auto,q_90,c_limit,w_1080'),
+                thumbSrcset: getCloudinarySrcset(url, [540, 720, 1080, 1440], 'q_90'),
+                full: getCloudinaryVariant(url, 'f_auto,q_95,c_limit,w_3200'),
+                fullSrcset: getCloudinarySrcset(url, [1440, 2160, 3200], 'q_95'),
                 name: name,
                 time: time
             };
@@ -1385,10 +1385,10 @@
                     var src = image.src || '';
                     return {
                         src: src,
-                        thumb: getCloudinaryVariant(src, 'f_auto,q_auto:good,c_limit,w_720'),
-                        thumbSrcset: getCloudinarySrcset(src, [360, 540, 720, 960], 'q_auto:good'),
-                        full: getCloudinaryVariant(src, 'f_auto,q_auto:best,c_limit,w_2400'),
-                        fullSrcset: getCloudinarySrcset(src, [1200, 1800, 2400], 'q_auto:best'),
+                        thumb: getCloudinaryVariant(src, 'f_auto,q_90,c_limit,w_1080'),
+                        thumbSrcset: getCloudinarySrcset(src, [540, 720, 1080, 1440], 'q_90'),
+                        full: getCloudinaryVariant(src, 'f_auto,q_95,c_limit,w_3200'),
+                        fullSrcset: getCloudinarySrcset(src, [1440, 2160, 3200], 'q_95'),
                         name: image.publicId || 'Ảnh mới',
                         time: Date.parse(image.createdAt || '') || 0,
                         isLive: true,
@@ -1444,10 +1444,10 @@
         var uploadedPhotos = urls.map(function (src, index) {
             return {
                 src: src,
-                thumb: getCloudinaryVariant(src, 'f_auto,q_auto:good,c_limit,w_720'),
-                thumbSrcset: getCloudinarySrcset(src, [360, 540, 720, 960], 'q_auto:good'),
-                full: getCloudinaryVariant(src, 'f_auto,q_auto:best,c_limit,w_2400'),
-                fullSrcset: getCloudinarySrcset(src, [1200, 1800, 2400], 'q_auto:best'),
+                thumb: getCloudinaryVariant(src, 'f_auto,q_90,c_limit,w_1080'),
+                thumbSrcset: getCloudinarySrcset(src, [540, 720, 1080, 1440], 'q_90'),
+                full: getCloudinaryVariant(src, 'f_auto,q_95,c_limit,w_3200'),
+                fullSrcset: getCloudinarySrcset(src, [1440, 2160, 3200], 'q_95'),
                 name: decodeURIComponent((src.split('?')[0].split('/').pop() || 'Ảnh mới')),
                 time: now - index,
                 isLive: true,

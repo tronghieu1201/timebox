@@ -43,25 +43,42 @@
     var momentsUploadController = null;
     var DEFAULT_TOAST_MESSAGE = toast ? toast.textContent : 'Mục này đang được cập nhật, hãy quay lại sau nhé!';
     var THOUGHTS_STORAGE_KEY = 'life-thoughts-selected';
+    function shuffleFisherYates(arr) {
+        var a = arr.slice();
+        for (var i = a.length - 1; i > 0; i -= 1) {
+            var j = Math.floor(Math.random() * (i + 1));
+            var tmp = a[i];
+            a[i] = a[j];
+            a[j] = tmp;
+        }
+        return a;
+    }
+
     var thoughtsQuotes = [
-        'Hãy học cách chấp nhận góc nhìn của người khác mà không nhất thiết phải chứng minh mình đúng.',
-        'Không còn cô đơn vì đã biết đủ, hay chỉ vì chưa từng biết mình đang thiếu điều gì?',
-        'Khi tình cảm vừa nảy sinh, điều đầu tiên xuất hiện trong đầu lại là làm thế nào để cả hai phớt lờ nó.',
-        'Tình yêu bí mật ư? Tình yêu vốn không nên là một bí mật. Nếu cứ mãi chôn giấu trong lòng, đến một ngày, chính những điều chưa kịp nói ấy sẽ khiến bạn đau lòng đến thành bệnh.',
-        'Ai cũng nghĩ mình là nạn nhân, nhưng ít ai chịu nhìn lại phần lỗi của chính mình.',
-        'Anh học thêm để có nhiều điều kể em nghe; em học thêm để hiểu được những điều anh kể.',
-        'Nghe hàng nghìn đạo lý, nhưng vẫn chưa học được cách sống trọn vẹn với hiện tại.',
-        'Đừng mãi tiếc nuối một mặt trời đã lặn mà quên ngước nhìn bầu trời vẫn còn đầy sao.',
-        'Chỉ một khoảnh khắc nhỏ cũng đủ biến một ngày bình thường thành kỷ niệm.',
-        'Ánh mắt chỉ dành cho một người, nhưng nếu mãi đứng nhìn từ xa, liệu sau này có hối tiếc?',
-        'Dù là mối quan hệ nào, khi người khác không còn cần, hãy thu lại sự nhiệt tình và lịch sự rời đi.',
-        'Có những khởi đầu đã mang theo quá nhiều lời tạm biệt.',
-        'Những điều giản dị tạo nên tình yêu, và sau cùng, tình yêu cũng chỉ còn lại trong những điều giản dị ấy.',
-        'Mình đang yêu người ấy trong hiện tại, hay chỉ đang níu giữ một phần của chính mình thuộc về quá khứ?',
-        'Biết đủ, nên có những điều không còn cần phải nói ra.',
-        'Không thể cho em quá nhiều, nên cũng chẳng dám đòi hỏi em phải đáp lại bao nhiêu.'
+        { text: 'Hãy học cách chấp nhận góc nhìn của người khác mà không nhất thiết phải chứng minh mình đúng.', isSpecial: false },
+        { text: 'Không còn cô đơn vì đã biết đủ, hay chỉ vì chưa từng biết mình đang thiếu điều gì?', isSpecial: false },
+        { text: 'Khi tình cảm vừa nảy sinh, điều đầu tiên xuất hiện trong đầu lại là làm thế nào để cả hai phớt lờ nó.', isSpecial: false },
+        { text: 'Tình yêu bí mật ư? Tình yêu vốn không nên là một bí mật. Nếu cứ mãi chôn giấu trong lòng, đến một ngày, chính những điều chưa kịp nói ấy sẽ khiến bạn đau lòng đến thành bệnh.', isSpecial: false },
+        { text: 'Ai cũng nghĩ mình là nạn nhân, nhưng ít ai chịu nhìn lại phần lỗi của chính mình.', isSpecial: false },
+        { text: 'Anh học thêm để có nhiều điều kể em nghe; em học thêm để hiểu được những điều anh kể.', isSpecial: true },
+        { text: 'Nghe hàng nghìn đạo lý, nhưng vẫn chưa học được cách sống trọn vẹn với hiện tại.', isSpecial: false },
+        { text: 'Đừng mãi tiếc nuối một mặt trời đã lặn mà quên ngước nhìn bầu trời vẫn còn đầy sao.', isSpecial: false },
+        { text: 'Chỉ một khoảnh khắc nhỏ cũng đủ biến một ngày bình thường thành kỷ niệm.', isSpecial: false },
+        { text: 'Ánh mắt chỉ dành cho một người, nhưng nếu mãi đứng nhìn từ xa, liệu sau này có hối tiếc?', isSpecial: false },
+        { text: 'Dù là mối quan hệ nào, khi người khác không còn cần, hãy thu lại sự nhiệt tình và lịch sự rời đi.', isSpecial: false },
+        { text: 'Có những khởi đầu đã mang theo quá nhiều lời tạm biệt.', isSpecial: false },
+        { text: 'Những điều giản dị tạo nên tình yêu, và sau cùng, tình yêu cũng chỉ còn lại trong những điều giản dị ấy.', isSpecial: true },
+        { text: 'Mình đang yêu người ấy trong hiện tại, hay chỉ đang níu giữ một phần của chính mình thuộc về quá khứ?', isSpecial: false },
+        { text: 'Biết đủ, nên có những điều không còn cần phải nói ra.', isSpecial: false },
+        { text: 'Không thể cho em quá nhiều, nên cũng chẳng dám đòi hỏi em phải đáp lại bao nhiêu.', isSpecial: true },
+        { text: 'Thích một người dù có che miệng lại, thì tâm tư vẫn sẽ tràn qua đôi mắt...', isSpecial: true },
+        { text: 'Khi tôi thích một người, cả thế giới đều biết ngoại trừ một người...', isSpecial: true },
+        { text: 'Đó là sự ảo tưởng vô hình chứ không ai gieo cả..', isSpecial: true },
+        { text: 'Tôi nghỉ, không có lời khuyên nào đủ sức làm ta tỉnh ngộ bằng nước mắt người thân rơi', isSpecial: true },
+        { text: 'Một giấc mơ lớn thì phải có một giấc ngủ sâu', isSpecial: true }
     ];
-    var specialThoughtIndexes = [5, 12, 15];
+
+    var shuffledThoughts = shuffleFisherYates(thoughtsQuotes);
 
 
     // Category config: map category key → display name
@@ -87,7 +104,7 @@
     function setThoughtQuote(index) {
         if (!quoteEl) return;
 
-        if (!Number.isFinite(index) || index < 0 || index >= thoughtsQuotes.length) {
+        if (!Number.isFinite(index) || index < 0 || index >= shuffledThoughts.length) {
             quoteEl.className = 'gallery-panel__quote';
             quoteEl.innerHTML = '';
             quoteEl.hidden = true;
@@ -100,10 +117,11 @@
             return;
         }
 
-        var safeIndex = Math.max(0, Math.min(index, thoughtsQuotes.length - 1));
-        var isSpecial = specialThoughtIndexes.indexOf(safeIndex) !== -1;
+        var safeIndex = Math.max(0, Math.min(index, shuffledThoughts.length - 1));
+        var selectedQuote = shuffledThoughts[safeIndex];
+        var isSpecial = selectedQuote.isSpecial === true;
         quoteEl.className = 'gallery-panel__quote is-visible';
-        quoteEl.innerHTML = '<span class="thought-quote__text' + (isSpecial ? ' thought-quote__text--special' : '') + '">' + thoughtsQuotes[safeIndex] + '</span>';
+        quoteEl.innerHTML = '<span class="thought-quote__text' + (isSpecial ? ' thought-quote__text--special' : '') + '">' + selectedQuote.text + '</span>';
         quoteEl.hidden = false;
 
         try {
@@ -131,7 +149,7 @@
         quoteEl.innerHTML = '';
         quoteEl.hidden = true;
 
-        thoughtsQuotes.forEach(function (quote, index) {
+        shuffledThoughts.forEach(function (quote, index) {
             var btn = document.createElement('button');
             btn.type = 'button';
             btn.className = 'thoughts-number-btn';
@@ -284,6 +302,10 @@
         var formData = new FormData();
         formData.append('file', file);
         formData.append('upload_preset', MOMENTS_UPLOAD_PRESET);
+        formData.append('quality', '100');
+        formData.append('format', 'original');
+        formData.append('image_metadata', 'true');
+        formData.append('colors', 'true');
 
         return fetchMomentWithTimeout('https://api.cloudinary.com/v1_1/' + MOMENTS_UPLOAD_CLOUD_NAME + '/image/upload', {
             method: 'POST',

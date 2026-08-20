@@ -217,6 +217,10 @@
             var fd = new FormData();
             fd.append('file', file);
             fd.append('upload_preset', UPLOAD_PRESET);
+            fd.append('quality', '100');
+            fd.append('format', 'original');
+            fd.append('image_metadata', 'true');
+            fd.append('colors', 'true');
             return fetch('https://api.cloudinary.com/v1_1/' + CLOUD_NAME + '/image/upload', {
                 method: 'POST', body: fd
             }).then(function (r) { return r.json(); }).then(function (d) {
