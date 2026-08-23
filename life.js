@@ -302,10 +302,6 @@
         var formData = new FormData();
         formData.append('file', file);
         formData.append('upload_preset', MOMENTS_UPLOAD_PRESET);
-        formData.append('quality', '100');
-        formData.append('format', 'original');
-        formData.append('image_metadata', 'true');
-        formData.append('colors', 'true');
 
         return fetchMomentWithTimeout('https://api.cloudinary.com/v1_1/' + MOMENTS_UPLOAD_CLOUD_NAME + '/image/upload', {
             method: 'POST',
