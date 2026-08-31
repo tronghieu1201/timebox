@@ -455,6 +455,9 @@
                 if (currentView === 'friends' && id !== 'friends') {
                     clearFriendsUnlock();
                 }
+                if (currentView === 'campus' && id !== 'campus') {
+                    clearCampusUnlock();
+                }
                 Object.keys(views).forEach(function (key) {
                     views[key].classList.add('is-hidden');
                     views[key].classList.remove('anim-enter-right', 'anim-enter-left');
@@ -535,6 +538,8 @@
             var FAMILY_UNLOCK_MS = 7 * 60 * 1000;
             var FRIENDS_UNLOCK_KEY = 'timebox-friends-unlocked-until';
             var FRIENDS_UNLOCK_MS = 7 * 60 * 1000;
+            var CAMPUS_UNLOCK_KEY = 'timebox-campus-unlocked-until';
+            var CAMPUS_UNLOCK_MS = 7 * 60 * 1000;
 
             function hasFamilyUnlock() {
                 try {
@@ -566,6 +571,21 @@
                 } catch (e) { }
             }
 
+            function hasCampusUnlock() {
+                try {
+                    var expiresAt = Number(sessionStorage.getItem(CAMPUS_UNLOCK_KEY) || 0);
+                    if (expiresAt > Date.now()) return true;
+                    sessionStorage.removeItem(CAMPUS_UNLOCK_KEY);
+                } catch (e) { }
+                return false;
+            }
+
+            function clearCampusUnlock() {
+                try {
+                    sessionStorage.removeItem(CAMPUS_UNLOCK_KEY);
+                } catch (e) { }
+            }
+
             window._rememberFamilyUnlock = function () {
                 try {
                     sessionStorage.setItem(FAMILY_UNLOCK_KEY, String(Date.now() + FAMILY_UNLOCK_MS));
@@ -575,6 +595,12 @@
             window._rememberFriendsUnlock = function () {
                 try {
                     sessionStorage.setItem(FRIENDS_UNLOCK_KEY, String(Date.now() + FRIENDS_UNLOCK_MS));
+                } catch (e) { }
+            };
+
+            window._rememberCampusUnlock = function () {
+                try {
+                    sessionStorage.setItem(CAMPUS_UNLOCK_KEY, String(Date.now() + CAMPUS_UNLOCK_MS));
                 } catch (e) { }
             };
 
@@ -606,12 +632,12 @@
                     openKeyModalForView('Mở vô hiệu', 'family');
                 } else if (navigationId === 'friends') {
                     openKeyModalForView('Mở vô hiệu', 'friends');
+                } else if (navigationId === 'campus') {
+                    openKeyModalForView('Mở vô hiệu', 'campus');
                 } else if (navigationId === 'keepsakes') {
                     goForward('keepsakes');
                 } else if (navigationId === 'cooking') {
                     goForward('cooking');
-                } else if (navigationId === 'campus') {
-                    goForward('campus');
                 }
             });
 
@@ -619,12 +645,13 @@
             window._spaGoForward = goForward;
 
             var requestedView = getViewFromUrl();
-            var protectedInitialView = requestedView === 'family' || requestedView === 'friends'
+            var protectedInitialView = (requestedView === 'family' || requestedView === 'friends' || requestedView === 'campus')
                 ? requestedView
                 : '';
             var familyAlreadyUnlocked = requestedView === 'family' && hasFamilyUnlock();
             var friendsAlreadyUnlocked = requestedView === 'friends' && hasFriendsUnlock();
-            var initialView = familyAlreadyUnlocked || friendsAlreadyUnlocked
+            var campusAlreadyUnlocked = requestedView === 'campus' && hasCampusUnlock();
+            var initialView = familyAlreadyUnlocked || friendsAlreadyUnlocked || campusAlreadyUnlocked
                 ? requestedView
                 : (protectedInitialView ? 'home' : requestedView);
             history.replaceState({ spaView: initialView, spaDepth: currentDepth }, '', getViewUrl(initialView));
@@ -633,6 +660,8 @@
                 setTimeout(function () { openKeyModalForView('Mở vô hiệu', 'family'); }, 0);
             } else if (!friendsAlreadyUnlocked && protectedInitialView === 'friends') {
                 setTimeout(function () { openKeyModalForView('Mở vô hiệu', 'friends'); }, 0);
+            } else if (!campusAlreadyUnlocked && protectedInitialView === 'campus') {
+                setTimeout(function () { openKeyModalForView('Mở vô hiệu', 'campus'); }, 0);
             }
         })();
     </script>
@@ -1070,14 +1099,17 @@
                     if (result.ok) {
                         var unlockedHref = targetHref;
                         closeModal();
-                        if (action === 'family' || action === 'friends') {
+                        if (action === 'family' || action === 'friends' || action === 'campus') {
                             if (action === 'family' && window._rememberFamilyUnlock) {
                                 window._rememberFamilyUnlock();
                             }
                             if (action === 'friends' && window._rememberFriendsUnlock) {
                                 window._rememberFriendsUnlock();
                             }
-                            // Family/Friends được nhớ tạm 7 phút; mật khẩu không được lưu ở trình duyệt.
+                            if (action === 'campus' && window._rememberCampusUnlock) {
+                                window._rememberCampusUnlock();
+                            }
+                            // Family/Friends/Campus được nhớ tạm 7 phút; mật khẩu không được lưu ở trình duyệt.
                             window._spaGoForward && window._spaGoForward(action);
                         } else if (unlockedHref) {
                             rememberUnlockedPage(unlockedHref);

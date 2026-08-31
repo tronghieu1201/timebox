@@ -75,7 +75,7 @@ if (!html.includes('class="timebox-cinematic space-nav-home-visible"') ||
   throw new Error('Initial home loading state or compact Timebox wordmark is missing');
 }
 
-for (const required of ['style.css?v=43', 'life.css?v=41', 'space-navigation.css?v=42', 'orbital-archive.css?v=41', 'theme.js?v=43', 'life.js?v=41', 'space-navigation.bundle.js?v=42', 'images/space/earth_day.webp']) {
+for (const required of ['style.css?v=44', 'life.css?v=41', 'space-navigation.css?v=42', 'orbital-archive.css?v=44', 'theme.js?v=44', 'life.js?v=41', 'space-navigation.bundle.js?v=42', 'images/space/earth_day.webp']) {
   if (!html.includes(required)) throw new Error(`index.html is missing ${required}`);
 }
 
