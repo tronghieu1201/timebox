@@ -103,21 +103,23 @@ body.space-nav-home-visible #view-home {
     position: absolute;
     bottom: 22px;
     left: 50%;
-    z-index: 87;
+    z-index: 95;
     display: flex;
     align-items: center;
     padding: 6px 10px;
-    border: 1px solid rgba(56, 189, 248, 0.26);
+    border: 1px solid rgba(56, 189, 248, 0.28);
     border-radius: 999px;
-    background: rgba(5, 9, 18, 0.85);
-    box-shadow: 0 16px 44px rgba(0, 0, 0, 0.7), 0 0 28px rgba(56, 189, 248, 0.15);
-    backdrop-filter: blur(24px) saturate(140%);
-    -webkit-backdrop-filter: blur(24px) saturate(140%);
+    background: rgba(6, 11, 22, 0.92);
+    box-shadow: 0 16px 44px rgba(0, 0, 0, 0.75), 0 0 24px rgba(56, 189, 248, 0.16);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
     transform: translateX(-50%);
     max-width: calc(100vw - 32px);
     overflow-x: auto;
     scrollbar-width: none;
     -webkit-overflow-scrolling: touch;
+    touch-action: pan-x;
+    pointer-events: auto;
 }
 
 .space-quick-dock::-webkit-scrollbar {
@@ -129,7 +131,6 @@ body.space-nav-home-visible #view-home {
     align-items: center;
     gap: 6px;
     width: max-content;
-    transform-style: preserve-3d;
 }
 
 .space-dock-btn {
@@ -139,19 +140,25 @@ body.space-nav-home-visible #view-home {
     width: 38px;
     height: 38px;
     padding: 0;
-    border: 1px solid rgba(56, 189, 248, 0.12);
+    border: 1px solid rgba(56, 189, 248, 0.16);
     border-radius: 50%;
     color: #cbd5e1;
     font: inherit;
-    background: transparent;
+    background: rgba(10, 18, 36, 0.8);
     cursor: pointer;
     white-space: nowrap;
-    transition: all 0.2s ease;
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    pointer-events: auto;
+    transition: transform 0.2s cubic-bezier(0.2, 0.9, 0.3, 1), background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .space-dock-btn i {
     font-size: 14px;
     color: #38bdf8;
+    pointer-events: none;
     transition: transform 0.2s ease;
 }
 
@@ -174,31 +181,22 @@ body.space-nav-home-visible #view-home {
 
     .space-quick-dock {
         bottom: max(12px, calc(env(safe-area-inset-bottom, 0px) + 6px));
-        width: min(260px, calc(100vw - 32px));
-        max-width: 260px;
-        padding: 7px 0;
+        width: min(270px, calc(100vw - 28px));
+        max-width: 270px;
+        padding: 6px 4px;
         border-radius: 999px;
-        perspective: 600px;
-        -webkit-perspective: 600px;
-        perspective-origin: center center;
         scroll-snap-type: x mandatory;
-        mask-image: linear-gradient(90deg, transparent 0%, black 18%, black 82%, transparent 100%);
-        -webkit-mask-image: linear-gradient(90deg, transparent 0%, black 18%, black 82%, transparent 100%);
     }
 
     .space-dock-track {
         gap: 8px;
-        padding: 0 calc(50% - 23px);
-        perspective: 600px;
-        -webkit-perspective: 600px;
-        transform-style: preserve-3d;
-        -webkit-transform-style: preserve-3d;
+        padding: 0 calc(50% - 22px);
     }
 
     .space-dock-btn {
-        width: 46px;
-        min-width: 46px;
-        height: 46px;
+        width: 44px;
+        min-width: 44px;
+        height: 44px;
         padding: 0;
         border-radius: 50%;
         display: flex;
@@ -206,32 +204,32 @@ body.space-nav-home-visible #view-home {
         justify-content: center;
         scroll-snap-align: center;
         transform-origin: center center;
-        transform-style: preserve-3d;
-        -webkit-transform-style: preserve-3d;
-        transform: perspective(600px) rotateY(var(--coverflow-ry, 0deg)) translateZ(var(--coverflow-tz, 0px)) scale(var(--coverflow-scale, 1));
-        -webkit-transform: perspective(600px) rotateY(var(--coverflow-ry, 0deg)) translateZ(var(--coverflow-tz, 0px)) scale(var(--coverflow-scale, 1));
+        transform: scale(var(--coverflow-scale, 0.92)) rotateY(var(--coverflow-ry, 0deg));
         opacity: var(--coverflow-opacity, 0.7);
-        border: 1px solid rgba(56, 189, 248, 0.18);
-        background: rgba(8, 16, 32, 0.75);
+        border: 1px solid rgba(56, 189, 248, 0.22);
+        background: rgba(8, 16, 34, 0.88);
         backdrop-filter: blur(12px);
-        transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+        -webkit-backdrop-filter: blur(12px);
+        will-change: transform, opacity;
     }
 
     .space-dock-btn i {
-        font-size: 18px;
+        font-size: 17px;
         margin: 0;
         color: #38bdf8;
+        pointer-events: none;
     }
 
     .space-dock-btn.is-active-center {
-        border-color: rgba(56, 189, 248, 0.75);
-        background: rgba(12, 28, 56, 0.95);
-        box-shadow: 0 0 22px rgba(56, 189, 248, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+        border-color: rgba(56, 189, 248, 0.85);
+        background: rgba(14, 34, 68, 0.98);
+        box-shadow: 0 0 20px rgba(56, 189, 248, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        opacity: 1;
     }
 
     .space-dock-btn.is-active-center i {
         color: #fff;
-        transform: scale(1.18);
+        transform: scale(1.15);
     }
 }
 

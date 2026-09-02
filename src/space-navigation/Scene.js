@@ -715,7 +715,7 @@ export class SpaceScene {
     this.camera.aspect = width / height;
     this.camera.fov = mobile ? 45 : (tablet ? 43 : 40);
     this.camera.updateProjectionMatrix();
-    const dprCap = this.lowPower || mobile ? 1.35 : 1.8;
+    const dprCap = mobile ? 1.25 : (this.lowPower ? 1.35 : 1.75);
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, dprCap));
     this.renderer.setSize(width, height, false);
     const horizontalWorldRadius = Math.tan(THREE.MathUtils.degToRad(this.camera.fov * 0.5)) * this.settings.cameraZ * this.camera.aspect;

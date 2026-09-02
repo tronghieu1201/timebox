@@ -1784,17 +1784,14 @@
                 var btnCenter = btn.offsetLeft + btn.offsetWidth / 2;
                 var dist = btnCenter - center;
                 var norm = dist / (btn.offsetWidth * 0.95);
-                var clampNorm = Math.max(-2.5, Math.min(2.5, norm));
+                var clampNorm = Math.max(-2.2, Math.min(2.2, norm));
 
-                var rotateY = clampNorm * -28;
-                var translateZ = -Math.abs(clampNorm) * 42;
-                var scale = Math.max(0.72, 1 - Math.abs(clampNorm) * 0.15);
-                var opacity = Math.max(0.35, 1 - Math.abs(clampNorm) * 0.26);
+                var rotateY = clampNorm * -24;
+                var scale = Math.max(0.78, 1 - Math.abs(clampNorm) * 0.12);
+                var opacity = Math.max(0.42, 1 - Math.abs(clampNorm) * 0.24);
 
-                btn.style.setProperty('--coverflow-ry', rotateY.toFixed(2) + 'deg');
-                btn.style.setProperty('--coverflow-tz', translateZ.toFixed(2) + 'px');
-                btn.style.setProperty('--coverflow-scale', scale.toFixed(3));
-                btn.style.setProperty('--coverflow-opacity', opacity.toFixed(3));
+                btn.style.transform = 'scale(' + scale.toFixed(3) + ') rotateY(' + rotateY.toFixed(2) + 'deg) translateZ(0)';
+                btn.style.opacity = opacity.toFixed(3);
 
                 if (Math.abs(dist) < btn.offsetWidth * 0.45) {
                     btn.classList.add('is-active-center');

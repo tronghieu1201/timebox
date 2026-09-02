@@ -1182,13 +1182,65 @@
                 document.body.appendChild(script);
             }
 
-            document.querySelectorAll('[data-space-action]').forEach(function (button) {
-                button.addEventListener('click', function () {
-                    window.dispatchEvent(new CustomEvent('timebox:navigate', {
-                        detail: { id: button.getAttribute('data-space-action') }
-                    }));
-                });
+            var lastNavTimestamp = 0;
+            function dispatchNavigation(actionId) {
+                if (!actionId) return;
+                var now = Date.now();
+                if (now - lastNavTimestamp < 300) return;
+                lastNavTimestamp = now;
+                window.dispatchEvent(new CustomEvent('timebox:navigate', {
+                    detail: { id: actionId }
+                }));
+            }
+
+            document.addEventListener('click', function (event) {
+                var btn = event.target.closest('[data-space-action]');
+                if (!btn) return;
+                var action = btn.getAttribute('data-space-action');
+                if (action) {
+                    dispatchNavigation(action);
+                }
             });
+
+            var dockEl = document.querySelector('[data-coverflow-dock]');
+            if (dockEl) {
+                var touchStartX = 0;
+                var touchStartY = 0;
+                var isTouchDrag = false;
+                dockEl.addEventListener('touchstart', function (e) {
+                    if (e.touches && e.touches.length === 1) {
+                        touchStartX = e.touches[0].clientX;
+                        touchStartY = e.touches[0].clientY;
+                        isTouchDrag = false;
+                    }
+                }, { passive: true });
+
+                dockEl.addEventListener('touchmove', function (e) {
+                    if (e.touches && e.touches.length === 1) {
+                        var dx = e.touches[0].clientX - touchStartX;
+                        var dy = e.touches[0].clientY - touchStartY;
+                        if (Math.hypot(dx, dy) > 9) {
+                            isTouchDrag = true;
+                        }
+                    }
+                }, { passive: true });
+
+                dockEl.addEventListener('touchend', function (e) {
+                    if (!isTouchDrag) {
+                        var touch = e.changedTouches && e.changedTouches[0];
+                        var clientX = touch ? touch.clientX : touchStartX;
+                        var clientY = touch ? touch.clientY : touchStartY;
+                        var target = document.elementFromPoint(clientX, clientY);
+                        var btn = (target && target.closest('[data-space-action]')) || (e.target && e.target.closest('[data-space-action]'));
+                        if (btn) {
+                            var action = btn.getAttribute('data-space-action');
+                            if (action) {
+                                dispatchNavigation(action);
+                            }
+                        }
+                    }
+                }, { passive: true });
+            }
 
             if (homeView) {
                 var homeObserver = new MutationObserver(function () {
