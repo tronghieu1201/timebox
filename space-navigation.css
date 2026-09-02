@@ -577,7 +577,7 @@ body.space-nav-home-visible #view-home {
 
     .space-info {
         right: max(14px, env(safe-area-inset-right, 0px));
-        bottom: max(68px, calc(env(safe-area-inset-bottom, 0px) + 54px));
+        bottom: max(78px, calc(env(safe-area-inset-bottom, 0px) + 72px));
         left: max(14px, env(safe-area-inset-left, 0px));
         width: auto;
         max-width: calc(100vw - 28px);

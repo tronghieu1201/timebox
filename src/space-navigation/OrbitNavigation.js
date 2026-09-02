@@ -172,7 +172,7 @@ export class OrbitNavigation {
   }
 
   isInterfaceTarget(target) {
-    return Boolean(target?.closest?.('.space-info'));
+    return Boolean(target?.closest?.('.space-info') || target?.closest?.('.space-quick-dock') || target?.closest?.('.space-navigation__fallback'));
   }
 
   pickNodeIndex(event) {

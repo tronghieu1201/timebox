@@ -1394,6 +1394,9 @@
     var LIVE_GALLERY_API = 'https://timebox.trghy.workers.dev/gallery/images';
 
     function getLiveGalleryPhotos(scope, gallery) {
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+            return Promise.resolve([]);
+        }
         return fetch(LIVE_GALLERY_API + '?scope=' + encodeURIComponent(scope), {
             headers: { 'Accept': 'application/json' },
             cache: 'no-store'

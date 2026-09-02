@@ -1170,6 +1170,7 @@
                 var preload = document.createElement('link');
                 preload.rel = 'preload';
                 preload.as = 'image';
+                preload.crossOrigin = 'anonymous';
                 preload.href = 'images/space/earth_day.webp';
                 preload.fetchPriority = 'high';
                 document.head.appendChild(preload);
