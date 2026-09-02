@@ -429,6 +429,41 @@ export class NavigationNode {
       this.addAtmosphere(0x9b9688, 0.035);
       this.addSignalWaves();
     }
+    this.addHoloReticle();
+  }
+
+  addHoloReticle() {
+    this.holoGroup = new THREE.Group();
+    const color = new THREE.Color(this.item.color || '#38bdf8');
+
+    const innerGeo = new THREE.RingGeometry(this.spec.radius * 1.25, this.spec.radius * 1.32, 32);
+    const innerMat = new THREE.MeshBasicMaterial({
+      color,
+      transparent: true,
+      opacity: 0.18,
+      side: THREE.DoubleSide,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending
+    });
+    this.holoInner = new THREE.Mesh(innerGeo, innerMat);
+    this.holoInner.rotation.x = Math.PI / 2;
+    this.holoGroup.add(this.holoInner);
+
+    const outerGeo = new THREE.RingGeometry(this.spec.radius * 1.44, this.spec.radius * 1.54, 40);
+    const outerMat = new THREE.MeshBasicMaterial({
+      color,
+      transparent: true,
+      opacity: 0.12,
+      side: THREE.DoubleSide,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending
+    });
+    this.holoOuter = new THREE.Mesh(outerGeo, outerMat);
+    this.holoOuter.rotation.x = Math.PI / 2;
+    this.holoGroup.add(this.holoOuter);
+
+    this.depthGroup.add(this.holoGroup);
+    this.track(innerGeo, innerMat, outerGeo, outerMat);
   }
 
   addCloudLayer(color, seed, opacity) {
@@ -631,6 +666,21 @@ export class NavigationNode {
         wave.scale.setScalar(0.96 + pulse * 0.12);
       });
     }
+    if (this.holoGroup) {
+      if (this.holoInner) this.holoInner.rotation.z += delta * 0.45;
+      if (this.holoOuter) this.holoOuter.rotation.z -= delta * 0.32;
+      const targetOpacity = this.active ? 0.85 : (this.hovered ? 0.52 : 0.16);
+      if (this.holoInner) {
+        this.holoInner.material.opacity += (targetOpacity - this.holoInner.material.opacity) * Math.min(1, delta * 6);
+      }
+      if (this.holoOuter) {
+        this.holoOuter.material.opacity += (targetOpacity * 0.7 - this.holoOuter.material.opacity) * Math.min(1, delta * 6);
+      }
+      const targetScale = this.active ? 1.22 : (this.hovered ? 1.14 : 1.0);
+      const currentScale = this.holoGroup.scale.x;
+      const nextScale = currentScale + (targetScale - currentScale) * Math.min(1, delta * 6);
+      this.holoGroup.scale.setScalar(nextScale);
+    }
     if (reducedMotion) return;
     this.surface.rotation.y += delta * (this.spec.style === 'gas-giant' ? 0.08 : 0.055);
     if (this.clouds) this.clouds.rotation.y += delta * 0.036;
@@ -666,6 +716,9 @@ export class NavigationNode {
     this.moons.length = 0;
     this.rings.length = 0;
     if (this.signalWaves) this.signalWaves.length = 0;
+    this.holoGroup = null;
+    this.holoInner = null;
+    this.holoOuter = null;
     this.surface = null;
     this.surfaceMaterial = null;
     this.clouds = null;

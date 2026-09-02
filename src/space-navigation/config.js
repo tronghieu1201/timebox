@@ -90,9 +90,9 @@ export const ORBITS = Object.freeze([
 export const SPACE_SETTINGS = Object.freeze({
   earthRadius: 2.05,
   autoRotateSpeed: 0.055,
-  focusDuration: 1.05,
+  focusDuration: 0.45,
   cameraZ: 15.5,
   cameraFocusZ: 13.9,
-  resumeDelay: 3200,
+  resumeDelay: 2500,
   dragSensitivity: 0.0062
 });

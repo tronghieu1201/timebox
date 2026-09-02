@@ -51,7 +51,8 @@ export class OrbitNavigation {
   }
 
   createOrbits() {
-    this.orbits.forEach((orbit) => {
+    this.orbitPulses = [];
+    this.orbits.forEach((orbit, orbitIndex) => {
       const points = [];
       const euler = new THREE.Euler(orbit.tiltX, 0, orbit.tiltZ);
       for (let step = 0; step <= 180; step += 1) {
@@ -66,14 +67,35 @@ export class OrbitNavigation {
       const material = new THREE.LineBasicMaterial({
         color: orbit.color,
         transparent: true,
-        opacity: 0.085,
+        opacity: 0.18,
         blending: THREE.NormalBlending,
         depthTest: true,
         depthWrite: false
       });
       const line = new THREE.LineLoop(geometry, material);
       this.system.add(line);
-      this.nodes.push({ orbitLine: line, disposables: [geometry, material] });
+
+      const pulseGeo = new THREE.BufferGeometry();
+      pulseGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array([0, 0, 0]), 3));
+      const pulseMat = new THREE.PointsMaterial({
+        color: 0x93c5fd,
+        size: 0.14,
+        transparent: true,
+        opacity: 0.75,
+        blending: THREE.AdditiveBlending,
+        depthTest: true,
+        depthWrite: false
+      });
+      const pulseMesh = new THREE.Points(pulseGeo, pulseMat);
+      this.system.add(pulseMesh);
+      this.orbitPulses.push({
+        mesh: pulseMesh,
+        geometry: pulseGeo,
+        material: pulseMat,
+        orbit,
+        euler,
+        progress: orbitIndex * 0.33
+      });
     });
     this.nodes = [];
   }
@@ -377,6 +399,19 @@ export class OrbitNavigation {
       });
     }
 
+    if (this.orbitPulses && !this.reducedMotion) {
+      this.orbitPulses.forEach((pulse) => {
+        pulse.progress = (pulse.progress + delta * 0.1) % 1;
+        const angle = pulse.progress * Math.PI * 2;
+        const pos = new THREE.Vector3(
+          Math.cos(angle) * pulse.orbit.radiusX,
+          0,
+          Math.sin(angle) * pulse.orbit.radiusZ
+        ).applyEuler(pulse.euler);
+        pulse.mesh.position.copy(pos);
+      });
+    }
+
     this.camera.position.x += (this.parallaxTarget.x - this.camera.position.x) * Math.min(1, delta * 2.5);
     this.camera.position.y += (this.parallaxTarget.y - this.camera.position.y) * Math.min(1, delta * 2.5);
     this.camera.lookAt(0, 0, 0);
@@ -449,6 +484,13 @@ export class OrbitNavigation {
       button.remove();
       node.dispose();
     });
+    if (this.orbitPulses) {
+      this.orbitPulses.forEach((pulse) => {
+        pulse.geometry.dispose();
+        pulse.material.dispose();
+      });
+      this.orbitPulses.length = 0;
+    }
     this.system.traverse((object) => {
       if (object.isLine) {
         object.geometry.dispose();

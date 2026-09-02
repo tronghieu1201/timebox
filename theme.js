@@ -1038,6 +1038,35 @@
         openButton.addEventListener('click', function () {
             openPhotoLightbox(card);
         });
+
+        // 3D Spatial Holographic Card Tilt (Desktop only, GPU accelerated)
+        var isTouchDevice = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+        if (!isTouchDevice) {
+            var tiltRaf = 0;
+            card.addEventListener('mousemove', function (e) {
+                if (tiltRaf) return;
+                tiltRaf = requestAnimationFrame(function () {
+                    tiltRaf = 0;
+                    var rect = card.getBoundingClientRect();
+                    if (!rect.width || !rect.height) return;
+                    var x = (e.clientX - rect.left) / rect.width - 0.5;
+                    var y = (e.clientY - rect.top) / rect.height - 0.5;
+                    card.style.setProperty('--tilt-rx', (-y * 12).toFixed(2) + 'deg');
+                    card.style.setProperty('--tilt-ry', (x * 12).toFixed(2) + 'deg');
+                    card.style.setProperty('--glare-x', ((x + 0.5) * 100).toFixed(1) + '%');
+                    card.style.setProperty('--glare-y', ((y + 0.5) * 100).toFixed(1) + '%');
+                });
+            });
+            card.addEventListener('mouseleave', function () {
+                if (tiltRaf) cancelAnimationFrame(tiltRaf);
+                tiltRaf = 0;
+                card.style.removeProperty('--tilt-rx');
+                card.style.removeProperty('--tilt-ry');
+                card.style.removeProperty('--glare-x');
+                card.style.removeProperty('--glare-y');
+            });
+        }
+
         gallery.appendChild(card);
     }
 
@@ -1727,12 +1756,66 @@
                 tmp.value = email;
                 tmp.style.position = 'fixed';
                 tmp.style.opacity = '0';
-                document.body.appendChild(tmp);
-                tmp.select();
-                document.execCommand('copy');
                 document.body.removeChild(tmp);
                 showToast('Đã copy email: ' + email);
             }
         });
     }
+
+    /* ---- Mobile 3D Coverflow / Cylinder Carousel Controller for Quick Dock ---- */
+    function initCoverflowDock() {
+        var dock = document.querySelector('[data-coverflow-dock]');
+        if (!dock) return;
+        var buttons = dock.querySelectorAll('.space-dock-btn');
+        if (!buttons.length) return;
+
+        var isTicking = false;
+        function updateCoverflow() {
+            isTicking = false;
+            var dockWidth = dock.clientWidth;
+            if (!dockWidth) return;
+            var center = dock.scrollLeft + dockWidth / 2;
+
+            for (var i = 0; i < buttons.length; i++) {
+                var btn = buttons[i];
+                var btnCenter = btn.offsetLeft + btn.offsetWidth / 2;
+                var dist = btnCenter - center;
+                var norm = dist / (btn.offsetWidth * 0.95);
+                var clampNorm = Math.max(-2.5, Math.min(2.5, norm));
+
+                var rotateY = clampNorm * -28;
+                var translateZ = -Math.abs(clampNorm) * 42;
+                var scale = Math.max(0.72, 1 - Math.abs(clampNorm) * 0.15);
+                var opacity = Math.max(0.35, 1 - Math.abs(clampNorm) * 0.26);
+
+                btn.style.setProperty('--coverflow-ry', rotateY.toFixed(2) + 'deg');
+                btn.style.setProperty('--coverflow-tz', translateZ.toFixed(2) + 'px');
+                btn.style.setProperty('--coverflow-scale', scale.toFixed(3));
+                btn.style.setProperty('--coverflow-opacity', opacity.toFixed(3));
+
+                if (Math.abs(dist) < btn.offsetWidth * 0.45) {
+                    btn.classList.add('is-active-center');
+                } else {
+                    btn.classList.remove('is-active-center');
+                }
+            }
+        }
+
+        function requestUpdate() {
+            if (isTicking) return;
+            isTicking = true;
+            requestAnimationFrame(updateCoverflow);
+        }
+
+        dock.addEventListener('scroll', requestUpdate, { passive: true });
+        window.addEventListener('resize', requestUpdate, { passive: true });
+        window.addEventListener('orientationchange', requestUpdate, { passive: true });
+
+        // Initial alignment on load
+        window.setTimeout(function () {
+            requestUpdate();
+        }, 120);
+    }
+
+    initCoverflowDock();
 })();

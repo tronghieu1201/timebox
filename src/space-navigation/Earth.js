@@ -65,8 +65,8 @@ function createAtmosphere(radius, sunDirection, lowPower) {
       varying float vFresnel;
       varying float vSunAmount;
       void main() {
-        float alpha = vFresnel * mix(0.035, 0.19, vSunAmount);
-        vec3 atmosphereColor = mix(vec3(0.18, 0.34, 0.56), vec3(0.34, 0.62, 0.92), vSunAmount);
+        float alpha = vFresnel * mix(0.055, 0.28, vSunAmount);
+        vec3 atmosphereColor = mix(vec3(0.06, 0.42, 0.88), vec3(0.12, 0.72, 1.0), vSunAmount);
         gl_FragColor = vec4(atmosphereColor, alpha);
       }
     `,
@@ -94,14 +94,14 @@ export class Earth {
     const heightSegments = 128;
     const surfaceGeometry = new THREE.SphereGeometry(radius, widthSegments, heightSegments);
     const surfaceMaterial = new THREE.MeshPhysicalMaterial({
-      color: 0x70839a,
-      roughness: 0.78,
-      metalness: 0,
-      clearcoat: 0.025,
-      clearcoatRoughness: 0.82,
-      specularIntensity: 0.38,
-      emissive: new THREE.Color(0xffc787),
-      emissiveIntensity: 0.72
+      color: 0x889bb2,
+      roughness: 0.72,
+      metalness: 0.04,
+      clearcoat: 0.12,
+      clearcoatRoughness: 0.6,
+      specularIntensity: 0.55,
+      emissive: new THREE.Color(0xffb85c),
+      emissiveIntensity: 0.85
     });
     applyNightTerminator(surfaceMaterial, sunDirection);
     this.surface = new THREE.Mesh(surfaceGeometry, surfaceMaterial);
