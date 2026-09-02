@@ -362,7 +362,7 @@
             <h2 class="key-modal__title" id="key-modal-title">Mở kho ký ức</h2>
             <p class="key-modal__note">Nhập mã truy cập để tiếp tục đến thế giới này.</p>
             <form class="key-form" id="key-form">
-                <input type="password" id="key-input" autocomplete="off" aria-label="Mã truy cập" placeholder="">
+                <input type="password" id="key-input" inputmode="numeric" pattern="[0-9]*" autocomplete="off" aria-label="Mã truy cập" placeholder="">
                 <button type="submit"><i class="fas fa-lock-open" aria-hidden="true"></i> Mở kho</button>
                 <p class="key-modal__error" id="key-error" aria-live="polite"></p>
             </form>
@@ -637,7 +637,17 @@
                 document.body.classList.add('is-modal-open');
                 modal.classList.add('is-open');
                 modal.setAttribute('aria-hidden', 'false');
-                setTimeout(function () { input.focus(); }, 60);
+                setTimeout(function () {
+                    if (input) {
+                        input.focus();
+                        if (typeof input.select === 'function') input.select();
+                    }
+                }, 60);
+                setTimeout(function () {
+                    if (input && document.activeElement !== input) {
+                        input.focus();
+                    }
+                }, 220);
             }
 
             window.addEventListener('timebox:navigate', function (event) {
@@ -1043,12 +1053,15 @@
                 try { sessionStorage.setItem(getUnlockStorageKey(url), '1'); } catch (e) { }
             }
 
+            var autoVerifyTimer = null;
+
             function openModal(card) {
                 authRequestId += 1;
                 if (authController) authController.abort();
                 authController = null;
+                clearTimeout(autoVerifyTimer);
                 targetHref = card ? card.getAttribute('data-locked-href') || '' : '';
-                targetErrorMsg = 'X\u00e1c nh\u1eadn kh\u00f4ng th\u00e0nh c\u00f4ng';
+                targetErrorMsg = 'Mở vô hiệu';
                 if (input) input.setAttribute('placeholder', card ? card.getAttribute('data-key-placeholder') || defaultPlaceholder : defaultPlaceholder);
                 if (error) error.textContent = '';
                 if (input) input.value = '';
@@ -1057,7 +1070,17 @@
                 document.body.classList.add('is-modal-open');
                 modal.classList.add('is-open');
                 modal.setAttribute('aria-hidden', 'false');
-                setTimeout(function () { if (input) input.focus(); }, 60);
+                setTimeout(function () {
+                    if (input) {
+                        input.focus();
+                        if (typeof input.select === 'function') input.select();
+                    }
+                }, 60);
+                setTimeout(function () {
+                    if (input && document.activeElement !== input) {
+                        input.focus();
+                    }
+                }, 220);
             }
 
             function closeModal() {
@@ -1065,6 +1088,8 @@
                 authRequestId += 1;
                 if (authController) authController.abort();
                 authController = null;
+                clearTimeout(autoVerifyTimer);
+                if (input) input.blur();
                 if (window.prepareTimeboxDialogClose) window.prepareTimeboxDialogClose(modal);
                 modal.classList.remove('is-open');
                 modal.setAttribute('aria-hidden', 'true');
@@ -1082,23 +1107,25 @@
                 });
             });
 
-            form.addEventListener('submit', function (e) {
-                e.preventDefault();
-                var keyValue = input.value.trim();
+            function verifyPassword(keyValue, isExplicitSubmit) {
                 if (!keyValue) {
-                    error.textContent = 'Mở vô hiệu';
-                    input.focus();
+                    if (isExplicitSubmit) {
+                        error.textContent = 'Mở vô hiệu';
+                        if (input) input.focus();
+                    }
                     return;
                 }
-                var submitBtn = form.querySelector('button[type="submit"]');
-                if (submitBtn) submitBtn.disabled = true;
+
                 var requestId = ++authRequestId;
                 if (authController) authController.abort();
                 authController = window.AbortController ? new AbortController() : null;
                 var action = modal._targetAction || '';
                 var scope = action === 'friends' || /friends/i.test(targetHref)
                     ? 'friends'
-                    : 'family';
+                    : (action === 'campus' || /campus/i.test(targetHref) ? 'campus' : 'family');
+
+                var submitBtn = form.querySelector('button[type="submit"]');
+                if (isExplicitSubmit && submitBtn) submitBtn.disabled = true;
 
                 fetch(AUTH_API, {
                     method: 'POST',
@@ -1109,8 +1136,9 @@
                     return response.json().catch(function () { return { ok: false }; });
                 }).then(function (result) {
                     if (requestId !== authRequestId || !modal.classList.contains('is-open')) return;
-                    var checkErr = modal._targetErr || targetErrorMsg;
                     if (result.ok) {
+                        // Kiểu 1: Đúng mật khẩu -> Tự động đóng bàn phím và mở khóa ngay lập tức!
+                        if (input) input.blur();
                         var unlockedHref = targetHref;
                         closeModal();
                         if (action === 'family' || action === 'friends' || action === 'campus') {
@@ -1123,26 +1151,50 @@
                             if (action === 'campus' && window._rememberCampusUnlock) {
                                 window._rememberCampusUnlock();
                             }
-                            // Family/Friends/Campus được nhớ tạm 7 phút; mật khẩu không được lưu ở trình duyệt.
                             window._spaGoForward && window._spaGoForward(action);
                         } else if (unlockedHref) {
                             rememberUnlockedPage(unlockedHref);
                             window.location.href = unlockedHref;
                         }
                     } else {
-                        error.textContent = checkErr || targetErrorMsg;
-                        input.select();
+                        // Kiểu 2 & Kiểu 3: Nhập chưa đủ hoặc nhập sai -> Nếu bấm Mở kho thì báo 'Mở vô hiệu', khi gõ thì im lặng
+                        if (isExplicitSubmit) {
+                            error.textContent = 'Mở vô hiệu';
+                            if (input) input.select();
+                        }
                     }
                 }).catch(function () {
                     if (requestId !== authRequestId) return;
-                    error.textContent = 'Kh\u00f4ng th\u1ec3 k\u1ebft n\u1ed1i m\u00e1y ch\u1ee7';
-                    input.select();
+                    if (isExplicitSubmit) {
+                        error.textContent = 'Mở vô hiệu';
+                        if (input) input.select();
+                    }
                 }).finally(function () {
                     if (requestId === authRequestId) {
                         authController = null;
                         if (submitBtn) submitBtn.disabled = false;
                     }
                 });
+            }
+
+            if (input) {
+                input.addEventListener('input', function () {
+                    if (error) error.textContent = '';
+                    clearTimeout(autoVerifyTimer);
+                    var val = input.value.trim();
+                    if (val.length >= 3) {
+                        autoVerifyTimer = setTimeout(function () {
+                            verifyPassword(val, false);
+                        }, 180);
+                    }
+                });
+            }
+
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+                clearTimeout(autoVerifyTimer);
+                var keyValue = input.value.trim();
+                verifyPassword(keyValue, true);
             });
 
             closeBtn.addEventListener('click', closeModal);
@@ -1186,8 +1238,14 @@
             function dispatchNavigation(actionId) {
                 if (!actionId) return;
                 var now = Date.now();
-                if (now - lastNavTimestamp < 300) return;
+                if (now - lastNavTimestamp < 350) return;
                 lastNavTimestamp = now;
+
+                document.body.classList.add('is-navigating');
+                setTimeout(function () {
+                    document.body.classList.remove('is-navigating');
+                }, 420);
+
                 window.dispatchEvent(new CustomEvent('timebox:navigate', {
                     detail: { id: actionId }
                 }));
@@ -1243,6 +1301,7 @@
 
                 dockEl.addEventListener('touchend', function (e) {
                     if (!isTouchDrag) {
+                        if (e.cancelable) e.preventDefault();
                         var touch = e.changedTouches && e.changedTouches[0];
                         var clientX = touch ? touch.clientX : touchStartX;
                         var clientY = touch ? touch.clientY : touchStartY;
@@ -1252,7 +1311,7 @@
                             handleButtonClick(btn, e);
                         }
                     }
-                }, { passive: true });
+                }, { passive: false });
             }
 
             if (homeView) {

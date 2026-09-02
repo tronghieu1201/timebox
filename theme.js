@@ -1775,6 +1775,15 @@
         var isTicking = false;
         function updateCoverflow() {
             isTicking = false;
+            if (window.innerWidth > 768) {
+                for (var i = 0; i < buttons.length; i++) {
+                    buttons[i].style.removeProperty('transform');
+                    buttons[i].style.removeProperty('opacity');
+                    buttons[i].classList.remove('is-active-center');
+                }
+                return;
+            }
+
             var dockWidth = dock.clientWidth;
             if (!dockWidth) return;
             var center = dock.scrollLeft + dockWidth / 2;
@@ -1823,10 +1832,8 @@
         window.addEventListener('resize', requestUpdate, { passive: true });
         window.addEventListener('orientationchange', requestUpdate, { passive: true });
 
-        // Initial alignment on load
-        window.setTimeout(function () {
-            requestUpdate();
-        }, 120);
+        // Immediate run
+        updateCoverflow();
     }
 
     initCoverflowDock();
