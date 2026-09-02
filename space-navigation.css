@@ -204,32 +204,36 @@ body.space-nav-home-visible #view-home {
         justify-content: center;
         scroll-snap-align: center;
         transform-origin: center center;
-        transform: scale(var(--coverflow-scale, 0.92)) rotateY(var(--coverflow-ry, 0deg));
-        opacity: var(--coverflow-opacity, 0.7);
-        border: 1px solid rgba(56, 189, 248, 0.22);
-        background: rgba(8, 16, 34, 0.88);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
+        transform: scale(var(--coverflow-scale, 0.9)) rotateY(var(--coverflow-ry, 0deg));
+        opacity: var(--coverflow-opacity, 0.35);
+        border: 1px solid rgba(56, 189, 248, 0.1);
+        background: rgba(6, 12, 26, 0.65);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
         will-change: transform, opacity;
+        filter: grayscale(30%);
+        transition: border-color 0.25s ease, box-shadow 0.25s ease, background 0.25s ease, filter 0.25s ease;
     }
 
     .space-dock-btn i {
-        font-size: 17px;
+        font-size: 16px;
         margin: 0;
-        color: #38bdf8;
+        color: #64748b;
         pointer-events: none;
+        transition: color 0.25s ease, transform 0.25s ease;
     }
 
     .space-dock-btn.is-active-center {
-        border-color: rgba(56, 189, 248, 0.85);
-        background: rgba(14, 34, 68, 0.98);
-        box-shadow: 0 0 20px rgba(56, 189, 248, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.3);
-        opacity: 1;
+        border-color: rgba(56, 189, 248, 0.95) !important;
+        background: rgba(14, 38, 76, 0.98) !important;
+        box-shadow: 0 0 24px rgba(56, 189, 248, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.35) !important;
+        opacity: 1 !important;
+        filter: grayscale(0%) !important;
     }
 
     .space-dock-btn.is-active-center i {
-        color: #fff;
-        transform: scale(1.15);
+        color: #38bdf8 !important;
+        transform: scale(1.22);
     }
 }
 

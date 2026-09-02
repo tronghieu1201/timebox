@@ -1193,13 +1193,29 @@
                 }));
             }
 
+            function handleButtonClick(btn, event) {
+                var dock = btn.closest('[data-coverflow-dock]');
+                var isMobileDock = Boolean(dock && window.innerWidth <= 768);
+
+                if (isMobileDock) {
+                    if (btn.classList.contains('is-active-center')) {
+                        var action = btn.getAttribute('data-space-action');
+                        if (action) dispatchNavigation(action);
+                    } else {
+                        if (event && event.preventDefault) event.preventDefault();
+                        var targetScrollLeft = btn.offsetLeft - (dock.clientWidth / 2) + (btn.offsetWidth / 2);
+                        dock.scrollTo({ left: targetScrollLeft, behavior: 'smooth' });
+                    }
+                } else {
+                    var action = btn.getAttribute('data-space-action');
+                    if (action) dispatchNavigation(action);
+                }
+            }
+
             document.addEventListener('click', function (event) {
                 var btn = event.target.closest('[data-space-action]');
                 if (!btn) return;
-                var action = btn.getAttribute('data-space-action');
-                if (action) {
-                    dispatchNavigation(action);
-                }
+                handleButtonClick(btn, event);
             });
 
             var dockEl = document.querySelector('[data-coverflow-dock]');
@@ -1233,10 +1249,7 @@
                         var target = document.elementFromPoint(clientX, clientY);
                         var btn = (target && target.closest('[data-space-action]')) || (e.target && e.target.closest('[data-space-action]'));
                         if (btn) {
-                            var action = btn.getAttribute('data-space-action');
-                            if (action) {
-                                dispatchNavigation(action);
-                            }
+                            handleButtonClick(btn, e);
                         }
                     }
                 }, { passive: true });

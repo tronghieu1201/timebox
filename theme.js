@@ -1779,24 +1779,36 @@
             if (!dockWidth) return;
             var center = dock.scrollLeft + dockWidth / 2;
 
+            var closestBtn = null;
+            var closestDist = Infinity;
+
             for (var i = 0; i < buttons.length; i++) {
                 var btn = buttons[i];
                 var btnCenter = btn.offsetLeft + btn.offsetWidth / 2;
                 var dist = btnCenter - center;
+                var absDist = Math.abs(dist);
+
+                if (absDist < closestDist) {
+                    closestDist = absDist;
+                    closestBtn = btn;
+                }
+
                 var norm = dist / (btn.offsetWidth * 0.95);
                 var clampNorm = Math.max(-2.2, Math.min(2.2, norm));
 
                 var rotateY = clampNorm * -24;
-                var scale = Math.max(0.78, 1 - Math.abs(clampNorm) * 0.12);
-                var opacity = Math.max(0.42, 1 - Math.abs(clampNorm) * 0.24);
+                var scale = Math.max(0.76, 1 - Math.abs(clampNorm) * 0.14);
+                var opacity = Math.max(0.32, 1 - Math.abs(clampNorm) * 0.38);
 
                 btn.style.transform = 'scale(' + scale.toFixed(3) + ') rotateY(' + rotateY.toFixed(2) + 'deg) translateZ(0)';
                 btn.style.opacity = opacity.toFixed(3);
+            }
 
-                if (Math.abs(dist) < btn.offsetWidth * 0.45) {
-                    btn.classList.add('is-active-center');
+            for (var j = 0; j < buttons.length; j++) {
+                if (buttons[j] === closestBtn) {
+                    buttons[j].classList.add('is-active-center');
                 } else {
-                    btn.classList.remove('is-active-center');
+                    buttons[j].classList.remove('is-active-center');
                 }
             }
         }
