@@ -213,7 +213,7 @@
                 }
                 var submitBtn = form.querySelector('button[type="submit"]');
                 if (submitBtn) submitBtn.disabled = true;
-                var scope = /friends/i.test(targetHref) ? 'friends' : 'family';
+                var scope = /friends|campus/i.test(targetHref) ? 'friends' : 'family';
 
                 fetch(AUTH_API, {
                     method: 'POST',

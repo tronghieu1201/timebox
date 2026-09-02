@@ -1120,9 +1120,9 @@
                 if (authController) authController.abort();
                 authController = window.AbortController ? new AbortController() : null;
                 var action = modal._targetAction || '';
-                var scope = action === 'friends' || /friends/i.test(targetHref)
+                var scope = (action === 'friends' || action === 'campus' || /friends|campus/i.test(targetHref))
                     ? 'friends'
-                    : (action === 'campus' || /campus/i.test(targetHref) ? 'campus' : 'family');
+                    : 'family';
 
                 var submitBtn = form.querySelector('button[type="submit"]');
                 if (isExplicitSubmit && submitBtn) submitBtn.disabled = true;
