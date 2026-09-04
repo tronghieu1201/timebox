@@ -382,11 +382,17 @@
                     aria-label="Đóng">&times;</button>
             </div>
 
-            <!-- Hint / drop zone -->
-            <button type="button" class="upload-modal__dropzone" id="upload-dropzone" data-dialog-focus>
-                <i class="fas fa-camera upload-modal__dropzone-icon" aria-hidden="true"></i>
-                <span class="upload-modal__dropzone-label">Chọn ảnh để gửi</span>
-            </button>
+            <!-- Hint / drop zones -->
+            <div class="upload-modal__dropzones" id="upload-dropzones" data-dialog-focus>
+                <button type="button" class="upload-modal__dropzone" id="upload-dropzone-image">
+                    <i class="fas fa-camera upload-modal__dropzone-icon" aria-hidden="true"></i>
+                    <span class="upload-modal__dropzone-label">Chọn ảnh</span>
+                </button>
+                <button type="button" class="upload-modal__dropzone" id="upload-dropzone-video">
+                    <i class="fas fa-video upload-modal__dropzone-icon" aria-hidden="true"></i>
+                    <span class="upload-modal__dropzone-label">Chọn video</span>
+                </button>
+            </div>
 
             <div class="upload-modal__pin-options" id="upload-pin-options" aria-label="Pin image" hidden>
                 <label class="upload-modal__pin-choice">
@@ -404,13 +410,14 @@
 
             <!-- Send button -->
             <button type="button" class="upload-modal__send" id="upload-send-btn" hidden>
-                <i class="fas fa-paper-plane" aria-hidden="true"></i> Gửi ảnh
+                <i class="fas fa-paper-plane" aria-hidden="true"></i> Gửi
             </button>
 
             <!-- Status -->
             <p class="upload-modal__status" id="upload-status" aria-live="polite"></p>
 
-            <input type="file" id="upload-input" accept="image/jpeg,image/png,image/webp,image/gif,image/heic,image/heif,.heic,.heif" multiple hidden>
+            <input type="file" id="upload-input-image" accept="image/jpeg,image/png,image/webp,image/gif,image/heic,image/heif,.heic,.heif" multiple hidden>
+            <input type="file" id="upload-input-video" accept="video/mp4,video/quicktime,video/webm,video/x-msvideo,video/x-matroska,.mp4,.mov,.webm,.avi,.mkv" multiple hidden>
         </article>
     </div>
 
@@ -695,11 +702,14 @@
             var modal = document.getElementById('upload-modal');
             var backdrop = document.getElementById('upload-modal-backdrop');
             var closeBtn = document.getElementById('upload-modal-close');
-            var dropzone = document.getElementById('upload-dropzone');
+            var dropzonesContainer = document.getElementById('upload-dropzones');
+            var dropzoneImage = document.getElementById('upload-dropzone-image');
+            var dropzoneVideo = document.getElementById('upload-dropzone-video');
             var preview = document.getElementById('upload-preview');
             var sendBtn = document.getElementById('upload-send-btn');
             var statusEl = document.getElementById('upload-status');
-            var fileInput = document.getElementById('upload-input');
+            var fileInputImage = document.getElementById('upload-input-image');
+            var fileInputVideo = document.getElementById('upload-input-video');
             var pinOptions = document.getElementById('upload-pin-options');
             var pinInputs = document.querySelectorAll('input[name="upload-pin"]');
             var familyDesktopBtn = document.getElementById('family-upload-open-desktop');
@@ -717,8 +727,8 @@
             var CLOUD_NAME = 'dtpw5htqs';
             var UPLOAD_PRESET = 'Upload_img';
             var MAX_FILES = 10;
-            // Cloudinary Free giới hạn 10 MB cho mỗi ảnh.
-            var MAX_SIZE = 10 * 1024 * 1024;
+            var MAX_SIZE = 10 * 1024 * 1024; // 10MB cho ảnh
+            var MAX_VIDEO_SIZE = 299 * 1024 * 1024; // 299MB cho video
             var MAX_CONCURRENT_UPLOADS = 2;
             var selected = [];
             var uploading = false;
@@ -774,7 +784,8 @@
                 modal.setAttribute('aria-hidden', 'true');
                 if (window.syncTimeboxModalState) window.syncTimeboxModalState();
                 selected = [];
-                fileInput.value = '';
+                if (fileInputImage) fileInputImage.value = '';
+                if (fileInputVideo) fileInputVideo.value = '';
                 renderPreview();
                 setStatus('');
             }
@@ -796,29 +807,68 @@
                 preview.innerHTML = '';
                 if (!selected.length) {
                     preview.hidden = true;
-                    dropzone.hidden = false;
+                    if (dropzonesContainer) dropzonesContainer.hidden = false;
                     sendBtn.hidden = true;
                     return;
                 }
-                selected.forEach(function (file, i) {
+                selected.forEach(function (item, i) {
+                    var file = item.file || item;
+                    var mediaType = item.mediaType || (isSupportedVideoFile(file) ? 'video' : 'image');
                     var wrap = document.createElement('div');
                     wrap.className = 'upload-modal__preview-item';
-                    var img = document.createElement('img');
-                    img.alt = file.name;
-                    var fallback = document.createElement('div');
-                    fallback.className = 'upload-modal__preview-fallback';
-                    fallback.hidden = true;
-                    fallback.innerHTML = '<i class="fas fa-image" aria-hidden="true"></i>';
-                    var fallbackName = document.createElement('span');
-                    fallbackName.textContent = file.name;
-                    fallback.appendChild(fallbackName);
+                    if (mediaType === 'video') wrap.classList.add('upload-modal__preview-item--video');
+
                     var previewUrl = URL.createObjectURL(file);
                     previewUrls.push(previewUrl);
-                    img.src = previewUrl;
-                    img.addEventListener('error', function () {
-                        img.hidden = true;
-                        fallback.hidden = false;
-                    }, { once: true });
+
+                    if (mediaType === 'video') {
+                        var video = document.createElement('video');
+                        video.src = previewUrl;
+                        video.muted = true;
+                        video.playsInline = true;
+                        video.preload = 'metadata';
+
+                        var badge = document.createElement('div');
+                        badge.className = 'upload-modal__preview-badge';
+                        badge.innerHTML = '<i class="fas fa-video" aria-hidden="true"></i> Video';
+
+                        var fallback = document.createElement('div');
+                        fallback.className = 'upload-modal__preview-fallback';
+                        fallback.hidden = true;
+                        fallback.innerHTML = '<i class="fas fa-film" aria-hidden="true"></i>';
+                        var fallbackName = document.createElement('span');
+                        fallbackName.textContent = file.name;
+                        fallback.appendChild(fallbackName);
+
+                        video.addEventListener('error', function () {
+                            video.hidden = true;
+                            fallback.hidden = false;
+                        }, { once: true });
+
+                        wrap.appendChild(video);
+                        wrap.appendChild(badge);
+                        wrap.appendChild(fallback);
+                    } else {
+                        var img = document.createElement('img');
+                        img.alt = file.name;
+                        var fallback = document.createElement('div');
+                        fallback.className = 'upload-modal__preview-fallback';
+                        fallback.hidden = true;
+                        fallback.innerHTML = '<i class="fas fa-image" aria-hidden="true"></i>';
+                        var fallbackName = document.createElement('span');
+                        fallbackName.textContent = file.name;
+                        fallback.appendChild(fallbackName);
+
+                        img.src = previewUrl;
+                        img.addEventListener('error', function () {
+                            img.hidden = true;
+                            fallback.hidden = false;
+                        }, { once: true });
+
+                        wrap.appendChild(img);
+                        wrap.appendChild(fallback);
+                    }
+
                     var rm = document.createElement('button');
                     rm.type = 'button';
                     rm.className = 'upload-modal__preview-remove';
@@ -828,12 +878,11 @@
                         selected.splice(i, 1);
                         renderPreview();
                     });
-                    wrap.appendChild(img);
-                    wrap.appendChild(fallback);
+
                     wrap.appendChild(rm);
                     preview.appendChild(wrap);
                 });
-                dropzone.hidden = true;
+                if (dropzonesContainer) dropzonesContainer.hidden = true;
                 preview.hidden = false;
                 sendBtn.hidden = false;
             }
@@ -845,14 +894,46 @@
                     /\.(jpe?g|png|webp|gif|heic|heif)$/.test(name);
             }
 
-            function addFiles(files) {
+            function isSupportedVideoFile(file) {
+                var mime = String(file.type || '').toLowerCase();
+                var name = String(file.name || '').toLowerCase();
+                return /^video\/(mp4|quicktime|webm|x-msvideo|x-matroska|mpeg|3gpp|ogg)$/.test(mime) ||
+                    /\.(mp4|mov|webm|avi|mkv|3gp|ogv)$/.test(name);
+            }
+
+            function addFiles(files, forcedMediaType) {
                 Array.prototype.forEach.call(files, function (f) {
-                    if (selected.length >= MAX_FILES) { setStatus('Tối đa ' + MAX_FILES + ' ảnh'); return; }
-                    if (!isSupportedImageFile(f)) { setStatus('Chỉ nhận JPG, PNG, WEBP, GIF, HEIC, HEIF'); return; }
-                    if (f.size > MAX_SIZE) { setStatus('Mỗi ảnh tối đa 10MB'); return; }
-                    selected.push(f);
+                    if (selected.length >= MAX_FILES) {
+                        setStatus('Tối đa ' + MAX_FILES + ' tập tin');
+                        return;
+                    }
+                    var isVid = isSupportedVideoFile(f);
+                    var isImg = isSupportedImageFile(f);
+
+                    if (forcedMediaType === 'video' || (isVid && !isImg)) {
+                        if (!isVid) {
+                            setStatus('Chỉ nhận video MP4, MOV, WEBM, AVI, MKV');
+                            return;
+                        }
+                        if (f.size > MAX_VIDEO_SIZE) {
+                            setStatus('Video vượt quá 299MB! Vui lòng chọn video ≤ 299MB.');
+                            return;
+                        }
+                        selected.push({ file: f, mediaType: 'video' });
+                    } else {
+                        if (!isImg) {
+                            setStatus('Chỉ nhận JPG, PNG, WEBP, GIF, HEIC, HEIF');
+                            return;
+                        }
+                        if (f.size > MAX_SIZE) {
+                            setStatus('Mỗi ảnh tối đa 10MB');
+                            return;
+                        }
+                        selected.push({ file: f, mediaType: 'image' });
+                    }
                 });
-                fileInput.value = '';
+                if (fileInputImage) fileInputImage.value = '';
+                if (fileInputVideo) fileInputVideo.value = '';
                 renderPreview();
             }
 
@@ -861,11 +942,15 @@
                 return Boolean(activeUploadScope && checked && checked.value === 'pinned');
             }
 
-            function getUploadSignature(scope, pinned, signal) {
+            function getUploadSignature(scope, pinned, mediaType, signal) {
                 return fetchWithTimeout(GALLERY_API + '/gallery/upload-signature', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ scope: scope, pinned: pinned === true }),
+                    body: JSON.stringify({
+                        scope: scope,
+                        pinned: pinned === true,
+                        mediaType: mediaType || 'image'
+                    }),
                     signal: signal
                 }, 30000).then(function (response) {
                     return response.json().catch(function () {
@@ -879,7 +964,11 @@
                 });
             }
 
-            function uploadOne(file, signed, signal) {
+            function uploadOne(item, signatures, signal) {
+                var file = item.file || item;
+                var mediaType = item.mediaType || (isSupportedVideoFile(file) ? 'video' : 'image');
+                var signed = signatures && signatures[mediaType];
+
                 var fd = new FormData();
                 fd.append('file', file);
                 var uploadUrl;
@@ -893,12 +982,24 @@
                     uploadUrl = signed.uploadUrl;
                 } else {
                     fd.append('upload_preset', activeUploadPreset);
-                    uploadUrl = 'https://api.cloudinary.com/v1_1/' + CLOUD_NAME + '/image/upload';
+                    if (mediaType === 'video') {
+                        var videoFolderMap = {
+                            'family': 'Upload video/video family',
+                            'keepsakes': 'Upload video/video middle school',
+                            'friends': 'Upload video/video Best frend',
+                            'campus': 'Upload video/video Student',
+                            'cooking': 'Upload video/video cooking'
+                        };
+                        var videoFolder = videoFolderMap[activeUploadScope] || 'video upload';
+                        fd.append('folder', videoFolder);
+                        fd.append('tags', videoFolder);
+                    }
+                    uploadUrl = 'https://api.cloudinary.com/v1_1/' + CLOUD_NAME + '/' + mediaType + '/upload';
                 }
 
                 return fetchWithTimeout(uploadUrl, {
                     method: 'POST', body: fd, signal: signal
-                }, 90000).then(function (r) { return r.json(); }).then(function (d) {
+                }, 240000).then(function (r) { return r.json(); }).then(function (d) {
                     if (!d.secure_url) {
                         throw new Error(d && d.error && d.error.message ? d.error.message : 'Upload thất bại');
                     }
@@ -906,16 +1007,16 @@
                 });
             }
 
-            function uploadFilesWithLimit(files, signed, signal) {
-                var results = new Array(files.length);
+            function uploadFilesWithLimit(items, signatures, signal) {
+                var results = new Array(items.length);
                 var nextIndex = 0;
 
                 function runNext() {
                     var index = nextIndex;
                     nextIndex += 1;
-                    if (index >= files.length) return Promise.resolve();
+                    if (index >= items.length) return Promise.resolve();
 
-                    return uploadOne(files[index], signed, signal).then(function (value) {
+                    return uploadOne(items[index], signatures, signal).then(function (value) {
                         results[index] = { status: 'fulfilled', value: value };
                     }).catch(function (reason) {
                         results[index] = { status: 'rejected', reason: reason };
@@ -923,7 +1024,7 @@
                 }
 
                 var workers = [];
-                var workerCount = Math.min(MAX_CONCURRENT_UPLOADS, files.length);
+                var workerCount = Math.min(MAX_CONCURRENT_UPLOADS, items.length);
                 for (var i = 0; i < workerCount; i += 1) workers.push(runNext());
                 return Promise.all(workers).then(function () { return results; });
             }
@@ -949,42 +1050,66 @@
             window.addEventListener('pagehide', releasePreviewUrls);
 
             /* pick files */
-            dropzone.addEventListener('click', function () { fileInput.click(); });
-            fileInput.addEventListener('change', function () { addFiles(fileInput.files); });
+            if (dropzoneImage) dropzoneImage.addEventListener('click', function () { fileInputImage.click(); });
+            if (dropzoneVideo) dropzoneVideo.addEventListener('click', function () { fileInputVideo.click(); });
+            if (fileInputImage) fileInputImage.addEventListener('change', function () { addFiles(fileInputImage.files, 'image'); });
+            if (fileInputVideo) fileInputVideo.addEventListener('change', function () { addFiles(fileInputVideo.files, 'video'); });
 
             /* drag & drop */
-            dropzone.addEventListener('dragover', function (e) { e.preventDefault(); dropzone.classList.add('is-drag'); });
-            dropzone.addEventListener('dragleave', function () { dropzone.classList.remove('is-drag'); });
-            dropzone.addEventListener('drop', function (e) {
-                e.preventDefault();
-                dropzone.classList.remove('is-drag');
-                addFiles(e.dataTransfer.files);
-            });
+            if (dropzonesContainer) {
+                dropzonesContainer.addEventListener('dragover', function (e) {
+                    e.preventDefault();
+                    if (dropzoneImage) dropzoneImage.classList.add('is-drag');
+                    if (dropzoneVideo) dropzoneVideo.classList.add('is-drag');
+                });
+                dropzonesContainer.addEventListener('dragleave', function () {
+                    if (dropzoneImage) dropzoneImage.classList.remove('is-drag');
+                    if (dropzoneVideo) dropzoneVideo.classList.remove('is-drag');
+                });
+                dropzonesContainer.addEventListener('drop', function (e) {
+                    e.preventDefault();
+                    if (dropzoneImage) dropzoneImage.classList.remove('is-drag');
+                    if (dropzoneVideo) dropzoneVideo.classList.remove('is-drag');
+                    addFiles(e.dataTransfer.files);
+                });
+            }
 
             /* send */
             sendBtn.addEventListener('click', function () {
                 if (!selected.length || uploading) return;
-                var files = selected.slice();
+                var items = selected.slice();
                 var uploadScope = activeUploadScope;
                 var pinUpload = isPinnedUpload();
                 uploading = true;
                 uploadController = window.AbortController ? new AbortController() : null;
                 var batchTimer = setTimeout(function () {
                     if (uploadController) uploadController.abort();
-                }, 120000);
+                }, 300000);
                 sendBtn.disabled = true;
                 closeBtn.disabled = true;
-                setStatus('Đang gửi ' + files.length + ' ảnh...');
+                setStatus('Đang gửi ' + items.length + ' tập tin...');
 
-                var signaturePromise = uploadScope
-                    ? getUploadSignature(uploadScope, pinUpload, uploadController ? uploadController.signal : undefined)
-                    : Promise.resolve(null);
+                var sigMap = {};
+                var mediaTypes = [];
+                items.forEach(function (it) {
+                    var mt = it.mediaType || 'image';
+                    if (mediaTypes.indexOf(mt) === -1) mediaTypes.push(mt);
+                });
 
-                signaturePromise.then(function (signed) {
-                    return uploadFilesWithLimit(files, signed, uploadController ? uploadController.signal : undefined);
+                var signaturePromises = [];
+                if (uploadScope) {
+                    signaturePromises = mediaTypes.map(function (mt) {
+                        return getUploadSignature(uploadScope, pinUpload, mt, uploadController ? uploadController.signal : undefined).then(function (signed) {
+                            sigMap[mt] = signed;
+                        });
+                    });
+                }
+
+                Promise.all(signaturePromises).then(function () {
+                    return uploadFilesWithLimit(items, sigMap, uploadController ? uploadController.signal : undefined);
                 }).then(function (results) {
                     var ok = results.filter(function (r) { return r.status === 'fulfilled'; }).length;
-                    var fail = files.length - ok;
+                    var fail = items.length - ok;
                     selected = [];
                     renderPreview();
                     if (ok > 0 && uploadScope && window.prependTimeboxGallery) {
@@ -999,26 +1124,26 @@
                         setStatus('');
                         closeModal(true);
                         if (window.showTimeboxToast) {
-                            window.showTimeboxToast('Cảm ơn bạn đã gửi ảnh 🌷');
+                            window.showTimeboxToast('Cảm ơn bạn đã gửi 🌷');
                         }
                     } else if (ok > 0) {
                         setStatus('');
                         closeModal(true);
                         if (window.showTimeboxToast) {
-                            window.showTimeboxToast('Gửi được ' + ok + '/' + files.length + ' ảnh 🌷');
+                            window.showTimeboxToast('Gửi được ' + ok + '/' + items.length + ' tập tin 🌷');
                         }
                     } else {
-                        selected = files;
+                        selected = items;
                         renderPreview();
                         setStatus('Gửi thất bại, thử lại nhé!', 3000);
                     }
                 }).catch(function (error) {
-                    selected = files;
+                    selected = items;
                     renderPreview();
                     var uploadError = error && error.name === 'AbortError'
                         ? 'Kết nối quá lâu, vui lòng thử lại.'
                         : (error.message || 'Gửi thất bại, thử lại nhé!');
-                    setStatus(uploadError, 3000);
+                    setStatus(uploadError, 4000);
                 }).finally(function () {
                     clearTimeout(batchTimer);
                     uploadController = null;

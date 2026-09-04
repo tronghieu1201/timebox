@@ -629,8 +629,8 @@
         applyPhotoLightboxZoom();
     }
 
-    function fitPhotoLightboxImage() {
-        if (!photoLightboxImg || !photoLightboxImg.naturalWidth || !photoLightboxImg.naturalHeight) return;
+    function fitPhotoLightboxMedia(naturalWidth, naturalHeight) {
+        if (!naturalWidth || !naturalHeight) return;
         var viewport = window.visualViewport;
         var viewportWidth = viewport ? viewport.width : window.innerWidth;
         var viewportHeight = viewport ? viewport.height : window.innerHeight;
@@ -639,14 +639,26 @@
         var maxWidth = Math.max(144, Math.min(1180, viewportWidth - horizontalSpace));
         var maxHeight = Math.max(144, viewportHeight - verticalSpace);
         var scale = Math.min(
-            maxWidth / photoLightboxImg.naturalWidth,
-            maxHeight / photoLightboxImg.naturalHeight
+            maxWidth / naturalWidth,
+            maxHeight / naturalHeight
         );
-        var width = Math.max(1, Math.round(photoLightboxImg.naturalWidth * scale));
-        var height = Math.max(1, Math.round(photoLightboxImg.naturalHeight * scale));
+        var width = Math.max(1, Math.round(naturalWidth * scale));
+        var height = Math.max(1, Math.round(naturalHeight * scale));
 
         setPhotoLightboxFrame(width, height);
         applyPhotoLightboxZoom();
+    }
+
+    function fitPhotoLightboxImage() {
+        if (!photoLightbox) return;
+        var stage = document.getElementById('photo-lightbox-stage') || photoLightbox.querySelector('.photo-lightbox__content');
+        var video = stage ? stage.querySelector('.photo-lightbox__video') : null;
+        if (video) {
+            fitPhotoLightboxMedia(video.videoWidth || 1280, video.videoHeight || 720);
+            return;
+        }
+        if (!photoLightboxImg || !photoLightboxImg.naturalWidth || !photoLightboxImg.naturalHeight) return;
+        fitPhotoLightboxMedia(photoLightboxImg.naturalWidth, photoLightboxImg.naturalHeight);
     }
 
     if (photoLightbox) {
@@ -675,40 +687,80 @@
         clearTimeout(photoLightboxReleaseTimer);
         resetPhotoLightboxZoom();
         var src = card.getAttribute('data-full');
+        var isVid = card.getAttribute('data-is-video') === 'true' || isVideoFile(src);
         var title = card.getAttribute('data-title') || '';
         var meta = card.getAttribute('data-meta') || '';
         var img = card.querySelector('img');
         var nextSrc = src || (img ? img.src : '');
         var requestId = String(Date.now()) + Math.random();
 
-        photoLightboxImg.dataset.requestId = requestId;
-        photoLightbox.classList.add('is-loading');
-        photoLightboxImg.removeAttribute('srcset');
-        photoLightboxImg.removeAttribute('src');
-        clearPhotoLightboxFrame();
-        photoLightboxImg.alt = title || (img ? img.alt : '');
+        var stage = document.getElementById('photo-lightbox-stage') || photoLightbox.querySelector('.photo-lightbox__content');
+        var existingVideo = stage ? stage.querySelector('.photo-lightbox__video') : null;
+        if (existingVideo) existingVideo.remove();
+
+        if (isVid) {
+            photoLightboxImg.style.display = 'none';
+            var video = document.createElement('video');
+            video.className = 'photo-lightbox__video';
+            video.src = nextSrc;
+            video.controls = true;
+            video.autoplay = true;
+            video.playsInline = true;
+            video.style.width = '100%';
+            video.style.height = '100%';
+            video.style.objectFit = 'contain';
+            video.style.borderRadius = 'inherit';
+
+            var applyVideoDimensions = function () {
+                var vWidth = video.videoWidth || 1280;
+                var vHeight = video.videoHeight || 720;
+                fitPhotoLightboxMedia(vWidth, vHeight);
+                photoLightbox.classList.remove('is-loading');
+            };
+
+            video.addEventListener('loadedmetadata', applyVideoDimensions);
+            video.addEventListener('loadeddata', applyVideoDimensions);
+            video.addEventListener('error', function () {
+                fitPhotoLightboxMedia(1280, 720);
+                photoLightbox.classList.remove('is-loading');
+            });
+
+            fitPhotoLightboxMedia(1280, 720);
+            if (stage) stage.appendChild(video);
+        } else {
+            photoLightboxImg.style.display = '';
+            photoLightboxImg.dataset.requestId = requestId;
+            photoLightbox.classList.add('is-loading');
+            photoLightboxImg.removeAttribute('srcset');
+            photoLightboxImg.removeAttribute('src');
+            clearPhotoLightboxFrame();
+            photoLightboxImg.alt = title || (img ? img.alt : '');
+        }
 
         // Khóa scroll body
         document.body.style.overflow = 'hidden';
         document.body.style.touchAction = 'none';
 
-        photoLightboxImg.onload = function () {
-            if (photoLightboxImg.dataset.requestId !== requestId) return;
-            fitPhotoLightboxImage();
-            photoLightbox.classList.remove('is-loading');
-        };
-        photoLightboxImg.onerror = function () {
-            if (photoLightboxImg.dataset.requestId !== requestId) return;
-            photoLightbox.classList.remove('is-loading');
-        };
+        if (!isVid) {
+            photoLightboxImg.onload = function () {
+                if (photoLightboxImg.dataset.requestId !== requestId) return;
+                fitPhotoLightboxImage();
+                photoLightbox.classList.remove('is-loading');
+            };
+            photoLightboxImg.onerror = function () {
+                if (photoLightboxImg.dataset.requestId !== requestId) return;
+                photoLightbox.classList.remove('is-loading');
+            };
 
-        photoLightboxImg.sizes = '(max-width: 1200px) 100vw, 1180px';
-        photoLightboxImg.srcset = card.getAttribute('data-full-srcset') || '';
-        photoLightboxImg.src = nextSrc;
-        if (photoLightboxImg.complete && photoLightboxImg.naturalWidth) {
-            fitPhotoLightboxImage();
-            photoLightbox.classList.remove('is-loading');
+            photoLightboxImg.sizes = '(max-width: 1200px) 100vw, 1180px';
+            photoLightboxImg.srcset = card.getAttribute('data-full-srcset') || '';
+            photoLightboxImg.src = nextSrc;
+            if (photoLightboxImg.complete && photoLightboxImg.naturalWidth) {
+                fitPhotoLightboxImage();
+                photoLightbox.classList.remove('is-loading');
+            }
         }
+
         if (photoLightboxCaption) {
             var caption = [title, meta].filter(Boolean).join(' - ');
             photoLightboxCaption.textContent = caption;
@@ -738,11 +790,19 @@
         photoLightbox.removeAttribute('data-world');
         if (photoLightboxPinAction) photoLightboxPinAction.hidden = true;
         photoLightboxImg.dataset.requestId = '';
-        
+
+        var stage = document.getElementById('photo-lightbox-stage') || photoLightbox.querySelector('.photo-lightbox__content');
+        var video = stage ? stage.querySelector('.photo-lightbox__video') : null;
+        if (video) {
+            try { video.pause(); } catch (e) {}
+            video.remove();
+        }
+        photoLightboxImg.style.display = '';
+
         // Mở khóa scroll body
         document.body.style.removeProperty('overflow');
         document.body.style.removeProperty('touch-action');
-        
+
         photoLightboxReleaseTimer = setTimeout(function () {
             photoLightboxImg.onload = null;
             photoLightboxImg.onerror = null;
@@ -757,6 +817,26 @@
         return /\.(avif|gif|jpe?g|png|webp|heic|heif)$/i.test(path || '');
     }
 
+    function isVideoFile(path) {
+        if (!path) return false;
+        var cleanPath = String(path).split('?')[0].toLowerCase();
+        return /\.(mp4|mov|webm|avi|mkv|3gp|ogv)$/i.test(cleanPath) ||
+            cleanPath.indexOf('/video/upload/') !== -1 ||
+            cleanPath.indexOf('/video/') !== -1;
+    }
+
+    function isMediaFile(path) {
+        return isImageFile(path) || isVideoFile(path);
+    }
+
+    function getCloudinaryVideoThumbnail(src) {
+        if (!src) return '';
+        if (src.indexOf('/video/upload/') !== -1) {
+            return src.replace('/video/upload/', '/video/upload/f_jpg,q_auto,w_720/').replace(/\.[^/.]+$/, '.jpg');
+        }
+        return src;
+    }
+
     function normalizeGalleryPhotoUrl(url) {
         if (!url) return '';
         return decodeURIComponent(url.split('?')[0]).replace(/\/+$/, '');
@@ -766,6 +846,10 @@
         var marker = '/image/upload/';
         var normalized = normalizeGalleryPhotoUrl(url);
         var markerIndex = normalized.indexOf(marker);
+        if (markerIndex === -1) {
+            marker = '/video/upload/';
+            markerIndex = normalized.indexOf(marker);
+        }
         if (markerIndex === -1) return '';
         var parts = normalized.slice(markerIndex + marker.length).split('/');
         var versionIndex = parts.findIndex(function (part) { return /^v\d+$/.test(part); });
@@ -965,39 +1049,46 @@
         var openButton = document.createElement('button');
         var img = document.createElement('img');
         photo = photo || {};
-        var publicId = (photo && photo.publicId) || getCloudinaryPublicId(originalSrc || fullSrc || src);
+        var rawSrc = originalSrc || fullSrc || src || '';
+        var isVid = photo.isVideo === true || isVideoFile(rawSrc);
+        var publicId = (photo && photo.publicId) || getCloudinaryPublicId(rawSrc);
         var scope = gallery.getAttribute('data-live-scope') || '';
         photo.publicId = publicId;
         photo.scope = scope;
+        photo.isVideo = isVid;
         card._gallery = gallery;
         card._photo = photo;
+
         var isPinned = isPinnedUpload === true || isPinnedPhotoCard(
             gallery,
-            originalSrc || fullSrc || src,
+            rawSrc,
             fullSrc || src,
             publicId
         );
         if (isExplicitlyUnpinned(gallery, publicId)) isPinned = false;
 
         card.className = 'photo-card';
+        if (isVid) card.classList.add('photo-card--video');
+        card.setAttribute('data-is-video', isVid ? 'true' : 'false');
+
         openButton.type = 'button';
         openButton.className = 'photo-card__open';
-        openButton.setAttribute('aria-label', 'Mở ảnh ' + (name || 'kỷ niệm'));
+        openButton.setAttribute('aria-label', 'Mở ' + (isVid ? 'video ' : 'ảnh ') + (name || 'kỷ niệm'));
         card.style.setProperty('--card-delay', Math.min(gallery.children.length, 11) * 35 + 'ms');
         card.setAttribute('data-full', fullSrc || src);
-        if (fullSrcset) {
+        if (fullSrcset && !isVid) {
             card.setAttribute('data-full-srcset', fullSrcset);
         }
         if (isPinned) {
             card.classList.add('photo-card--pinned');
         }
 
-        if (thumbSrcset) {
+        if (thumbSrcset && !isVid) {
             img.srcset = thumbSrcset;
             img.sizes = '(max-width: 899px) and (orientation: landscape) calc((100vw - 54px) / 4), (max-width: 639px) calc((100vw - 36px) / 3), (max-width: 699px) calc((100vw - 68px) / 3), (max-width: 899px) calc((100vw - 88px) / 4), 210px';
         }
-        img.src = src;
-        img.alt = name || 'Anh nau an';
+        img.src = isVid ? getCloudinaryVideoThumbnail(src || rawSrc) : src;
+        img.alt = name || (isVid ? 'Video kỷ niệm' : 'Ảnh kỷ niệm');
         img.width = 420;
         img.height = 420;
         img.loading = isPriority ? 'eager' : 'lazy';
@@ -1005,8 +1096,12 @@
         if (isPriority) {
             img.fetchPriority = 'high';
         }
-        
+
         img.onload = function () {
+            img.classList.add('is-loaded');
+            card.classList.add('is-loaded');
+        };
+        img.onerror = function () {
             img.classList.add('is-loaded');
             card.classList.add('is-loaded');
         };
@@ -1016,6 +1111,14 @@
         }
 
         openButton.appendChild(img);
+
+        if (isVid) {
+            var playBadge = document.createElement('div');
+            playBadge.className = 'photo-card__video-badge';
+            playBadge.innerHTML = '<i class="fas fa-play" aria-hidden="true"></i>';
+            openButton.appendChild(playBadge);
+        }
+
         card.appendChild(openButton);
         if (isPinned) {
             var pinBadge = document.createElement('button');
@@ -1325,23 +1428,24 @@
                 return url.trim();
             })
             .filter(function (url) {
-                return url && isImageFile(url);
+                return url && isMediaFile(url);
             });
 
         return urls.map(function (url, index) {
             var cleanUrl = url.split('?')[0];
-            var name = decodeURIComponent(cleanUrl.split('/').pop() || 'Anh ky niem');
-            // Lấy version timestamp từ URL Cloudinary (v1782486xxx) — số lớn hơn = mới hơn
+            var isVid = isVideoFile(cleanUrl);
+            var name = decodeURIComponent(cleanUrl.split('/').pop() || (isVid ? 'Video kỷ niệm' : 'Ảnh kỷ niệm'));
             var versionMatch = cleanUrl.match(/\/v(\d+)\//);
             var time = versionMatch ? parseInt(versionMatch[1], 10) : (urls.length - index);
             return {
                 src: url,
-                thumb: getCloudinaryVariant(url, 'f_auto,q_90,c_limit,w_1080'),
-                thumbSrcset: getCloudinarySrcset(url, [540, 720, 1080, 1440], 'q_90'),
-                full: getCloudinaryVariant(url, 'f_auto,q_95,c_limit,w_3200'),
-                fullSrcset: getCloudinarySrcset(url, [1440, 2160, 3200], 'q_95'),
+                thumb: isVid ? getCloudinaryVideoThumbnail(url) : getCloudinaryVariant(url, 'f_auto,q_90,c_limit,w_1080'),
+                thumbSrcset: isVid ? '' : getCloudinarySrcset(url, [540, 720, 1080, 1440], 'q_90'),
+                full: url,
+                fullSrcset: isVid ? '' : getCloudinarySrcset(url, [1440, 2160, 3200], 'q_95'),
                 name: name,
-                time: time
+                time: time,
+                isVideo: isVid
             };
         });
     }
@@ -1354,13 +1458,15 @@
                 return name.trim();
             })
             .filter(function (name) {
-                return name && isImageFile(name);
+                return name && isMediaFile(name);
             })
             .map(function (name, index, files) {
+                var isVid = isVideoFile(name);
                 return {
                     src: dir + name,
                     name: name,
-                    time: files.length - index
+                    time: files.length - index,
+                    isVideo: isVid
                 };
             });
     }
@@ -1394,9 +1500,6 @@
     var LIVE_GALLERY_API = 'https://timebox.trghy.workers.dev/gallery/images';
 
     function getLiveGalleryPhotos(scope, gallery) {
-        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-            return Promise.resolve([]);
-        }
         return fetch(LIVE_GALLERY_API + '?scope=' + encodeURIComponent(scope), {
             headers: { 'Accept': 'application/json' },
             cache: 'no-store'
@@ -1405,7 +1508,7 @@
                 return { ok: false, message: 'Máy chủ trả dữ liệu không hợp lệ' };
             }).then(function (data) {
                 if (!response.ok || !data.ok) {
-                    throw new Error(data.message || 'Không thể tải ảnh mới');
+                    throw new Error(data.message || 'Không thể tải dữ liệu mới');
                 }
                 gallery._unpinnedPublicIds = Array.isArray(data.unpinnedPublicIds)
                     ? data.unpinnedPublicIds
@@ -1415,20 +1518,23 @@
                     : [];
                 return (data.images || []).map(function (image) {
                     var src = image.src || '';
+                    var isVid = image.resourceType === 'video' || isVideoFile(src);
+                    var thumbUrl = isVid ? getCloudinaryVideoThumbnail(src) : getCloudinaryVariant(src, 'f_auto,q_90,c_limit,w_1080');
                     return {
                         src: src,
-                        thumb: getCloudinaryVariant(src, 'f_auto,q_90,c_limit,w_1080'),
-                        thumbSrcset: getCloudinarySrcset(src, [540, 720, 1080, 1440], 'q_90'),
-                        full: getCloudinaryVariant(src, 'f_auto,q_95,c_limit,w_3200'),
-                        fullSrcset: getCloudinarySrcset(src, [1440, 2160, 3200], 'q_95'),
-                        name: image.publicId || 'Ảnh mới',
+                        thumb: thumbUrl,
+                        thumbSrcset: isVid ? '' : getCloudinarySrcset(src, [540, 720, 1080, 1440], 'q_90'),
+                        full: src,
+                        fullSrcset: isVid ? '' : getCloudinarySrcset(src, [1440, 2160, 3200], 'q_95'),
+                        name: image.publicId || (isVid ? 'Video mới' : 'Ảnh mới'),
                         time: Date.parse(image.createdAt || '') || 0,
                         isLive: true,
                         publicId: image.publicId || '',
-                        isPinnedUpload: image.pinned === true
+                        isPinnedUpload: image.pinned === true,
+                        isVideo: isVid
                     };
                 }).filter(function (photo) {
-                    return photo.src && isImageFile(photo.src);
+                    return photo.src && isMediaFile(photo.src);
                 });
             });
         });
@@ -1458,7 +1564,6 @@
                 renderPhotoGallery(gallery, mergedPhotos, gallery._currentPage || 1);
             }
         }).catch(function () {
-            // Nếu Worker tạm lỗi, các URL ảnh cũ vẫn hiển thị bình thường.
             if (!gallery._photos && oldPhotos.length) renderPhotoGallery(gallery, oldPhotos, gallery._currentPage || 1);
             if (!gallery._photos) gallery._hasLoaded = false;
         });
@@ -1474,16 +1579,18 @@
         if (!gallery || !urls || !urls.length) return;
         var now = Date.now();
         var uploadedPhotos = urls.map(function (src, index) {
+            var isVid = isVideoFile(src);
             return {
                 src: src,
-                thumb: getCloudinaryVariant(src, 'f_auto,q_90,c_limit,w_1080'),
-                thumbSrcset: getCloudinarySrcset(src, [540, 720, 1080, 1440], 'q_90'),
-                full: getCloudinaryVariant(src, 'f_auto,q_95,c_limit,w_3200'),
-                fullSrcset: getCloudinarySrcset(src, [1440, 2160, 3200], 'q_95'),
-                name: decodeURIComponent((src.split('?')[0].split('/').pop() || 'Ảnh mới')),
+                thumb: isVid ? getCloudinaryVideoThumbnail(src) : getCloudinaryVariant(src, 'f_auto,q_90,c_limit,w_1080'),
+                thumbSrcset: isVid ? '' : getCloudinarySrcset(src, [540, 720, 1080, 1440], 'q_90'),
+                full: src,
+                fullSrcset: isVid ? '' : getCloudinarySrcset(src, [1440, 2160, 3200], 'q_95'),
+                name: decodeURIComponent((src.split('?')[0].split('/').pop() || (isVid ? 'Video mới' : 'Ảnh mới'))),
                 time: now - index,
                 isLive: true,
-                isPinnedUpload: pinned === true
+                isPinnedUpload: pinned === true,
+                isVideo: isVid
             };
         });
         var currentPhotos = gallery._photos || getCloudinaryGalleryPhotos(gallery);

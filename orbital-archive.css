@@ -1150,7 +1150,15 @@ body.timebox-cinematic .upload-modal__close {
     flex-basis: 36px;
 }
 
+body.timebox-cinematic .upload-modal__dropzones {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+}
+
 body.timebox-cinematic .upload-modal__dropzone {
+    flex: 1 1 0;
+    min-width: 0;
     width: 100%;
     min-height: 102px;
     padding: 14px 12px;
@@ -1238,14 +1246,35 @@ body.timebox-cinematic .upload-modal__preview {
 }
 
 body.timebox-cinematic .upload-modal__preview-item {
+    position: relative;
     border: 1px solid var(--archive-line);
     border-radius: 13px;
     background: #080b10;
     overflow: hidden;
+    aspect-ratio: 1;
 }
 
-body.timebox-cinematic .upload-modal__preview-item img {
+body.timebox-cinematic .upload-modal__preview-item img,
+body.timebox-cinematic .upload-modal__preview-item video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
     border-radius: inherit;
+}
+
+body.timebox-cinematic .upload-modal__preview-badge {
+    position: absolute;
+    bottom: 6px;
+    left: 6px;
+    padding: 2px 6px;
+    border-radius: 6px;
+    background: rgba(0, 0, 0, 0.75);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 600;
+    pointer-events: none;
+    backdrop-filter: blur(4px);
 }
 
 body.timebox-cinematic .upload-modal__preview-remove {
@@ -1256,6 +1285,43 @@ body.timebox-cinematic .upload-modal__preview-remove {
     border: 1px solid rgba(255, 255, 255, 0.18);
     background: rgba(4, 6, 10, 0.78);
     color: #fff;
+}
+
+/* Video Card Badge */
+.photo-card__video-badge {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.65);
+    border: 1.5px solid rgba(255, 255, 255, 0.85);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    padding-left: 3px;
+    pointer-events: none;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+    transition: transform 0.2s ease, background 0.2s ease;
+    z-index: 2;
+}
+
+.photo-card:hover .photo-card__video-badge {
+    transform: translate(-50%, -50%) scale(1.15);
+    background: rgba(var(--world-rgb, 100, 180, 255), 0.9);
+}
+
+.photo-lightbox__video {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: inherit;
+    display: block;
+    background: #000;
 }
 
 body.timebox-cinematic .upload-modal__send {
