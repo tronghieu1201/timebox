@@ -1500,15 +1500,25 @@
                 });
             }
 
+            function isMobileDevice() {
+                var userAgentMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile/i.test(navigator.userAgent || '');
+                var isTouchScreen = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+                var isNarrowScreen = window.innerWidth <= 768;
+                return userAgentMobile || (isTouchScreen && isNarrowScreen);
+            }
+
             if (input) {
                 input.addEventListener('input', function () {
                     if (error) error.textContent = '';
                     clearTimeout(autoVerifyTimer);
-                    var val = input.value.trim();
-                    if (val.length >= 3) {
-                        autoVerifyTimer = setTimeout(function () {
-                            verifyPassword(val, false);
-                        }, 180);
+                    // Chỉ tự động mở kho khi nhập đúng pass ở thiết bị MOBILE (điện thoại)
+                    if (isMobileDevice()) {
+                        var val = input.value.trim();
+                        if (val.length >= 3) {
+                            autoVerifyTimer = setTimeout(function () {
+                                verifyPassword(val, false);
+                            }, 180);
+                        }
                     }
                 });
             }
