@@ -1,5 +1,11 @@
 // theme.js – interactions for link panels, modals, galleries, and toasts.
 (function () {
+    /* ---- Maintenance Lockdown Guard ---- */
+    if (typeof window.IS_SITE_CLOSED !== 'undefined' && window.IS_SITE_CLOSED) {
+        document.documentElement.classList.add('site-is-closed-mode');
+        return;
+    }
+
     /* ---- Service Worker Registration ---- */
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', function () {
