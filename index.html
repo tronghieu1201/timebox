@@ -7,6 +7,17 @@
     <meta name="theme-color" content="#010205">
     <meta name="color-scheme" content="dark">
     <title>Trọng Hiếu – Timebox</title>
+
+
+    <script>
+        var IS_SITE_CLOSED = true;
+        var WEBSITE_MAINTENANCE_MODE = IS_SITE_CLOSED;
+        var TRONG_HIEU_TIMEBOX_CLOSED = IS_SITE_CLOSED;
+
+        if (IS_SITE_CLOSED) {
+            document.documentElement.classList.add('site-is-closed-mode');
+        }
+    </script>
     <meta name="description"
         content="Timebox – Nơi lưu giữ kỷ niệm của Trọng Hiếu. Gia đình, bạn bè, sinh viên và những khoảnh khắc đáng nhớ.">
     <link rel="canonical" href="https://tronghieu1201.github.io/timebox/">
@@ -20,10 +31,112 @@
         href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css?v=44">
-    <link rel="stylesheet" href="life.css?v=41">
-    <link rel="stylesheet" href="space-navigation.css?v=42">
+    <link rel="stylesheet" href="style.css?v=45">
+    <link rel="stylesheet" href="life.css?v=45">
+    <link rel="stylesheet" href="space-navigation.css?v=45">
     <style>
+        /* ---- MAINTENANCE LOCK SCREEN STYLES ---- */
+        html.site-is-closed-mode,
+        html.site-is-closed-mode body {
+            overflow: hidden !important;
+            height: 100vh !important;
+            background: #010205 !important;
+            touch-action: none !important;
+        }
+
+        html.site-is-closed-mode .spa-shell,
+        html.site-is-closed-mode .blob,
+        html.site-is-closed-mode header,
+        html.site-is-closed-mode footer,
+        html.site-is-closed-mode main {
+            display: none !important;
+        }
+
+        #maintenance-lock-screen {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            height: 100dvh;
+            z-index: 99999999;
+            background: #010205;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            box-sizing: border-box;
+            pointer-events: auto !important;
+            user-select: none;
+        }
+
+        html.site-is-closed-mode #maintenance-lock-screen {
+            display: flex !important;
+            animation: lockScreenFadeIn 0.4s ease forwards;
+        }
+
+        @keyframes lockScreenFadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.96);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .maintenance-card {
+            position: relative;
+            max-width: 360px;
+            width: 100%;
+            background: rgba(16, 20, 36, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            padding: 44px 24px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9),
+                0 0 40px rgba(239, 68, 68, 0.12);
+        }
+
+        .maintenance-icon-ring {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px auto;
+            border-radius: 50%;
+            background: rgba(239, 68, 68, 0.12);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ef4444;
+            font-size: 2.2rem;
+            box-shadow: 0 0 30px rgba(239, 68, 68, 0.2);
+            animation: floatLock 3s ease-in-out infinite;
+        }
+
+        @keyframes floatLock {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-5px);
+            }
+        }
+
+        .maintenance-title {
+            font-family: 'Be Vietnam Pro', 'Inter', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0;
+            letter-spacing: -0.01em;
+        }
+
         .spa-shell {
             position: relative;
             width: 100%;
@@ -75,6 +188,49 @@
 </head>
 
 <body class="timebox-cinematic space-nav-home-visible" data-space-view="home">
+    <!-- =========================================================================
+         GIAO DIỆN THÔNG BÁO WEBSITE TẠM ĐÓNG (CỰC KỲ TỐI GIẢN)
+         ========================================================================= -->
+    <div id="maintenance-lock-screen" aria-modal="true" role="dialog" aria-label="Website tạm đóng">
+        <div class="maintenance-card">
+            <div class="maintenance-icon-ring">
+                <i class="fas fa-lock" aria-hidden="true"></i>
+            </div>
+            <h1 class="maintenance-title">Website Tạm Đóng</h1>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            if (!window.IS_SITE_CLOSED) return;
+
+            function applyLockDown() {
+                document.documentElement.classList.add('site-is-closed-mode');
+                if (document.body) document.body.classList.add('site-is-closed-mode');
+                var shell = document.querySelector('.spa-shell');
+                if (shell) {
+                    shell.setAttribute('aria-hidden', 'true');
+                    shell.setAttribute('inert', '');
+                }
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', applyLockDown);
+            } else {
+                applyLockDown();
+            }
+
+            var preventEvent = function (e) {
+                if (!window.IS_SITE_CLOSED) return;
+                e.stopPropagation();
+                if (e.cancelable) e.preventDefault();
+            };
+
+            ['click', 'dblclick', 'contextmenu', 'keydown', 'keypress', 'keyup', 'wheel', 'touchmove', 'selectstart'].forEach(function (evt) {
+                window.addEventListener(evt, preventEvent, { capture: true, passive: false });
+            });
+        })();
+    </script>
     <script>
         (function () {
             var requestedView = new URLSearchParams(window.location.search).get('view');
@@ -98,33 +254,50 @@
 
                 <section class="space-navigation" data-space-navigation aria-label="Điều hướng vũ trụ ký ức">
                     <div class="space-navigation__stage" data-space-stage tabindex="-1">
-                        <div class="space-navigation__nodes" data-space-nodes aria-label="Các thiên thể điều hướng"></div>
+                        <div class="space-navigation__nodes" data-space-nodes aria-label="Các thiên thể điều hướng">
+                        </div>
                     </div>
 
                     <div class="space-quick-dock" data-coverflow-dock aria-label="Điều hướng nhanh">
                         <div class="space-dock-track" data-coverflow-track>
-                            <button type="button" class="space-dock-btn" data-space-action="family" aria-label="Gia đình"><i class="fas fa-house-user" aria-hidden="true"></i></button>
-                            <button type="button" class="space-dock-btn" data-space-action="thoughts" aria-label="Lăng kính"><i class="fas fa-eye" aria-hidden="true"></i></button>
-                            <button type="button" class="space-dock-btn" data-space-action="keepsakes" aria-label="Tạm lưu"><i class="fas fa-infinity" aria-hidden="true"></i></button>
-                            <button type="button" class="space-dock-btn" data-space-action="friends" aria-label="Bạn bè"><i class="fas fa-users" aria-hidden="true"></i></button>
-                            <button type="button" class="space-dock-btn" data-space-action="campus" aria-label="Sinh viên"><i class="fas fa-graduation-cap" aria-hidden="true"></i></button>
-                            <button type="button" class="space-dock-btn" data-space-action="cooking" aria-label="Nấu ăn"><i class="fas fa-utensils" aria-hidden="true"></i></button>
-                            <button type="button" class="space-dock-btn" data-space-action="upload" aria-label="Upload"><i class="fas fa-camera" aria-hidden="true"></i></button>
-                            <button type="button" class="space-dock-btn" data-space-action="feedback" aria-label="Feedback"><i class="fas fa-comment-dots" aria-hidden="true"></i></button>
+                            <button type="button" class="space-dock-btn" data-space-action="family"
+                                aria-label="Gia đình"><i class="fas fa-house-user" aria-hidden="true"></i></button>
+                            <button type="button" class="space-dock-btn" data-space-action="thoughts"
+                                aria-label="Lăng kính"><i class="fas fa-eye" aria-hidden="true"></i></button>
+                            <button type="button" class="space-dock-btn" data-space-action="keepsakes"
+                                aria-label="Tạm lưu"><i class="fas fa-infinity" aria-hidden="true"></i></button>
+                            <button type="button" class="space-dock-btn" data-space-action="friends"
+                                aria-label="Bạn bè"><i class="fas fa-users" aria-hidden="true"></i></button>
+                            <button type="button" class="space-dock-btn" data-space-action="campus"
+                                aria-label="Sinh viên"><i class="fas fa-graduation-cap" aria-hidden="true"></i></button>
+                            <button type="button" class="space-dock-btn" data-space-action="cooking"
+                                aria-label="Nấu ăn"><i class="fas fa-utensils" aria-hidden="true"></i></button>
+                            <button type="button" class="space-dock-btn" data-space-action="upload"
+                                aria-label="Upload"><i class="fas fa-camera" aria-hidden="true"></i></button>
+                            <button type="button" class="space-dock-btn" data-space-action="feedback"
+                                aria-label="Feedback"><i class="fas fa-comment-dots" aria-hidden="true"></i></button>
                         </div>
                     </div>
 
                     <nav class="space-navigation__fallback" aria-label="Điều hướng dự phòng">
                         <p class="space-navigation__fallback-title">Chọn một thế giới</p>
                         <div class="space-navigation__fallback-grid">
-                            <button type="button" class="space-navigation__fallback-btn" data-space-action="family">Gia đình</button>
-                            <button type="button" class="space-navigation__fallback-btn" data-space-action="thoughts">Lăng kính của Hiếu</button>
-                            <button type="button" class="space-navigation__fallback-btn" data-space-action="keepsakes">Tạm lưu tạm giữ</button>
-                            <button type="button" class="space-navigation__fallback-btn" data-space-action="friends">Những thằng cốt đột</button>
-                            <button type="button" class="space-navigation__fallback-btn" data-space-action="campus">Sinh viên</button>
-                            <button type="button" class="space-navigation__fallback-btn" data-space-action="cooking">Nấu ăn</button>
-                            <button type="button" class="space-navigation__fallback-btn" data-space-action="upload">Upload</button>
-                            <button type="button" class="space-navigation__fallback-btn" data-space-action="feedback">Feedback</button>
+                            <button type="button" class="space-navigation__fallback-btn" data-space-action="family">Gia
+                                đình</button>
+                            <button type="button" class="space-navigation__fallback-btn"
+                                data-space-action="thoughts">Lăng kính của Hiếu</button>
+                            <button type="button" class="space-navigation__fallback-btn"
+                                data-space-action="keepsakes">Tạm lưu tạm giữ</button>
+                            <button type="button" class="space-navigation__fallback-btn"
+                                data-space-action="friends">Những thằng cốt đột</button>
+                            <button type="button" class="space-navigation__fallback-btn" data-space-action="campus">Sinh
+                                viên</button>
+                            <button type="button" class="space-navigation__fallback-btn" data-space-action="cooking">Nấu
+                                ăn</button>
+                            <button type="button" class="space-navigation__fallback-btn"
+                                data-space-action="upload">Upload</button>
+                            <button type="button" class="space-navigation__fallback-btn"
+                                data-space-action="feedback">Feedback</button>
                         </div>
                     </nav>
                 </section>
@@ -145,8 +318,10 @@
                         <p class="world-heading__subtitle">Những điều bình yên để người đi xa nhìn về.</p>
                     </div>
                     <div class="world-header__actions">
-                        <span class="world-header__count"><i class="fas fa-satellite-dish" aria-hidden="true"></i><span data-gallery-count>Đang đồng bộ</span></span>
-                        <button type="button" class="family-upload-fab" id="family-upload-open-desktop" aria-label="Thêm ảnh vào album gia đình">
+                        <span class="world-header__count"><i class="fas fa-satellite-dish" aria-hidden="true"></i><span
+                                data-gallery-count>Đang đồng bộ</span></span>
+                        <button type="button" class="family-upload-fab" id="family-upload-open-desktop"
+                            aria-label="Thêm ảnh vào album gia đình">
                             <i class="fas fa-camera" aria-hidden="true"></i><span>Thêm ký ức</span>
                         </button>
                     </div>
@@ -163,53 +338,58 @@
             </main>
         </div><!-- /view-family -->
 
-        <div class="gallery-overlay orbital-dialog" id="gallery-overlay" data-world="thoughts" role="dialog" aria-modal="true" aria-labelledby="gallery-title" aria-hidden="true">
-                    <div class="gallery-panel">
-                        <div class="gallery-panel__header">
-                            <div class="dialog-heading">
-                                <p class="dialog-heading__eyebrow">Quỹ đạo 02 · Lăng kính của Hiếu</p>
-                                <h2 class="gallery-panel__title" id="gallery-title"></h2>
-                                <p class="dialog-heading__subtitle">Mỗi chiếc hộp là một góc nhìn. Nếu tò mò hãy chạm lấy.</p>
-                            </div>
-                            <button class="gallery-panel__close" id="gallery-close" aria-label="Đóng">&times;</button>
-                        </div>
-                        <div class="gallery-panel__grid" id="gallery-grid"></div>
-                        <p class="gallery-panel__quote" id="gallery-quote" hidden></p>
-                        <p class="gallery-panel__empty" id="gallery-empty">Chưa update. H&atilde;y quay lại sau
-                            nh&eacute;!</p>
-                        <div class="cooking-upload-widget moments-upload-widget" id="moments-upload-widget"
-                            aria-label="Upload ảnh" hidden>
-                            <div class="cooking-upload-widget__hint" id="moments-upload-hint">
-                                <i class="fas fa-camera hint-icon" aria-hidden="true"></i>
-                                <span class="hint-label">Chọn ảnh để gửi</span>
-                            </div>
-                            <div class="cooking-upload-widget__preview" id="moments-upload-preview" hidden></div>
-                            <button type="button" class="cooking-upload-widget__send" id="moments-send-btn" hidden>
-                                <i class="fas fa-paper-plane" aria-hidden="true"></i>
-                            </button>
-                            <input type="file" id="moments-upload-input"
-                                accept="image/jpeg,image/png,image/webp,image/gif,image/heic,image/heif,.heic,.heif" multiple hidden>
-                        </div>
-                        <p class="cooking-upload-widget__status moments-upload-status" id="moments-upload-status"
-                            aria-live="polite"></p>
+        <div class="gallery-overlay orbital-dialog" id="gallery-overlay" data-world="thoughts" role="dialog"
+            aria-modal="true" aria-labelledby="gallery-title" aria-hidden="true">
+            <div class="gallery-panel">
+                <div class="gallery-panel__header">
+                    <div class="dialog-heading">
+                        <p class="dialog-heading__eyebrow">Quỹ đạo 02 · Lăng kính của Hiếu</p>
+                        <h2 class="gallery-panel__title" id="gallery-title"></h2>
+                        <p class="dialog-heading__subtitle">Mỗi chiếc hộp là một góc nhìn. Nếu tò mò hãy chạm lấy.</p>
                     </div>
+                    <button class="gallery-panel__close" id="gallery-close" aria-label="Đóng">&times;</button>
                 </div>
+                <div class="gallery-panel__grid" id="gallery-grid"></div>
+                <p class="gallery-panel__quote" id="gallery-quote" hidden></p>
+                <p class="gallery-panel__empty" id="gallery-empty">Chưa update. H&atilde;y quay lại sau
+                    nh&eacute;!</p>
+                <div class="cooking-upload-widget moments-upload-widget" id="moments-upload-widget"
+                    aria-label="Upload ảnh" hidden>
+                    <div class="cooking-upload-widget__hint" id="moments-upload-hint">
+                        <i class="fas fa-camera hint-icon" aria-hidden="true"></i>
+                        <span class="hint-label">Chọn ảnh để gửi</span>
+                    </div>
+                    <div class="cooking-upload-widget__preview" id="moments-upload-preview" hidden></div>
+                    <button type="button" class="cooking-upload-widget__send" id="moments-send-btn" hidden>
+                        <i class="fas fa-paper-plane" aria-hidden="true"></i>
+                    </button>
+                    <input type="file" id="moments-upload-input"
+                        accept="image/jpeg,image/png,image/webp,image/gif,image/heic,image/heif,.heic,.heif" multiple
+                        hidden>
+                </div>
+                <p class="cooking-upload-widget__status moments-upload-status" id="moments-upload-status"
+                    aria-live="polite"></p>
+            </div>
+        </div>
 
-        <div class="join-modal orbital-dialog" id="join-modal" data-world="feedback" role="dialog" aria-modal="true" aria-labelledby="join-title" aria-hidden="true">
-                    <div class="join-modal__backdrop"></div>
-                    <article class="join-modal__card">
-                        <button type="button" class="join-modal__close" id="join-close" aria-label="Đóng">&times;</button>
-                        <p class="dialog-heading__eyebrow">Quỹ đạo 08 · Feedback</p>
-                        <h2 class="join-modal__title" id="join-title">Gửi một tín hiệu</h2>
-                        <form class="join-form" id="join-form">
-                            <input type="hidden" name="createdAt" id="join-created-at">
-                            <label class="join-form__field">
-                                <span class="sr-only">Nội dung góp ý</span>
-                                <textarea id="join-content" name="content" rows="5" placeholder="Nhập lời nhắn..." required></textarea>
-                            </label>
-                            <button type="submit" class="join-form__submit"><i class="fas fa-paper-plane" aria-hidden="true"></i> Gửi tín hiệu</button>
-                        </form>
-                    </article>
+        <div class="join-modal orbital-dialog" id="join-modal" data-world="feedback" role="dialog" aria-modal="true"
+            aria-labelledby="join-title" aria-hidden="true">
+            <div class="join-modal__backdrop"></div>
+            <article class="join-modal__card">
+                <button type="button" class="join-modal__close" id="join-close" aria-label="Đóng">&times;</button>
+                <p class="dialog-heading__eyebrow">Quỹ đạo 08 · Feedback</p>
+                <h2 class="join-modal__title" id="join-title">Gửi một tín hiệu</h2>
+                <form class="join-form" id="join-form">
+                    <input type="hidden" name="createdAt" id="join-created-at">
+                    <label class="join-form__field">
+                        <span class="sr-only">Nội dung góp ý</span>
+                        <textarea id="join-content" name="content" rows="5" placeholder="Nhập lời nhắn..."
+                            required></textarea>
+                    </label>
+                    <button type="submit" class="join-form__submit"><i class="fas fa-paper-plane"
+                            aria-hidden="true"></i> Gửi tín hiệu</button>
+                </form>
+            </article>
         </div>
 
         <!-- ════ VIEW: FRIENDS (Những thằng ở tuổi 16) ════ -->
@@ -226,8 +406,10 @@
                         <p class="world-heading__subtitle">Đang cập nhật...</p>
                     </div>
                     <div class="world-header__actions">
-                        <span class="world-header__count"><i class="fas fa-satellite-dish" aria-hidden="true"></i><span data-gallery-count>Đang đồng bộ</span></span>
-                        <button type="button" class="family-upload-fab" id="friends-upload-open-desktop" aria-label="Thêm ảnh vào album bạn bè">
+                        <span class="world-header__count"><i class="fas fa-satellite-dish" aria-hidden="true"></i><span
+                                data-gallery-count>Đang đồng bộ</span></span>
+                        <button type="button" class="family-upload-fab" id="friends-upload-open-desktop"
+                            aria-label="Thêm ảnh vào album bạn bè">
                             <i class="fas fa-camera" aria-hidden="true"></i><span>Thêm ký ức</span>
                         </button>
                     </div>
@@ -257,8 +439,10 @@
                         <p class="world-heading__subtitle">Những mảnh ký ức chưa muốn gọi tên là đã qua.</p>
                     </div>
                     <div class="world-header__actions">
-                        <span class="world-header__count"><i class="fas fa-satellite-dish" aria-hidden="true"></i><span data-gallery-count>Đang đồng bộ</span></span>
-                        <button type="button" class="family-upload-fab" id="keepsakes-upload-open-desktop" aria-label="Thêm ảnh vào kho tạm lưu">
+                        <span class="world-header__count"><i class="fas fa-satellite-dish" aria-hidden="true"></i><span
+                                data-gallery-count>Đang đồng bộ</span></span>
+                        <button type="button" class="family-upload-fab" id="keepsakes-upload-open-desktop"
+                            aria-label="Thêm ảnh vào kho tạm lưu">
                             <i class="fas fa-camera" aria-hidden="true"></i><span>Thêm ký ức</span>
                         </button>
                     </div>
@@ -288,8 +472,10 @@
                         <p class="world-heading__subtitle">Không cần chứng minh bạn nấu nếu bạn đã rửa.</p>
                     </div>
                     <div class="world-header__actions">
-                        <span class="world-header__count"><i class="fas fa-satellite-dish" aria-hidden="true"></i><span data-gallery-count>Đang đồng bộ</span></span>
-                        <button type="button" class="family-upload-fab" id="cooking-upload-open-desktop" aria-label="Thêm ảnh vào nhật ký nấu ăn">
+                        <span class="world-header__count"><i class="fas fa-satellite-dish" aria-hidden="true"></i><span
+                                data-gallery-count>Đang đồng bộ</span></span>
+                        <button type="button" class="family-upload-fab" id="cooking-upload-open-desktop"
+                            aria-label="Thêm ảnh vào nhật ký nấu ăn">
                             <i class="fas fa-camera" aria-hidden="true"></i><span>Thêm ký ức</span>
                         </button>
                     </div>
@@ -321,8 +507,10 @@
                         <p class="world-heading__subtitle">Vẫn đang cập nhật...</p>
                     </div>
                     <div class="world-header__actions">
-                        <span class="world-header__count"><i class="fas fa-satellite-dish" aria-hidden="true"></i><span data-gallery-count>Đang đồng bộ</span></span>
-                        <button type="button" class="family-upload-fab" id="campus-upload-open-desktop" aria-label="Thêm ảnh vào nhật ký sinh viên">
+                        <span class="world-header__count"><i class="fas fa-satellite-dish" aria-hidden="true"></i><span
+                                data-gallery-count>Đang đồng bộ</span></span>
+                        <button type="button" class="family-upload-fab" id="campus-upload-open-desktop"
+                            aria-label="Thêm ảnh vào nhật ký sinh viên">
                             <i class="fas fa-camera" aria-hidden="true"></i><span>Thêm ký ức</span>
                         </button>
                     </div>
@@ -338,15 +526,19 @@
         </div><!-- /view-campus -->
     </div><!-- /spa-shell -->
 
-    <div class="photo-lightbox" id="photo-lightbox" role="dialog" aria-modal="true" aria-label="Ảnh phóng to" aria-hidden="true">
+    <div class="photo-lightbox" id="photo-lightbox" role="dialog" aria-modal="true" aria-label="Ảnh phóng to"
+        aria-hidden="true">
         <div class="photo-lightbox__backdrop"></div>
         <div class="photo-lightbox__content">
             <button class="photo-lightbox__close" id="photo-lightbox-close" aria-label="Đóng">&times;</button>
             <div class="photo-lightbox__stage" id="photo-lightbox-stage">
                 <img class="photo-lightbox__img" id="photo-lightbox-img" src="" alt="" loading="lazy" decoding="async">
-                <svg class="photo-lightbox__orbit" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false">
-                    <rect class="photo-lightbox__orbit-track" x="1.2" y="1.2" width="97.6" height="97.6" rx="4.5" pathLength="100"></rect>
-                    <rect class="photo-lightbox__orbit-beam" x="1.2" y="1.2" width="97.6" height="97.6" rx="4.5" pathLength="100"></rect>
+                <svg class="photo-lightbox__orbit" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"
+                    focusable="false">
+                    <rect class="photo-lightbox__orbit-track" x="1.2" y="1.2" width="97.6" height="97.6" rx="4.5"
+                        pathLength="100"></rect>
+                    <rect class="photo-lightbox__orbit-beam" x="1.2" y="1.2" width="97.6" height="97.6" rx="4.5"
+                        pathLength="100"></rect>
                 </svg>
             </div>
             <div class="photo-lightbox__caption" id="photo-lightbox-caption"></div>
@@ -354,7 +546,8 @@
     </div>
 
     <!-- Key modal -->
-    <div class="key-modal orbital-dialog" id="key-modal" role="dialog" aria-modal="true" aria-labelledby="key-modal-title" aria-hidden="true">
+    <div class="key-modal orbital-dialog" id="key-modal" role="dialog" aria-modal="true"
+        aria-labelledby="key-modal-title" aria-hidden="true">
         <div class="key-modal__backdrop"></div>
         <article class="key-modal__card">
             <button type="button" class="key-modal__close" id="key-close" aria-label="Đóng">&times;</button>
@@ -362,7 +555,8 @@
             <h2 class="key-modal__title" id="key-modal-title">Mở kho ký ức</h2>
             <p class="key-modal__note">Nhập mã truy cập để tiếp tục đến thế giới này.</p>
             <form class="key-form" id="key-form">
-                <input type="password" id="key-input" inputmode="numeric" pattern="[0-9]*" autocomplete="off" aria-label="Mã truy cập" placeholder="">
+                <input type="password" id="key-input" inputmode="numeric" pattern="[0-9]*" autocomplete="off"
+                    aria-label="Mã truy cập" placeholder="">
                 <button type="submit"><i class="fas fa-lock-open" aria-hidden="true"></i> Mở kho</button>
                 <p class="key-modal__error" id="key-error" aria-live="polite"></p>
             </form>
@@ -370,7 +564,8 @@
     </div>
 
     <!-- Upload Modal -->
-    <div class="upload-modal orbital-dialog" id="upload-modal" data-world="upload" role="dialog" aria-modal="true" aria-labelledby="upload-modal-title" aria-hidden="true">
+    <div class="upload-modal orbital-dialog" id="upload-modal" data-world="upload" role="dialog" aria-modal="true"
+        aria-labelledby="upload-modal-title" aria-hidden="true">
         <div class="upload-modal__backdrop" id="upload-modal-backdrop"></div>
         <article class="upload-modal__card">
             <div class="upload-modal__header">
@@ -416,8 +611,11 @@
             <!-- Status -->
             <p class="upload-modal__status" id="upload-status" aria-live="polite"></p>
 
-            <input type="file" id="upload-input-image" accept="image/jpeg,image/png,image/webp,image/gif,image/heic,image/heif,.heic,.heif" multiple hidden>
-            <input type="file" id="upload-input-video" accept="video/mp4,video/quicktime,video/webm,video/x-msvideo,video/x-matroska,.mp4,.mov,.webm,.avi,.mkv" multiple hidden>
+            <input type="file" id="upload-input-image"
+                accept="image/jpeg,image/png,image/webp,image/gif,image/heic,image/heif,.heic,.heif" multiple hidden>
+            <input type="file" id="upload-input-video"
+                accept="video/mp4,video/quicktime,video/webm,video/x-msvideo,video/x-matroska,.mp4,.mov,.webm,.avi,.mkv"
+                multiple hidden>
         </article>
     </div>
 
