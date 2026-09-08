@@ -1,0 +1,3591 @@
+index.html 
+
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#010205">
+    <meta name="color-scheme" content="dark">
+    <title>Trọng Hiếu – Timebox</title>
+    <meta name="description"
+        content="Timebox – Nơi lưu giữ kỷ niệm của Trọng Hiếu. Gia đình, bạn bè, sinh viên và những khoảnh khắc đáng nhớ.">
+    <link rel="canonical" href="https://tronghieu1201.github.io/timebox/">
+    <link rel="icon" type="image/webp"
+        href="https://res.cloudinary.com/dtpw5htqs/image/upload/v1782711381/43b58650-6952-47b7-9bac-94918d6b54a6_fcvxaq.webp">
+    <link rel="apple-touch-icon"
+        href="https://res.cloudinary.com/dtpw5htqs/image/upload/v1782711381/43b58650-6952-47b7-9bac-94918d6b54a6_fcvxaq.webp">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css?v=44">
+    <link rel="stylesheet" href="life.css?v=41">
+    <link rel="stylesheet" href="space-navigation.css?v=42">
+    <style>
+        .spa-shell {
+            position: relative;
+            width: 100%;
+            max-width: 560px;
+            margin: auto;
+        }
+
+        .spa-view {
+            width: 100%;
+        }
+
+        .spa-view.is-hidden {
+            display: none;
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(28px) scale(0.98);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0) scale(1);
+            }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-28px) scale(0.98);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0) scale(1);
+            }
+        }
+
+        .spa-view.anim-enter-right {
+            animation: slideInRight 0.24s cubic-bezier(0.22, 1, 0.36, 1) both;
+        }
+
+        .spa-view.anim-enter-left {
+            animation: slideInLeft 0.24s cubic-bezier(0.22, 1, 0.36, 1) both;
+        }
+    </style>
+    <link rel="stylesheet" href="orbital-archive.css?v=44">
+</head>
+
+<body class="timebox-cinematic space-nav-home-visible" data-space-view="home">
+    <script>
+        (function () {
+            var requestedView = new URLSearchParams(window.location.search).get('view');
+            if (['family', 'friends', 'keepsakes', 'cooking', 'campus'].indexOf(requestedView) !== -1) {
+                document.body.setAttribute('data-space-view', requestedView);
+                document.body.classList.remove('space-nav-home-visible');
+            }
+        })();
+    </script>
+    <!-- Background blobs -->
+    <div class="blob blob--1" aria-hidden="true"></div>
+    <div class="blob blob--2" aria-hidden="true"></div>
+    <div class="blob blob--3" aria-hidden="true"></div>
+
+    <div class="spa-shell">
+        <div class="spa-view" id="view-home">
+            <main class="bio-card life-page archive-page space-home">
+                <header class="space-home__header">
+                    <h1 class="space-home__eyebrow">Timebox</h1>
+                </header>
+
+                <section class="space-navigation" data-space-navigation aria-label="Điều hướng vũ trụ ký ức">
+                    <div class="space-navigation__stage" data-space-stage tabindex="-1">
+                        <div class="space-navigation__nodes" data-space-nodes aria-label="Các thiên thể điều hướng"></div>
+                    </div>
+
+                    <div class="space-quick-dock" data-coverflow-dock aria-label="Điều hướng nhanh">
+                        <div class="space-dock-track" data-coverflow-track>
+                            <button type="button" class="space-dock-btn" data-space-action="family" aria-label="Gia đình"><i class="fas fa-house-user" aria-hidden="true"></i></button>
+                            <button type="button" class="space-dock-btn" data-space-action="thoughts" aria-label="Lăng kính"><i class="fas fa-eye" aria-hidden="true"></i></button>
+                            <button type="button" class="space-dock-btn" data-space-action="keepsakes" aria-label="Tạm lưu"><i class="fas fa-infinity" aria-hidden="true"></i></button>
+                            <button type="button" class="space-dock-btn" data-space-action="friends" aria-label="Bạn bè"><i class="fas fa-users" aria-hidden="true"></i></button>
+                            <button type="button" class="space-dock-btn" data-space-action="campus" aria-label="Sinh viên"><i class="fas fa-graduation-cap" aria-hidden="true"></i></button>
+                            <button type="button" class="space-dock-btn" data-space-action="cooking" aria-label="Nấu ăn"><i class="fas fa-utensils" aria-hidden="true"></i></button>
+                            <button type="button" class="space-dock-btn" data-space-action="upload" aria-label="Upload"><i class="fas fa-camera" aria-hidden="true"></i></button>
+                            <button type="button" class="space-dock-btn" data-space-action="feedback" aria-label="Feedback"><i class="fas fa-comment-dots" aria-hidden="true"></i></button>
+                        </div>
+                    </div>
+
+                    <nav class="space-navigation__fallback" aria-label="Điều hướng dự phòng">
+                        <p class="space-navigation__fallback-title">Chọn một thế giới</p>
+                        <div class="space-navigation__fallback-grid">
+                            <button type="button" class="space-navigation__fallback-btn" data-space-action="family">Gia đình</button>
+                            <button type="button" class="space-navigation__fallback-btn" data-space-action="thoughts">Lăng kính của Hiếu</button>
+                            <button type="button" class="space-navigation__fallback-btn" data-space-action="keepsakes">Tạm lưu tạm giữ</button>
+                            <button type="button" class="space-navigation__fallback-btn" data-space-action="friends">Những thằng cốt đột</button>
+                            <button type="button" class="space-navigation__fallback-btn" data-space-action="campus">Sinh viên</button>
+                            <button type="button" class="space-navigation__fallback-btn" data-space-action="cooking">Nấu ăn</button>
+                            <button type="button" class="space-navigation__fallback-btn" data-space-action="upload">Upload</button>
+                            <button type="button" class="space-navigation__fallback-btn" data-space-action="feedback">Feedback</button>
+                        </div>
+                    </nav>
+                </section>
+            </main>
+        </div><!-- /view-home -->
+
+        <!-- ════ VIEW: FAMILY (Gia đình) ════ -->
+        <div class="spa-view is-hidden" id="view-family">
+            <main class="bio-card album-page world-album" data-world="family">
+                <header class="life-header world-header">
+                    <button type="button" class="life-back" id="btn-back-family" aria-label="Về quỹ đạo chính">
+                        <i class="fas fa-arrow-left" aria-hidden="true"></i>
+                        <span>Về quỹ đạo</span>
+                    </button>
+                    <div class="world-heading">
+                        <p class="world-heading__eyebrow">Quỹ đạo 01 · Gia đình</p>
+                        <h1 class="life-title">Gia đình mình</h1>
+                        <p class="world-heading__subtitle">Những điều bình yên để người đi xa nhìn về.</p>
+                    </div>
+                    <div class="world-header__actions">
+                        <span class="world-header__count"><i class="fas fa-satellite-dish" aria-hidden="true"></i><span data-gallery-count>Đang đồng bộ</span></span>
+                        <button type="button" class="family-upload-fab" id="family-upload-open-desktop" aria-label="Thêm ảnh vào album gia đình">
+                            <i class="fas fa-camera" aria-hidden="true"></i><span>Thêm ký ức</span>
+                        </button>
+                    </div>
+                </header>
+                <section class="photo-gallery" aria-label="Album gia dinh" data-live-scope="family"
+                    data-gallery-cloudinary="https://res.cloudinary.com/dtpw5htqs/image/upload/v1782843231/474919975_620365200643532_1969014067725644935_n_gw5f4v.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782843229/405002857_858864052679605_2321506920921441389_n_ufzq4h.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782843228/419461838_427518506294410_7497663406157582344_n_axfccp.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782843227/420557200_1803026840198809_5054056938182832634_n_cbfe4e.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782843224/352840803_632090475516819_2496629704571334396_n_ufypg3.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782843224/364198136_2563393060478451_202851886270146469_n_b7ypjs.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782843226/353404349_1224884841558866_4655714473081427073_n_lhcoda.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782843232/476880045_1586477362010710_1731960998613157307_n_hgf2bw.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782843235/553895920_1133959295471819_8286816900586390701_n_sspwb8.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782843237/613354640_889209363703149_4987623942501048444_n_atcr3h.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782843234/495071579_2058007294689282_3395155635642199359_n_ln8u1r.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782843238/637974375_802482968854487_6559249715192562672_n_cjut6w.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782843240/672755822_938016605883494_8900332934448303080_n_yunvox.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782445536/z7977421421246_e1124cbeb01bdb34a57c1b077465222e_agkjdu.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782445536/z7977421190637_fd1aa95fddd59c6c41e1dc721e89be34_bimxxf.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782290358/z7971162030633_114dd7da15988c7204cdd879387cd095_uhobb6.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782481059/727082953_985291301003447_1485165696336316805_n_hp0zu1.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782452992/IMG_3079_h55rhc.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782452991/1I7O035HN_807RV1_m1ornz.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782452992/1I7O0PVMM_807RV1_h7vzhi.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782486601/Screenshot_73_q5i56e.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782486602/z4553161299473_3f97a24e42cd38c04e78510dd95b58d7_n2as0x.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782486601/dff29471-428f-47db-949b-02dc94200ac1_lugtnv.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782486602/352955887_966768314472029_8758201426811431935_n_vi9hwj.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782486603/353087561_1298057061094554_7317470717430735685_n_wmab8a.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782445536/z7977421444455_a21e501c170541f1d34032ef67b0a1f0_yhcej7.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782445535/z7977421292225_6b6f207c5780ea01a503a54867d179cf_tkjagg.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782445535/z7977421059680_1f57d410e0e99619dc962b0c500de3bd_i1q3e8.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782445535/z7977420740452_790bca5b19d1d6fa0d528b875835eaa9_mzryvu.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782445535/z7977420575747_97bee961346dc4cd995811d24d0fbf9d_ceqgjf.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782445535/z7977420494936_1cb1dba9e59702e6694801deb4e0d734_k00mfr.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782445534/z7977420352216_c3fb25dd953b4b1135ef07f7fe107aea_xfdrfk.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782445534/z7977420352012_a32e431e3f1dddf1aa6fc60f7405804f_wzhsdc.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782290356/z7971158903452_ae4c5d419cd2c043a4d05c41aa762375_t00an1.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782290354/z7971158843659_d670b24c4ebb0ea39b11e313c00cad7f_yfltee.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782290353/z7971158795148_c6546e3736bc6a663191966181d77ff8_iugooi.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782290351/z7971158767549_155a33db166cc729c5270fe5052616e1_dxomsa.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782290349/z7971158701287_623a8aa558c66c2fc78f8f6c3abcd115_igekpp.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782290347/z7971158651332_c87f84fcf2f0c2340259f4def8efd2f8_mwzinp.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782290345/z7971158618450_d731f856eb52387589e617ffbe9cecff_belygp.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782290339/z7971158592791_396af9fb702d13c08d280b225bec0604_lmviww.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782290327/IMG_5341_chkbwj.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782290325/IMG_5332_y7l7fx.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782290320/IMG_5308_wxnmw4.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782290322/IMG_5309_nvhklv.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782290312/IMG_3004_cb4bzj.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782290318/IMG_5307_cfhl00.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782290311/IMG_2846_crvxqc.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782289943/IMG_3123_pj5e7d.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782289937/z4553161151438_edad6dd155c1094bdefeeabeaf459486_lyeg4g.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782289935/z4553161119313_6b143769903ceb4efc0a1e7742d0a6f5_grxg2b.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782289930/IMG_5331_habq8x.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782289927/IMG_3124_nhruqe.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782743446/1I7O09M3V_807RV1_bslr3j.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782743445/1I7O0PV7N_807RV1_snod3h.webp"
+                    data-pinned-image="https://res.cloudinary.com/dtpw5htqs/image/upload/v1782486603/353087561_1298057061094554_7317470717430735685_n_wmab8a.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782486602/352955887_966768314472029_8758201426811431935_n_vi9hwj.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782843226/353404349_1224884841558866_4655714473081427073_n_lhcoda.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782843224/352840803_632090475516819_2496629704571334396_n_ufypg3.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782445536/z7977421421246_e1124cbeb01bdb34a57c1b077465222e_agkjdu.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782445536/z7977421190637_fd1aa95fddd59c6c41e1dc721e89be34_bimxxf.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782290358/z7971162030633_114dd7da15988c7204cdd879387cd095_uhobb6.webp">
+                </section>
+                <div class="family-upload-mobile" id="family-upload-mobile">
+                    <button type="button" class="family-upload-mobile__btn" id="family-upload-open-mobile">
+                        <i class="fas fa-camera" aria-hidden="true"></i><span>Upload</span>
+                    </button>
+                </div>
+            </main>
+        </div><!-- /view-family -->
+
+        <div class="gallery-overlay orbital-dialog" id="gallery-overlay" data-world="thoughts" role="dialog" aria-modal="true" aria-labelledby="gallery-title" aria-hidden="true">
+                    <div class="gallery-panel">
+                        <div class="gallery-panel__header">
+                            <div class="dialog-heading">
+                                <p class="dialog-heading__eyebrow">Quỹ đạo 02 · Lăng kính của Hiếu</p>
+                                <h2 class="gallery-panel__title" id="gallery-title"></h2>
+                                <p class="dialog-heading__subtitle">Mỗi chiếc hộp là một góc nhìn. Nếu tò mò hãy chạm lấy.</p>
+                            </div>
+                            <button class="gallery-panel__close" id="gallery-close" aria-label="Đóng">&times;</button>
+                        </div>
+                        <div class="gallery-panel__grid" id="gallery-grid"></div>
+                        <p class="gallery-panel__quote" id="gallery-quote" hidden></p>
+                        <p class="gallery-panel__empty" id="gallery-empty">Chưa update. H&atilde;y quay lại sau
+                            nh&eacute;!</p>
+                        <div class="cooking-upload-widget moments-upload-widget" id="moments-upload-widget"
+                            aria-label="Upload ảnh" hidden>
+                            <div class="cooking-upload-widget__hint" id="moments-upload-hint">
+                                <i class="fas fa-camera hint-icon" aria-hidden="true"></i>
+                                <span class="hint-label">Chọn ảnh để gửi</span>
+                            </div>
+                            <div class="cooking-upload-widget__preview" id="moments-upload-preview" hidden></div>
+                            <button type="button" class="cooking-upload-widget__send" id="moments-send-btn" hidden>
+                                <i class="fas fa-paper-plane" aria-hidden="true"></i>
+                            </button>
+                            <input type="file" id="moments-upload-input"
+                                accept="image/jpeg,image/png,image/webp,image/gif,image/heic,image/heif,.heic,.heif" multiple hidden>
+                        </div>
+                        <p class="cooking-upload-widget__status moments-upload-status" id="moments-upload-status"
+                            aria-live="polite"></p>
+                    </div>
+                </div>
+
+        <div class="join-modal orbital-dialog" id="join-modal" data-world="feedback" role="dialog" aria-modal="true" aria-labelledby="join-title" aria-hidden="true">
+                    <div class="join-modal__backdrop"></div>
+                    <article class="join-modal__card">
+                        <button type="button" class="join-modal__close" id="join-close" aria-label="Đóng">&times;</button>
+                        <p class="dialog-heading__eyebrow">Quỹ đạo 08 · Feedback</p>
+                        <h2 class="join-modal__title" id="join-title">Gửi một tín hiệu</h2>
+                        <form class="join-form" id="join-form">
+                            <input type="hidden" name="createdAt" id="join-created-at">
+                            <label class="join-form__field">
+                                <span class="sr-only">Nội dung góp ý</span>
+                                <textarea id="join-content" name="content" rows="5" placeholder="Nhập lời nhắn..." required></textarea>
+                            </label>
+                            <button type="submit" class="join-form__submit"><i class="fas fa-paper-plane" aria-hidden="true"></i> Gửi tín hiệu</button>
+                        </form>
+                    </article>
+        </div>
+
+        <!-- ════ VIEW: FRIENDS (Những thằng ở tuổi 16) ════ -->
+        <div class="spa-view is-hidden" id="view-friends">
+            <main class="bio-card album-page world-album" data-world="friends">
+                <header class="life-header world-header">
+                    <button type="button" class="life-back" id="btn-back-friends" aria-label="Về quỹ đạo chính">
+                        <i class="fas fa-arrow-left" aria-hidden="true"></i>
+                        <span>Về quỹ đạo</span>
+                    </button>
+                    <div class="world-heading">
+                        <p class="world-heading__eyebrow">Quỹ đạo 04 · Những thằng cốt đột</p>
+                        <h1 class="life-title">Những thằng ở tuổi 16</h1>
+                        <p class="world-heading__subtitle">Đang cập nhật...</p>
+                    </div>
+                    <div class="world-header__actions">
+                        <span class="world-header__count"><i class="fas fa-satellite-dish" aria-hidden="true"></i><span data-gallery-count>Đang đồng bộ</span></span>
+                        <button type="button" class="family-upload-fab" id="friends-upload-open-desktop" aria-label="Thêm ảnh vào album bạn bè">
+                            <i class="fas fa-camera" aria-hidden="true"></i><span>Thêm ký ức</span>
+                        </button>
+                    </div>
+                </header>
+                <section class="photo-gallery" aria-label="Album Best Friends" data-live-scope="friends"
+                    data-gallery-cloudinary="https://res.cloudinary.com/dtpw5htqs/image/upload/v1783095792/IMG_6447_u8p06h.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1783095792/IMG_6441_boqnbv.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1783095792/IMG_6453_rwdkfp.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1783095792/IMG_6452_bgerog.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782285735/z7970828591662_7287208052dbaa6a8a1637bec96113f7_ggy62w.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782285193/IMG_1458_qexx6a.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782285192/IMG_1457_juqln5.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782285191/df711c41-215c-40da-9737-0fe450b9be96_whjnnx.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782285190/cf891f1f-21f1-440d-b49f-2d86efa462ea_ubvgwp.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782285188/cd942cc0-cf13-4e00-ba61-65a0e5435340_r94gy3.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782285187/643c91de-691e-4ba4-8ef3-ceb05b586c5c_bawxlb.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782285185/z7968429834343_5b9e8278fc949764c79f2744244c449e_vh9pcp.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782285186/0d1d757b-1e88-4f78-bc10-613370b6b7ce_tihgyu.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782285183/z7968429774386_c18dda87d14938d0c632f4e15391a9dc_s6oq3y.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782285181/z7961712141973_cdc3cbe101365e1b34abe5ffdaf78a4d_e2jtbp.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782285180/z7429701366088_8556aaaf9a0a19a2b05ce342b7e6fec2_piqmpy.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782285179/IMG_4147_vmjxjx.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782285178/IMG_3753_rlcxk9.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782285176/IMG_3720_poncwz.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782285176/IMG_3718_sxxsqt.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782285175/IMG_3072_ncbq6o.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782486552/IMG_4092_xhwkzn.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782486552/1I7O0NQQP_807RV1_svpax3.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782486553/IMG_4820_zqplz5.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782486553/1I7O06786_807RV1_lqjk83.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782486553/z7961689553601_d263b055bf8c8e0c1af4e74a1bf11eee_aucfws.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782486553/z7961689256587_c4cff1c9c413393e53a65d97ebde9ff6_brxmhu.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782743476/1I7O0NQN1_807RV1_z6wcmi.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782743475/IMG_5967_wlnv0k.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782743472/1I7O09LTP_807RV1_h2fgca.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782743472/1I7O035LG_807RV1_oghhv3.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782743474/IMG_3717_p0lwff.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782743487/1I7O11BT7_807RV1_nezlw2.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782743486/1I7O11BG6_807RV1_lytavf.webp"
+                    data-pinned-image="https://res.cloudinary.com/dtpw5htqs/image/upload/v1782285181/z7961712141973_cdc3cbe101365e1b34abe5ffdaf78a4d_e2jtbp.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782285176/IMG_3720_poncwz.webp">
+                </section>
+                <div class="family-upload-mobile">
+                    <button type="button" class="family-upload-mobile__btn" id="friends-upload-open-mobile">
+                        <i class="fas fa-camera" aria-hidden="true"></i><span>Upload</span>
+                    </button>
+                </div>
+            </main>
+        </div><!-- /view-friends -->
+
+        <div class="spa-view is-hidden" id="view-keepsakes">
+            <main class="bio-card album-page world-album" data-world="keepsakes">
+                <header class="life-header world-header">
+                    <button type="button" class="life-back" id="btn-back-keepsakes" aria-label="Về quỹ đạo chính">
+                        <i class="fas fa-arrow-left" aria-hidden="true"></i>
+                        <span>Về quỹ đạo</span>
+                    </button>
+                    <div class="world-heading">
+                        <p class="world-heading__eyebrow">Quỹ đạo 03 · Kho tạm lưu</p>
+                        <h1 class="life-title">Tạm lưu tạm giữ</h1>
+                        <p class="world-heading__subtitle">Những mảnh ký ức chưa muốn gọi tên là đã qua.</p>
+                    </div>
+                    <div class="world-header__actions">
+                        <span class="world-header__count"><i class="fas fa-satellite-dish" aria-hidden="true"></i><span data-gallery-count>Đang đồng bộ</span></span>
+                        <button type="button" class="family-upload-fab" id="keepsakes-upload-open-desktop" aria-label="Thêm ảnh vào kho tạm lưu">
+                            <i class="fas fa-camera" aria-hidden="true"></i><span>Thêm ký ức</span>
+                        </button>
+                    </div>
+                </header>
+
+                <section class="photo-gallery" aria-label="Album Keepsakes" data-live-scope="keepsakes"
+                    data-gallery-cloudinary="https://res.cloudinary.com/dtpw5htqs/image/upload/v1782314527/z7859878819639_0bd47bfa86fed208b0357e5a0f9f2202_cqrkge.jpg">
+                </section>
+                <div class="family-upload-mobile">
+                    <button type="button" class="family-upload-mobile__btn" id="keepsakes-upload-open-mobile">
+                        <i class="fas fa-camera" aria-hidden="true"></i><span>Upload</span>
+                    </button>
+                </div>
+            </main>
+        </div><!-- /view-keepsakes -->
+
+        <div class="spa-view is-hidden" id="view-cooking">
+            <main class="bio-card album-page world-album" data-world="cooking">
+                <header class="life-header world-header">
+                    <button type="button" class="life-back" id="btn-back-cooking" aria-label="Về quỹ đạo chính">
+                        <i class="fas fa-arrow-left" aria-hidden="true"></i>
+                        <span>Về quỹ đạo</span>
+                    </button>
+                    <div class="world-heading">
+                        <p class="world-heading__eyebrow">Quỹ đạo 06 · Nhật ký căn bếp</p>
+                        <h1 class="life-title">Cơm sinh viên</h1>
+                        <p class="world-heading__subtitle">Không cần chứng minh bạn nấu nếu bạn đã rửa.</p>
+                    </div>
+                    <div class="world-header__actions">
+                        <span class="world-header__count"><i class="fas fa-satellite-dish" aria-hidden="true"></i><span data-gallery-count>Đang đồng bộ</span></span>
+                        <button type="button" class="family-upload-fab" id="cooking-upload-open-desktop" aria-label="Thêm ảnh vào nhật ký nấu ăn">
+                            <i class="fas fa-camera" aria-hidden="true"></i><span>Thêm ký ức</span>
+                        </button>
+                    </div>
+                </header>
+
+                <section class="photo-gallery" aria-label="Album ảnh nấu ăn" data-live-scope="cooking"
+                    data-gallery-prepend="https://res.cloudinary.com/dtpw5htqs/image/upload/v1784300631/IMG_6644_ryhytk.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1784300631/IMG_6618_spyfog.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1784300631/IMG_6722_kfgtq8.webp"
+                    data-gallery-cloudinary="https://res.cloudinary.com/dtpw5htqs/image/upload/v1783735170/IMG_6469_ed50i9.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1783735169/IMG_6594_y7gjzi.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1783735153/IMG_6523_rsd1cg.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1783735153/IMG_6583_lwdzw3.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1783735153/IMG_6484_whpa0h.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1783735152/IMG_6480_skisqs.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782841988/1I7O0PVHF_807RV1_zo1oky.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782841977/1I7O0RC4L_807RV1_y3rgqg.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782841989/1I7O0RC85_807RV1_tau2qp.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782841990/1I7O0STQV_807RV1_gydqzo.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782841998/z7067349656334_d7f278650b5accfccf0e58209f001424_l5aul5.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782842002/z7431497882665_8085e3371327f7e9bcf446eeb784a53b_tc9kvt.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782842001/z7431496260864_4e69a9ec888200892b2098200730fcfd_f7mmqw.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782842000/z7431496229451_e4d8b685f8c9e861a3fecfdd017b488e_gqv75i.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782842004/z7431496261166_d1ee29857eeee6f32411a6478a53265d_rlbs1f.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782842007/1I7O0NQKP_807RV1_ricy89.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782842009/1I7O0PVD7_807RV1_vmzyg6.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782842005/z7431588275072_bf2260e83f8c67d6348614eb15b39d54_fummvy.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782842006/z7431588276975_20fe8229b5c0516449faf796f5a44fbe_gqll4b.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782841998/IMG_4807_acxqa0.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782841999/z7431496225118_21e738b8e4511eac612727005fcee851_zxbcpr.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782841995/IMG_4704_mvewab.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782839282/IMG_4966_fmlvmy.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782839281/IMG_6312_lkwvqg.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782839280/IMG_5841_jzsxq4.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782839276/IMG_5055_b6ptyo.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782839274/IMG_5050_vspgeh.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782839274/IMG_5049_efk8vd.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782839274/IMG_5052_y4kyde.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782839279/IMG_5606_kyxjyy.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782723340/IMG_6301_esmljp.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782740838/IMG_6223_jm9yaf.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782740839/IMG_6307_v9gr8z.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782282314/z7967139980045_b79316869706d1d8c8d99e47193b2ac9_ujg9wl.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782282303/1I7O0RCLA_807RV1_wqfgsm.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782282303/1I7O0673N_807RV1_uul4fi.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782282303/1I7O0STUI_807RV1_zd4mfp.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782282303/1I7O06756_807RV1_nmbedo.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782282304/IMG_1453_cdemy8.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782282304/IMG_4525_lrtsnp.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782282304/IMG_3439_hkwkvx.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782282304/IMG_4380_kq3oeo.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782282304/cooking-01_o8lfpu.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782282305/z7968429780516_ed3414230415a7c391c708e440c036ea_u6jfzv.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782282305/z7968429778881_5f6d3590f7d3e8e27e2807f4dee17d30_ll328j.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782282305/z7968429789926_2cee510c4a1fcc5c38e155cf0e9a8c89_qpeuq0.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782282306/z7968424123252_04538f7930f4a203cb045cf78f35c5e1_b0j83z.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782282306/z7968429804592_c73c35c379542a9a9cf84bdf4a6f65cd_ejk58z.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782282306/z7968429799221_4b614d5dd6e337d57700753941512cde_ubjsn6.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782282307/z7968429819693_c6673d877717c06288b6ff3c601d8c18_fc8uu4.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782282307/z7968429808486_b72b31104301936ff3b36f8bd83fce02_phantx.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782282308/z7968429820039_d4fa4ea8d6f3232e18fb2c776d40bd40_bwgqgy.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782282309/z7968429899720_2da92c0523a8b0555399d4c4447673bf_vzy7jl.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782282309/z7968429827395_d430d5120ea6db8bf3445f2bede644a7_hwjbub.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782282309/z7968429847045_3b3b7c942e34698b602055e82977437c_llpins.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782282310/1I7O0NQKP_807RV1_podkof.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782282310/IMG_4576_pnaffv.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782282311/IMG_4811_i8cbrr.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782282313/IMG_4893_cxpan0.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782282314/1I7O0HO1M_807RV1_ke0hfu.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782282315/1I7O09M9L_807RV1_emdymh.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782282316/IMG_3392_nrcseo.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782282315/IMG_2162_wyxrim.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782282317/tranh_zjsuvw.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782282317/IMG_3898_o32x1x.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782282316/IMG_3607_ldtmki.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782282318/1I7O0NQP3_807RV1_xacrrq.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782282318/1I7O0RCCT_807RV1_xxljt6.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782486572/IMG_5413_yspnqz.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782486572/IMG_6276_pu7q0w.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782567987/IMG_6285_cs6xxj.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782743511/IMG_5331_p5s2mb.webp,https://res.cloudinary.com/dtpw5htqs/image/upload/v1782743510/IMG_5058_ohghln.webp"
+                    data-pinned-image="https://res.cloudinary.com/dtpw5htqs/image/upload/v1782282314/z7967139980045_b79316869706d1d8c8d99e47193b2ac9_ujg9wl.webp">
+                </section>
+                <div class="family-upload-mobile">
+                    <button type="button" class="family-upload-mobile__btn" id="cooking-upload-open-mobile">
+                        <i class="fas fa-camera" aria-hidden="true"></i><span>Upload</span>
+                    </button>
+                </div>
+            </main>
+        </div><!-- /view-cooking -->
+
+        <div class="spa-view is-hidden" id="view-campus">
+            <main class="bio-card album-page world-album" data-world="campus">
+                <header class="life-header world-header">
+                    <button type="button" class="life-back" id="btn-back-campus" aria-label="Về quỹ đạo chính">
+                        <i class="fas fa-arrow-left" aria-hidden="true"></i>
+                        <span>Về quỹ đạo</span>
+                    </button>
+                    <div class="world-heading">
+                        <p class="world-heading__eyebrow">Quỹ đạo 05 · Nhật ký sinh viên</p>
+                        <h1 class="life-title">Những thằng GAY</h1>
+                        <p class="world-heading__subtitle">Vẫn đang cập nhật...</p>
+                    </div>
+                    <div class="world-header__actions">
+                        <span class="world-header__count"><i class="fas fa-satellite-dish" aria-hidden="true"></i><span data-gallery-count>Đang đồng bộ</span></span>
+                        <button type="button" class="family-upload-fab" id="campus-upload-open-desktop" aria-label="Thêm ảnh vào nhật ký sinh viên">
+                            <i class="fas fa-camera" aria-hidden="true"></i><span>Thêm ký ức</span>
+                        </button>
+                    </div>
+                </header>
+
+                <section class="photo-gallery" aria-label="Album sinh viên" data-live-scope="campus"></section>
+                <div class="family-upload-mobile">
+                    <button type="button" class="family-upload-mobile__btn" id="campus-upload-open-mobile">
+                        <i class="fas fa-camera" aria-hidden="true"></i><span>Upload</span>
+                    </button>
+                </div>
+            </main>
+        </div><!-- /view-campus -->
+    </div><!-- /spa-shell -->
+
+    <div class="photo-lightbox" id="photo-lightbox" role="dialog" aria-modal="true" aria-label="Ảnh phóng to" aria-hidden="true">
+        <div class="photo-lightbox__backdrop"></div>
+        <div class="photo-lightbox__content">
+            <button class="photo-lightbox__close" id="photo-lightbox-close" aria-label="Đóng">&times;</button>
+            <div class="photo-lightbox__stage" id="photo-lightbox-stage">
+                <img class="photo-lightbox__img" id="photo-lightbox-img" src="" alt="" loading="lazy" decoding="async">
+                <svg class="photo-lightbox__orbit" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+                    <rect class="photo-lightbox__orbit-track" x="1.2" y="1.2" width="97.6" height="97.6" rx="4.5" pathLength="100"></rect>
+                    <rect class="photo-lightbox__orbit-beam" x="1.2" y="1.2" width="97.6" height="97.6" rx="4.5" pathLength="100"></rect>
+                </svg>
+            </div>
+            <div class="photo-lightbox__caption" id="photo-lightbox-caption"></div>
+        </div>
+    </div>
+
+    <!-- Key modal -->
+    <div class="key-modal orbital-dialog" id="key-modal" role="dialog" aria-modal="true" aria-labelledby="key-modal-title" aria-hidden="true">
+        <div class="key-modal__backdrop"></div>
+        <article class="key-modal__card">
+            <button type="button" class="key-modal__close" id="key-close" aria-label="Đóng">&times;</button>
+            <p class="dialog-heading__eyebrow">Kho lưu trữ riêng tư</p>
+            <h2 class="key-modal__title" id="key-modal-title">Mở kho ký ức</h2>
+            <p class="key-modal__note">Nhập mã truy cập để tiếp tục đến thế giới này.</p>
+            <form class="key-form" id="key-form">
+                <input type="password" id="key-input" inputmode="numeric" pattern="[0-9]*" autocomplete="off" aria-label="Mã truy cập" placeholder="">
+                <button type="submit"><i class="fas fa-lock-open" aria-hidden="true"></i> Mở kho</button>
+                <p class="key-modal__error" id="key-error" aria-live="polite"></p>
+            </form>
+        </article>
+    </div>
+
+    <!-- Upload Modal -->
+    <div class="upload-modal orbital-dialog" id="upload-modal" data-world="upload" role="dialog" aria-modal="true" aria-labelledby="upload-modal-title" aria-hidden="true">
+        <div class="upload-modal__backdrop" id="upload-modal-backdrop"></div>
+        <article class="upload-modal__card">
+            <div class="upload-modal__header">
+                <div class="dialog-heading">
+                    <p class="dialog-heading__eyebrow">Quỹ đạo 07 · Trạm Upload</p>
+                    <h2 class="upload-modal__title" id="upload-modal-title">Đưa ký ức lên quỹ đạo</h2>
+                </div>
+                <button type="button" class="upload-modal__close" id="upload-modal-close"
+                    aria-label="Đóng">&times;</button>
+            </div>
+
+            <!-- Hint / drop zones -->
+            <div class="upload-modal__dropzones" id="upload-dropzones" data-dialog-focus>
+                <button type="button" class="upload-modal__dropzone" id="upload-dropzone-image">
+                    <i class="fas fa-camera upload-modal__dropzone-icon" aria-hidden="true"></i>
+                    <span class="upload-modal__dropzone-label">Chọn ảnh</span>
+                </button>
+                <button type="button" class="upload-modal__dropzone" id="upload-dropzone-video">
+                    <i class="fas fa-video upload-modal__dropzone-icon" aria-hidden="true"></i>
+                    <span class="upload-modal__dropzone-label">Chọn video</span>
+                </button>
+            </div>
+
+            <div class="upload-modal__pin-options" id="upload-pin-options" aria-label="Pin image" hidden>
+                <label class="upload-modal__pin-choice">
+                    <input type="radio" name="upload-pin" value="pinned">
+                    <span><i class="fas fa-thumbtack" aria-hidden="true"></i> Ghim ảnh</span>
+                </label>
+                <label class="upload-modal__pin-choice">
+                    <input type="radio" name="upload-pin" value="normal" checked>
+                    <span>Không ghim</span>
+                </label>
+            </div>
+
+            <!-- Preview grid -->
+            <div class="upload-modal__preview" id="upload-preview" hidden></div>
+
+            <!-- Send button -->
+            <button type="button" class="upload-modal__send" id="upload-send-btn" hidden>
+                <i class="fas fa-paper-plane" aria-hidden="true"></i> Gửi
+            </button>
+
+            <!-- Status -->
+            <p class="upload-modal__status" id="upload-status" aria-live="polite"></p>
+
+            <input type="file" id="upload-input-image" accept="image/jpeg,image/png,image/webp,image/gif,image/heic,image/heif,.heic,.heif" multiple hidden>
+            <input type="file" id="upload-input-video" accept="video/mp4,video/quicktime,video/webm,video/x-msvideo,video/x-matroska,.mp4,.mov,.webm,.avi,.mkv" multiple hidden>
+        </article>
+    </div>
+
+    <!-- Toast notification -->
+    <div class="toast" id="toast" aria-live="polite"></div>
+
+    <script src="theme.js?v=44"></script>
+    <script src="life.js?v=41"></script>
+    <script>
+        (function () {
+            var views = {
+                home: document.getElementById('view-home'),
+                family: document.getElementById('view-family'),
+                friends: document.getElementById('view-friends'),
+                keepsakes: document.getElementById('view-keepsakes'),
+                cooking: document.getElementById('view-cooking'),
+                campus: document.getElementById('view-campus')
+            };
+            var titles = {
+                home: 'Trọng Hiếu - Timebox',
+                family: 'Gia đình - Trọng Hiếu'
+            };
+            titles.campus = 'Sinh viên - Trọng Hiếu';
+            titles.keepsakes = 'Tạm lưu tạm giữ - Trọng Hiếu';
+            titles.cooking = 'Nấu ăn - Trọng Hiếu';
+            titles.friends = 'Những thằng ở tuổi 16 - Trọng Hiếu';
+            titles.family = 'Gia đình - Trọng Hiếu';
+            var currentView = null;
+            var currentDepth = 0;
+
+            function getViewFromUrl() {
+                var params = new URLSearchParams(window.location.search);
+                var view = params.get('view') || 'home';
+                return views[view] ? view : 'home';
+            }
+
+            function getViewUrl(id) {
+                var url = new URL(window.location.href);
+                if (id === 'home') {
+                    url.searchParams.delete('view');
+                } else {
+                    url.searchParams.set('view', id);
+                }
+                return url.pathname + url.search + url.hash;
+            }
+
+            function setView(id, direction) {
+                if (!views[id] || id === currentView) return;
+                var isInitialView = currentView === null;
+                if (currentView && window.suspendTimeboxGallery) {
+                    window.suspendTimeboxGallery(currentView);
+                }
+                if (currentView === 'family' && id !== 'family') {
+                    clearFamilyUnlock();
+                }
+                if (currentView === 'friends' && id !== 'friends') {
+                    clearFriendsUnlock();
+                }
+                if (currentView === 'campus' && id !== 'campus') {
+                    clearCampusUnlock();
+                }
+                Object.keys(views).forEach(function (key) {
+                    views[key].classList.add('is-hidden');
+                    views[key].classList.remove('anim-enter-right', 'anim-enter-left');
+                });
+                views[id].classList.remove('is-hidden');
+                void views[id].offsetWidth;
+                views[id].classList.add(direction === 'back' ? 'anim-enter-left' : 'anim-enter-right');
+                views[id].addEventListener('animationend', function () {
+                    views[id].classList.remove('anim-enter-right', 'anim-enter-left');
+                }, { once: true });
+                currentView = id;
+                document.body.setAttribute('data-space-view', id);
+                document.title = titles[id] || 'Timebox';
+                window.scrollTo(0, 0);
+                if (window.ensureTimeboxGallery) {
+                    window.ensureTimeboxGallery(id);
+                }
+                if (!isInitialView) {
+                    var focusTarget = id === 'home'
+                        ? views.home.querySelector('[data-space-stage]')
+                        : views[id].querySelector('.life-title');
+                    if (focusTarget) {
+                        focusTarget.setAttribute('tabindex', '-1');
+                        window.requestAnimationFrame(function () {
+                            focusTarget.focus({ preventScroll: true });
+                        });
+                    }
+                }
+            }
+
+            function goForward(id) {
+                if (!views[id]) return;
+                currentDepth += 1;
+                history.pushState({ spaView: id, spaDepth: currentDepth }, '', getViewUrl(id));
+                setView(id, 'forward');
+            }
+
+            function goToParent() {
+                // Tất cả danh mục hiện nằm trực tiếp trên trang chủ vũ trụ.
+                var parent = 'home';
+                currentDepth = 0;
+                history.replaceState({ spaView: parent, spaDepth: currentDepth }, '', getViewUrl(parent));
+                setView(parent, 'back');
+            }
+
+            function goBack() {
+                if (currentDepth > 0) {
+                    history.back();
+                } else if (currentView !== 'home') {
+                    goToParent();
+                }
+            }
+
+            window.addEventListener('popstate', function (e) {
+                if (e.state && (e.state.qrLightbox || e.state.bioPanel)) return;
+                if (window.closeTimeboxDialogsForNavigation && !window.closeTimeboxDialogsForNavigation()) {
+                    history.pushState(
+                        { spaView: currentView, spaDepth: currentDepth },
+                        '',
+                        getViewUrl(currentView)
+                    );
+                    return;
+                }
+                var nextView = e.state && e.state.spaView ? e.state.spaView : getViewFromUrl();
+                var nextDepth = e.state && typeof e.state.spaDepth === 'number' ? e.state.spaDepth : 0;
+                var direction = nextDepth < currentDepth ? 'back' : 'forward';
+                currentDepth = nextDepth;
+                setView(nextView, direction);
+            });
+
+            var btnBackKeepsakes = document.getElementById('btn-back-keepsakes');
+            var btnBackCooking = document.getElementById('btn-back-cooking');
+            var btnBackCampus = document.getElementById('btn-back-campus');
+            var btnBackFamily = document.getElementById('btn-back-family');
+
+            var btnBackFriends = document.getElementById('btn-back-friends');
+            var FAMILY_UNLOCK_KEY = 'timebox-family-unlocked-until';
+            var FAMILY_UNLOCK_MS = 7 * 60 * 1000;
+            var FRIENDS_UNLOCK_KEY = 'timebox-friends-unlocked-until';
+            var FRIENDS_UNLOCK_MS = 7 * 60 * 1000;
+            var CAMPUS_UNLOCK_KEY = 'timebox-campus-unlocked-until';
+            var CAMPUS_UNLOCK_MS = 7 * 60 * 1000;
+
+            function hasFamilyUnlock() {
+                try {
+                    var expiresAt = Number(sessionStorage.getItem(FAMILY_UNLOCK_KEY) || 0);
+                    if (expiresAt > Date.now()) return true;
+                    sessionStorage.removeItem(FAMILY_UNLOCK_KEY);
+                } catch (e) { }
+                return false;
+            }
+
+            function clearFamilyUnlock() {
+                try {
+                    sessionStorage.removeItem(FAMILY_UNLOCK_KEY);
+                } catch (e) { }
+            }
+
+            function hasFriendsUnlock() {
+                try {
+                    var expiresAt = Number(sessionStorage.getItem(FRIENDS_UNLOCK_KEY) || 0);
+                    if (expiresAt > Date.now()) return true;
+                    sessionStorage.removeItem(FRIENDS_UNLOCK_KEY);
+                } catch (e) { }
+                return false;
+            }
+
+            function clearFriendsUnlock() {
+                try {
+                    sessionStorage.removeItem(FRIENDS_UNLOCK_KEY);
+                } catch (e) { }
+            }
+
+            function hasCampusUnlock() {
+                try {
+                    var expiresAt = Number(sessionStorage.getItem(CAMPUS_UNLOCK_KEY) || 0);
+                    if (expiresAt > Date.now()) return true;
+                    sessionStorage.removeItem(CAMPUS_UNLOCK_KEY);
+                } catch (e) { }
+                return false;
+            }
+
+            function clearCampusUnlock() {
+                try {
+                    sessionStorage.removeItem(CAMPUS_UNLOCK_KEY);
+                } catch (e) { }
+            }
+
+            window._rememberFamilyUnlock = function () {
+                try {
+                    sessionStorage.setItem(FAMILY_UNLOCK_KEY, String(Date.now() + FAMILY_UNLOCK_MS));
+                } catch (e) { }
+            };
+
+            window._rememberFriendsUnlock = function () {
+                try {
+                    sessionStorage.setItem(FRIENDS_UNLOCK_KEY, String(Date.now() + FRIENDS_UNLOCK_MS));
+                } catch (e) { }
+            };
+
+            window._rememberCampusUnlock = function () {
+                try {
+                    sessionStorage.setItem(CAMPUS_UNLOCK_KEY, String(Date.now() + CAMPUS_UNLOCK_MS));
+                } catch (e) { }
+            };
+
+            if (btnBackKeepsakes) btnBackKeepsakes.addEventListener('click', goBack);
+            if (btnBackCooking) btnBackCooking.addEventListener('click', goBack);
+            if (btnBackCampus) btnBackCampus.addEventListener('click', goBack);
+            if (btnBackFamily) btnBackFamily.addEventListener('click', goBack);
+            if (btnBackFriends) btnBackFriends.addEventListener('click', goBack);
+
+            // Helper mở key modal cho SPA view
+            function openKeyModalForView(errMsg, targetView) {
+                var modal = document.getElementById('key-modal');
+                var input = document.getElementById('key-input');
+                var error = document.getElementById('key-error');
+                if (!modal || !input) return;
+                input.value = ''; if (error) error.textContent = '';
+                modal._targetErr = errMsg;
+                modal._targetAction = targetView;
+                modal.setAttribute('data-world', targetView || 'family');
+                document.body.classList.add('is-modal-open');
+                modal.classList.add('is-open');
+                modal.setAttribute('aria-hidden', 'false');
+                setTimeout(function () {
+                    if (input) {
+                        input.focus();
+                        if (typeof input.select === 'function') input.select();
+                    }
+                }, 60);
+                setTimeout(function () {
+                    if (input && document.activeElement !== input) {
+                        input.focus();
+                    }
+                }, 220);
+            }
+
+            window.addEventListener('timebox:navigate', function (event) {
+                var navigationId = event.detail && event.detail.id;
+                if (navigationId === 'family') {
+                    openKeyModalForView('Mở vô hiệu', 'family');
+                } else if (navigationId === 'friends') {
+                    openKeyModalForView('Mở vô hiệu', 'friends');
+                } else if (navigationId === 'campus') {
+                    openKeyModalForView('Mở vô hiệu', 'campus');
+                } else if (navigationId === 'keepsakes') {
+                    goForward('keepsakes');
+                } else if (navigationId === 'cooking') {
+                    goForward('cooking');
+                }
+            });
+
+            window._spaGoBack = goBack;
+            window._spaGoForward = goForward;
+
+            var requestedView = getViewFromUrl();
+            var protectedInitialView = (requestedView === 'family' || requestedView === 'friends' || requestedView === 'campus')
+                ? requestedView
+                : '';
+            var familyAlreadyUnlocked = requestedView === 'family' && hasFamilyUnlock();
+            var friendsAlreadyUnlocked = requestedView === 'friends' && hasFriendsUnlock();
+            var campusAlreadyUnlocked = requestedView === 'campus' && hasCampusUnlock();
+            var initialView = familyAlreadyUnlocked || friendsAlreadyUnlocked || campusAlreadyUnlocked
+                ? requestedView
+                : (protectedInitialView ? 'home' : requestedView);
+            history.replaceState({ spaView: initialView, spaDepth: currentDepth }, '', getViewUrl(initialView));
+            setView(initialView, 'forward');
+            if (!familyAlreadyUnlocked && protectedInitialView === 'family') {
+                setTimeout(function () { openKeyModalForView('Mở vô hiệu', 'family'); }, 0);
+            } else if (!friendsAlreadyUnlocked && protectedInitialView === 'friends') {
+                setTimeout(function () { openKeyModalForView('Mở vô hiệu', 'friends'); }, 0);
+            } else if (!campusAlreadyUnlocked && protectedInitialView === 'campus') {
+                setTimeout(function () { openKeyModalForView('Mở vô hiệu', 'campus'); }, 0);
+            }
+        })();
+    </script>
+    <script>
+        /* ── Upload Modal ── */
+        (function () {
+            var modal = document.getElementById('upload-modal');
+            var backdrop = document.getElementById('upload-modal-backdrop');
+            var closeBtn = document.getElementById('upload-modal-close');
+            var dropzonesContainer = document.getElementById('upload-dropzones');
+            var dropzoneImage = document.getElementById('upload-dropzone-image');
+            var dropzoneVideo = document.getElementById('upload-dropzone-video');
+            var preview = document.getElementById('upload-preview');
+            var sendBtn = document.getElementById('upload-send-btn');
+            var statusEl = document.getElementById('upload-status');
+            var fileInputImage = document.getElementById('upload-input-image');
+            var fileInputVideo = document.getElementById('upload-input-video');
+            var pinOptions = document.getElementById('upload-pin-options');
+            var pinInputs = document.querySelectorAll('input[name="upload-pin"]');
+            var familyDesktopBtn = document.getElementById('family-upload-open-desktop');
+            var familyMobileBtn = document.getElementById('family-upload-open-mobile');
+            var keepsakesDesktopBtn = document.getElementById('keepsakes-upload-open-desktop');
+            var keepsakesMobileBtn = document.getElementById('keepsakes-upload-open-mobile');
+            var friendsDesktopBtn = document.getElementById('friends-upload-open-desktop');
+            var friendsMobileBtn = document.getElementById('friends-upload-open-mobile');
+            var cookingDesktopBtn = document.getElementById('cooking-upload-open-desktop');
+            var cookingMobileBtn = document.getElementById('cooking-upload-open-mobile');
+            var campusDesktopBtn = document.getElementById('campus-upload-open-desktop');
+            var campusMobileBtn = document.getElementById('campus-upload-open-mobile');
+
+            var GALLERY_API = 'https://timebox.trghy.workers.dev';
+            var CLOUD_NAME = 'dtpw5htqs';
+            var UPLOAD_PRESET = 'Upload_img';
+            var MAX_FILES = 10;
+            var MAX_SIZE = 10 * 1024 * 1024; // 10MB cho ảnh
+            var MAX_VIDEO_SIZE = 299 * 1024 * 1024; // 299MB cho video
+            var MAX_CONCURRENT_UPLOADS = 2;
+            var selected = [];
+            var uploading = false;
+            var uploadController = null;
+            var activeUploadScope = '';
+            var activeUploadPreset = UPLOAD_PRESET;
+            var statusTimer = null;
+            var previewUrls = [];
+
+            function fetchWithTimeout(url, options, timeoutMs) {
+                if (!window.AbortController) return fetch(url, options);
+                var controller = new AbortController();
+                var timer = setTimeout(function () { controller.abort(); }, timeoutMs);
+                var externalSignal = options && options.signal;
+                var abortFromExternal = function () { controller.abort(); };
+                if (externalSignal) {
+                    if (externalSignal.aborted) controller.abort();
+                    else externalSignal.addEventListener('abort', abortFromExternal, { once: true });
+                }
+                var requestOptions = Object.assign({}, options, { signal: controller.signal });
+                return fetch(url, requestOptions).finally(function () {
+                    clearTimeout(timer);
+                    if (externalSignal) externalSignal.removeEventListener('abort', abortFromExternal);
+                });
+            }
+
+            function releasePreviewUrls() {
+                previewUrls.forEach(function (url) {
+                    try { URL.revokeObjectURL(url); } catch (e) { }
+                });
+                previewUrls = [];
+            }
+
+            function openModal(scope, uploadPreset) {
+                activeUploadScope = scope || '';
+                activeUploadPreset = uploadPreset || UPLOAD_PRESET;
+                modal.setAttribute('data-world', activeUploadScope || 'upload');
+                setStatus('');
+                if (pinOptions) pinOptions.hidden = !activeUploadScope;
+                Array.prototype.forEach.call(pinInputs, function (input) {
+                    input.checked = input.value === 'normal';
+                });
+                document.body.classList.add('is-modal-open');
+                modal.classList.add('is-open');
+                modal.setAttribute('aria-hidden', 'false');
+            }
+
+            function closeModal(force) {
+                if (!modal.classList.contains('is-open')) return;
+                if (uploading && force !== true) return;
+                if (window.prepareTimeboxDialogClose) window.prepareTimeboxDialogClose(modal);
+                modal.classList.remove('is-open');
+                modal.setAttribute('aria-hidden', 'true');
+                if (window.syncTimeboxModalState) window.syncTimeboxModalState();
+                selected = [];
+                if (fileInputImage) fileInputImage.value = '';
+                if (fileInputVideo) fileInputVideo.value = '';
+                renderPreview();
+                setStatus('');
+            }
+
+            function setStatus(msg, duration, cb) {
+                clearTimeout(statusTimer);
+                statusEl.textContent = msg || '';
+                statusEl.classList.toggle('upload-modal__status--visible', Boolean(msg));
+                if (msg && duration) {
+                    statusTimer = setTimeout(function () {
+                        statusEl.classList.remove('upload-modal__status--visible');
+                        if (cb) cb();
+                    }, duration);
+                }
+            }
+
+            function renderPreview() {
+                releasePreviewUrls();
+                preview.innerHTML = '';
+                if (!selected.length) {
+                    preview.hidden = true;
+                    if (dropzonesContainer) dropzonesContainer.hidden = false;
+                    sendBtn.hidden = true;
+                    return;
+                }
+                selected.forEach(function (item, i) {
+                    var file = item.file || item;
+                    var mediaType = item.mediaType || (isSupportedVideoFile(file) ? 'video' : 'image');
+                    var wrap = document.createElement('div');
+                    wrap.className = 'upload-modal__preview-item';
+                    if (mediaType === 'video') wrap.classList.add('upload-modal__preview-item--video');
+
+                    var previewUrl = URL.createObjectURL(file);
+                    previewUrls.push(previewUrl);
+
+                    if (mediaType === 'video') {
+                        var video = document.createElement('video');
+                        video.src = previewUrl;
+                        video.muted = true;
+                        video.playsInline = true;
+                        video.preload = 'metadata';
+
+                        var badge = document.createElement('div');
+                        badge.className = 'upload-modal__preview-badge';
+                        badge.innerHTML = '<i class="fas fa-video" aria-hidden="true"></i> Video';
+
+                        var fallback = document.createElement('div');
+                        fallback.className = 'upload-modal__preview-fallback';
+                        fallback.hidden = true;
+                        fallback.innerHTML = '<i class="fas fa-film" aria-hidden="true"></i>';
+                        var fallbackName = document.createElement('span');
+                        fallbackName.textContent = file.name;
+                        fallback.appendChild(fallbackName);
+
+                        video.addEventListener('error', function () {
+                            video.hidden = true;
+                            fallback.hidden = false;
+                        }, { once: true });
+
+                        wrap.appendChild(video);
+                        wrap.appendChild(badge);
+                        wrap.appendChild(fallback);
+                    } else {
+                        var img = document.createElement('img');
+                        img.alt = file.name;
+                        var fallback = document.createElement('div');
+                        fallback.className = 'upload-modal__preview-fallback';
+                        fallback.hidden = true;
+                        fallback.innerHTML = '<i class="fas fa-image" aria-hidden="true"></i>';
+                        var fallbackName = document.createElement('span');
+                        fallbackName.textContent = file.name;
+                        fallback.appendChild(fallbackName);
+
+                        img.src = previewUrl;
+                        img.addEventListener('error', function () {
+                            img.hidden = true;
+                            fallback.hidden = false;
+                        }, { once: true });
+
+                        wrap.appendChild(img);
+                        wrap.appendChild(fallback);
+                    }
+
+                    var rm = document.createElement('button');
+                    rm.type = 'button';
+                    rm.className = 'upload-modal__preview-remove';
+                    rm.setAttribute('aria-label', 'Xóa');
+                    rm.innerHTML = '&times;';
+                    rm.addEventListener('click', function () {
+                        selected.splice(i, 1);
+                        renderPreview();
+                    });
+
+                    wrap.appendChild(rm);
+                    preview.appendChild(wrap);
+                });
+                if (dropzonesContainer) dropzonesContainer.hidden = true;
+                preview.hidden = false;
+                sendBtn.hidden = false;
+            }
+
+            function isSupportedImageFile(file) {
+                var mime = String(file.type || '').toLowerCase();
+                var name = String(file.name || '').toLowerCase();
+                return /^image\/(jpeg|png|webp|gif|heic|heif|heic-sequence|heif-sequence)$/.test(mime) ||
+                    /\.(jpe?g|png|webp|gif|heic|heif)$/.test(name);
+            }
+
+            function isSupportedVideoFile(file) {
+                var mime = String(file.type || '').toLowerCase();
+                var name = String(file.name || '').toLowerCase();
+                return /^video\/(mp4|quicktime|webm|x-msvideo|x-matroska|mpeg|3gpp|ogg)$/.test(mime) ||
+                    /\.(mp4|mov|webm|avi|mkv|3gp|ogv)$/.test(name);
+            }
+
+            function addFiles(files, forcedMediaType) {
+                Array.prototype.forEach.call(files, function (f) {
+                    if (selected.length >= MAX_FILES) {
+                        setStatus('Tối đa ' + MAX_FILES + ' tập tin');
+                        return;
+                    }
+                    var isVid = isSupportedVideoFile(f);
+                    var isImg = isSupportedImageFile(f);
+
+                    if (forcedMediaType === 'video' || (isVid && !isImg)) {
+                        if (!isVid) {
+                            setStatus('Chỉ nhận video MP4, MOV, WEBM, AVI, MKV');
+                            return;
+                        }
+                        if (f.size > MAX_VIDEO_SIZE) {
+                            setStatus('Video vượt quá 299MB! Vui lòng chọn video ≤ 299MB.');
+                            return;
+                        }
+                        selected.push({ file: f, mediaType: 'video' });
+                    } else {
+                        if (!isImg) {
+                            setStatus('Chỉ nhận JPG, PNG, WEBP, GIF, HEIC, HEIF');
+                            return;
+                        }
+                        if (f.size > MAX_SIZE) {
+                            setStatus('Mỗi ảnh tối đa 10MB');
+                            return;
+                        }
+                        selected.push({ file: f, mediaType: 'image' });
+                    }
+                });
+                if (fileInputImage) fileInputImage.value = '';
+                if (fileInputVideo) fileInputVideo.value = '';
+                renderPreview();
+            }
+
+            function isPinnedUpload() {
+                var checked = document.querySelector('input[name="upload-pin"]:checked');
+                return Boolean(activeUploadScope && checked && checked.value === 'pinned');
+            }
+
+            function getUploadSignature(scope, pinned, mediaType, signal) {
+                return fetchWithTimeout(GALLERY_API + '/gallery/upload-signature', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        scope: scope,
+                        pinned: pinned === true,
+                        mediaType: mediaType || 'image'
+                    }),
+                    signal: signal
+                }, 30000).then(function (response) {
+                    return response.json().catch(function () {
+                        return { ok: false, message: 'Máy chủ trả dữ liệu không hợp lệ' };
+                    }).then(function (data) {
+                        if (!response.ok || !data.ok) {
+                            throw new Error(data.message || 'Không thể cấp quyền upload');
+                        }
+                        return data;
+                    });
+                });
+            }
+
+            function uploadOne(item, signatures, signal) {
+                var file = item.file || item;
+                var mediaType = item.mediaType || (isSupportedVideoFile(file) ? 'video' : 'image');
+                var signed = signatures && signatures[mediaType];
+
+                var fd = new FormData();
+                fd.append('file', file);
+                var uploadUrl;
+
+                if (signed) {
+                    fd.append('api_key', signed.apiKey);
+                    fd.append('timestamp', String(signed.timestamp));
+                    fd.append('signature', signed.signature);
+                    fd.append('asset_folder', signed.assetFolder);
+                    fd.append('tags', signed.tags);
+                    uploadUrl = signed.uploadUrl;
+                } else {
+                    fd.append('upload_preset', activeUploadPreset);
+                    if (mediaType === 'video') {
+                        var videoFolderMap = {
+                            'family': 'Upload video/video family',
+                            'keepsakes': 'Upload video/video middle school',
+                            'friends': 'Upload video/video Best frend',
+                            'campus': 'Upload video/video Student',
+                            'cooking': 'Upload video/video cooking'
+                        };
+                        var videoFolder = videoFolderMap[activeUploadScope] || 'video upload';
+                        fd.append('folder', videoFolder);
+                        fd.append('tags', videoFolder);
+                    }
+                    uploadUrl = 'https://api.cloudinary.com/v1_1/' + CLOUD_NAME + '/' + mediaType + '/upload';
+                }
+
+                return fetchWithTimeout(uploadUrl, {
+                    method: 'POST', body: fd, signal: signal
+                }, 240000).then(function (r) { return r.json(); }).then(function (d) {
+                    if (!d.secure_url) {
+                        throw new Error(d && d.error && d.error.message ? d.error.message : 'Upload thất bại');
+                    }
+                    return d.secure_url;
+                });
+            }
+
+            function uploadFilesWithLimit(items, signatures, signal) {
+                var results = new Array(items.length);
+                var nextIndex = 0;
+
+                function runNext() {
+                    var index = nextIndex;
+                    nextIndex += 1;
+                    if (index >= items.length) return Promise.resolve();
+
+                    return uploadOne(items[index], signatures, signal).then(function (value) {
+                        results[index] = { status: 'fulfilled', value: value };
+                    }).catch(function (reason) {
+                        results[index] = { status: 'rejected', reason: reason };
+                    }).then(runNext);
+                }
+
+                var workers = [];
+                var workerCount = Math.min(MAX_CONCURRENT_UPLOADS, items.length);
+                for (var i = 0; i < workerCount; i += 1) workers.push(runNext());
+                return Promise.all(workers).then(function () { return results; });
+            }
+
+            /* open */
+            window.addEventListener('timebox:navigate', function (event) {
+                var navigationId = event.detail && event.detail.id;
+                if (navigationId === 'upload') openModal('', 'Upload_img');
+            });
+            if (familyDesktopBtn) familyDesktopBtn.addEventListener('click', function () { openModal('family'); });
+            if (familyMobileBtn) familyMobileBtn.addEventListener('click', function () { openModal('family'); });
+            if (keepsakesDesktopBtn) keepsakesDesktopBtn.addEventListener('click', function () { openModal('keepsakes'); });
+            if (keepsakesMobileBtn) keepsakesMobileBtn.addEventListener('click', function () { openModal('keepsakes'); });
+            if (friendsDesktopBtn) friendsDesktopBtn.addEventListener('click', function () { openModal('friends'); });
+            if (friendsMobileBtn) friendsMobileBtn.addEventListener('click', function () { openModal('friends'); });
+            if (cookingDesktopBtn) cookingDesktopBtn.addEventListener('click', function () { openModal('cooking'); });
+            if (cookingMobileBtn) cookingMobileBtn.addEventListener('click', function () { openModal('cooking'); });
+            if (campusDesktopBtn) campusDesktopBtn.addEventListener('click', function () { openModal('campus'); });
+            if (campusMobileBtn) campusMobileBtn.addEventListener('click', function () { openModal('campus'); });
+            closeBtn.addEventListener('click', closeModal);
+            backdrop.addEventListener('click', closeModal);
+            document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeModal(); });
+            window.addEventListener('pagehide', releasePreviewUrls);
+
+            /* pick files */
+            if (dropzoneImage) dropzoneImage.addEventListener('click', function () { fileInputImage.click(); });
+            if (dropzoneVideo) dropzoneVideo.addEventListener('click', function () { fileInputVideo.click(); });
+            if (fileInputImage) fileInputImage.addEventListener('change', function () { addFiles(fileInputImage.files, 'image'); });
+            if (fileInputVideo) fileInputVideo.addEventListener('change', function () { addFiles(fileInputVideo.files, 'video'); });
+
+            /* drag & drop */
+            if (dropzonesContainer) {
+                dropzonesContainer.addEventListener('dragover', function (e) {
+                    e.preventDefault();
+                    if (dropzoneImage) dropzoneImage.classList.add('is-drag');
+                    if (dropzoneVideo) dropzoneVideo.classList.add('is-drag');
+                });
+                dropzonesContainer.addEventListener('dragleave', function () {
+                    if (dropzoneImage) dropzoneImage.classList.remove('is-drag');
+                    if (dropzoneVideo) dropzoneVideo.classList.remove('is-drag');
+                });
+                dropzonesContainer.addEventListener('drop', function (e) {
+                    e.preventDefault();
+                    if (dropzoneImage) dropzoneImage.classList.remove('is-drag');
+                    if (dropzoneVideo) dropzoneVideo.classList.remove('is-drag');
+                    addFiles(e.dataTransfer.files);
+                });
+            }
+
+            /* send */
+            sendBtn.addEventListener('click', function () {
+                if (!selected.length || uploading) return;
+                var items = selected.slice();
+                var uploadScope = activeUploadScope;
+                var pinUpload = isPinnedUpload();
+                uploading = true;
+                uploadController = window.AbortController ? new AbortController() : null;
+                var batchTimer = setTimeout(function () {
+                    if (uploadController) uploadController.abort();
+                }, 300000);
+                sendBtn.disabled = true;
+                closeBtn.disabled = true;
+                setStatus('Đang gửi ' + items.length + ' tập tin...');
+
+                var sigMap = {};
+                var mediaTypes = [];
+                items.forEach(function (it) {
+                    var mt = it.mediaType || 'image';
+                    if (mediaTypes.indexOf(mt) === -1) mediaTypes.push(mt);
+                });
+
+                var signaturePromises = [];
+                if (uploadScope) {
+                    signaturePromises = mediaTypes.map(function (mt) {
+                        return getUploadSignature(uploadScope, pinUpload, mt, uploadController ? uploadController.signal : undefined).then(function (signed) {
+                            sigMap[mt] = signed;
+                        });
+                    });
+                }
+
+                Promise.all(signaturePromises).then(function () {
+                    return uploadFilesWithLimit(items, sigMap, uploadController ? uploadController.signal : undefined);
+                }).then(function (results) {
+                    var ok = results.filter(function (r) { return r.status === 'fulfilled'; }).length;
+                    var fail = items.length - ok;
+                    selected = [];
+                    renderPreview();
+                    if (ok > 0 && uploadScope && window.prependTimeboxGallery) {
+                        var uploadedUrls = results.filter(function (result) {
+                            return result.status === 'fulfilled';
+                        }).map(function (result) {
+                            return result.value;
+                        });
+                        window.prependTimeboxGallery(uploadScope, uploadedUrls, pinUpload);
+                    }
+                    if (fail === 0) {
+                        setStatus('');
+                        closeModal(true);
+                        if (window.showTimeboxToast) {
+                            window.showTimeboxToast('Cảm ơn bạn đã gửi 🌷');
+                        }
+                    } else if (ok > 0) {
+                        setStatus('');
+                        closeModal(true);
+                        if (window.showTimeboxToast) {
+                            window.showTimeboxToast('Gửi được ' + ok + '/' + items.length + ' tập tin 🌷');
+                        }
+                    } else {
+                        selected = items;
+                        renderPreview();
+                        setStatus('Gửi thất bại, thử lại nhé!', 3000);
+                    }
+                }).catch(function (error) {
+                    selected = items;
+                    renderPreview();
+                    var uploadError = error && error.name === 'AbortError'
+                        ? 'Kết nối quá lâu, vui lòng thử lại.'
+                        : (error.message || 'Gửi thất bại, thử lại nhé!');
+                    setStatus(uploadError, 4000);
+                }).finally(function () {
+                    clearTimeout(batchTimer);
+                    uploadController = null;
+                    uploading = false;
+                    sendBtn.disabled = false;
+                    closeBtn.disabled = false;
+                });
+            });
+        })();
+    </script>
+    <script>
+        (function () {
+            var modal = document.getElementById('key-modal');
+            var form = document.getElementById('key-form');
+            var input = document.getElementById('key-input');
+            var error = document.getElementById('key-error');
+            var closeBtn = document.getElementById('key-close');
+            var AUTH_API = 'https://timebox.trghy.workers.dev/verify';
+            var targetHref = '';
+            var targetErrorMsg = '';
+            var defaultPlaceholder = '';
+            var authController = null;
+            var authRequestId = 0;
+
+            function getUnlockStorageKey(url) {
+                var targetUrl = new URL(url, window.location.href);
+                var filename = targetUrl.pathname.split('/').filter(Boolean).pop() || targetUrl.pathname;
+                return 'life-unlocked:' + filename;
+            }
+
+            function rememberUnlockedPage(url) {
+                try { sessionStorage.setItem(getUnlockStorageKey(url), '1'); } catch (e) { }
+            }
+
+            var autoVerifyTimer = null;
+
+            function openModal(card) {
+                authRequestId += 1;
+                if (authController) authController.abort();
+                authController = null;
+                clearTimeout(autoVerifyTimer);
+                targetHref = card ? card.getAttribute('data-locked-href') || '' : '';
+                targetErrorMsg = 'Mở vô hiệu';
+                if (input) input.setAttribute('placeholder', card ? card.getAttribute('data-key-placeholder') || defaultPlaceholder : defaultPlaceholder);
+                if (error) error.textContent = '';
+                if (input) input.value = '';
+                var submitButton = form.querySelector('button[type="submit"]');
+                if (submitButton) submitButton.disabled = false;
+                document.body.classList.add('is-modal-open');
+                modal.classList.add('is-open');
+                modal.setAttribute('aria-hidden', 'false');
+                setTimeout(function () {
+                    if (input) {
+                        input.focus();
+                        if (typeof input.select === 'function') input.select();
+                    }
+                }, 60);
+                setTimeout(function () {
+                    if (input && document.activeElement !== input) {
+                        input.focus();
+                    }
+                }, 220);
+            }
+
+            function closeModal() {
+                if (!modal.classList.contains('is-open')) return;
+                authRequestId += 1;
+                if (authController) authController.abort();
+                authController = null;
+                clearTimeout(autoVerifyTimer);
+                if (input) input.blur();
+                if (window.prepareTimeboxDialogClose) window.prepareTimeboxDialogClose(modal);
+                modal.classList.remove('is-open');
+                modal.setAttribute('aria-hidden', 'true');
+                if (window.syncTimeboxModalState) window.syncTimeboxModalState();
+                targetHref = '';
+                targetErrorMsg = '';
+                if (input) input.setAttribute('placeholder', defaultPlaceholder);
+                var submitButton = form.querySelector('button[type="submit"]');
+                if (submitButton) submitButton.disabled = false;
+            }
+
+            document.querySelectorAll('[data-locked-href]').forEach(function (card) {
+                card.addEventListener('click', function () {
+                    openModal(card);
+                });
+            });
+
+            function verifyPassword(keyValue, isExplicitSubmit) {
+                if (!keyValue) {
+                    if (isExplicitSubmit) {
+                        error.textContent = 'Mở vô hiệu';
+                        if (input) input.focus();
+                    }
+                    return;
+                }
+
+                var requestId = ++authRequestId;
+                if (authController) authController.abort();
+                authController = window.AbortController ? new AbortController() : null;
+                var action = modal._targetAction || '';
+                var scope = (action === 'friends' || action === 'campus' || /friends|campus/i.test(targetHref))
+                    ? 'friends'
+                    : 'family';
+
+                var submitBtn = form.querySelector('button[type="submit"]');
+                if (isExplicitSubmit && submitBtn) submitBtn.disabled = true;
+
+                fetch(AUTH_API, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ password: keyValue, scope: scope }),
+                    signal: authController ? authController.signal : undefined
+                }).then(function (response) {
+                    return response.json().catch(function () { return { ok: false }; });
+                }).then(function (result) {
+                    if (requestId !== authRequestId || !modal.classList.contains('is-open')) return;
+                    if (result.ok) {
+                        // Kiểu 1: Đúng mật khẩu -> Tự động đóng bàn phím và mở khóa ngay lập tức!
+                        if (input) input.blur();
+                        var unlockedHref = targetHref;
+                        closeModal();
+                        if (action === 'family' || action === 'friends' || action === 'campus') {
+                            if (action === 'family' && window._rememberFamilyUnlock) {
+                                window._rememberFamilyUnlock();
+                            }
+                            if (action === 'friends' && window._rememberFriendsUnlock) {
+                                window._rememberFriendsUnlock();
+                            }
+                            if (action === 'campus' && window._rememberCampusUnlock) {
+                                window._rememberCampusUnlock();
+                            }
+                            window._spaGoForward && window._spaGoForward(action);
+                        } else if (unlockedHref) {
+                            rememberUnlockedPage(unlockedHref);
+                            window.location.href = unlockedHref;
+                        }
+                    } else {
+                        // Kiểu 2 & Kiểu 3: Nhập chưa đủ hoặc nhập sai -> Nếu bấm Mở kho thì báo 'Mở vô hiệu', khi gõ thì im lặng
+                        if (isExplicitSubmit) {
+                            error.textContent = 'Mở vô hiệu';
+                            if (input) input.select();
+                        }
+                    }
+                }).catch(function () {
+                    if (requestId !== authRequestId) return;
+                    if (isExplicitSubmit) {
+                        error.textContent = 'Mở vô hiệu';
+                        if (input) input.select();
+                    }
+                }).finally(function () {
+                    if (requestId === authRequestId) {
+                        authController = null;
+                        if (submitBtn) submitBtn.disabled = false;
+                    }
+                });
+            }
+
+            if (input) {
+                input.addEventListener('input', function () {
+                    if (error) error.textContent = '';
+                    clearTimeout(autoVerifyTimer);
+                    var val = input.value.trim();
+                    if (val.length >= 3) {
+                        autoVerifyTimer = setTimeout(function () {
+                            verifyPassword(val, false);
+                        }, 180);
+                    }
+                });
+            }
+
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+                clearTimeout(autoVerifyTimer);
+                var keyValue = input.value.trim();
+                verifyPassword(keyValue, true);
+            });
+
+            closeBtn.addEventListener('click', closeModal);
+            modal.querySelector('.key-modal__backdrop').addEventListener('click', closeModal);
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape') closeModal();
+            });
+        })();
+    </script>
+    <script>
+        (function () {
+            var homeView = document.getElementById('view-home');
+            var navigationRoot = document.querySelector('[data-space-navigation]');
+            var bundleRequested = false;
+
+            function showFallback() {
+                if (navigationRoot) navigationRoot.classList.add('is-unavailable');
+            }
+
+            function loadSpaceNavigation() {
+                if (bundleRequested || !homeView || homeView.classList.contains('is-hidden')) return;
+                bundleRequested = true;
+                if (homeObserver) homeObserver.disconnect();
+
+                var preload = document.createElement('link');
+                preload.rel = 'preload';
+                preload.as = 'image';
+                preload.crossOrigin = 'anonymous';
+                preload.href = 'images/space/earth_day.webp';
+                preload.fetchPriority = 'high';
+                document.head.appendChild(preload);
+
+                var script = document.createElement('script');
+                script.src = 'space-navigation.bundle.js?v=42';
+                script.async = true;
+                script.addEventListener('error', showFallback, { once: true });
+                document.body.appendChild(script);
+            }
+
+            var lastNavTimestamp = 0;
+            function dispatchNavigation(actionId) {
+                if (!actionId) return;
+                var now = Date.now();
+                if (now - lastNavTimestamp < 350) return;
+                lastNavTimestamp = now;
+
+                document.body.classList.add('is-navigating');
+                setTimeout(function () {
+                    document.body.classList.remove('is-navigating');
+                }, 420);
+
+                window.dispatchEvent(new CustomEvent('timebox:navigate', {
+                    detail: { id: actionId }
+                }));
+            }
+
+            function handleButtonClick(btn, event) {
+                var dock = btn.closest('[data-coverflow-dock]');
+                var isMobileDock = Boolean(dock && window.innerWidth <= 768);
+
+                if (isMobileDock) {
+                    if (btn.classList.contains('is-active-center')) {
+                        var action = btn.getAttribute('data-space-action');
+                        if (action) dispatchNavigation(action);
+                    } else {
+                        if (event && event.preventDefault) event.preventDefault();
+                        var targetScrollLeft = btn.offsetLeft - (dock.clientWidth / 2) + (btn.offsetWidth / 2);
+                        dock.scrollTo({ left: targetScrollLeft, behavior: 'smooth' });
+                    }
+                } else {
+                    var action = btn.getAttribute('data-space-action');
+                    if (action) dispatchNavigation(action);
+                }
+            }
+
+            document.addEventListener('click', function (event) {
+                var btn = event.target.closest('[data-space-action]');
+                if (!btn) return;
+                handleButtonClick(btn, event);
+            });
+
+            var dockEl = document.querySelector('[data-coverflow-dock]');
+            if (dockEl) {
+                var touchStartX = 0;
+                var touchStartY = 0;
+                var isTouchDrag = false;
+                dockEl.addEventListener('touchstart', function (e) {
+                    if (e.touches && e.touches.length === 1) {
+                        touchStartX = e.touches[0].clientX;
+                        touchStartY = e.touches[0].clientY;
+                        isTouchDrag = false;
+                    }
+                }, { passive: true });
+
+                dockEl.addEventListener('touchmove', function (e) {
+                    if (e.touches && e.touches.length === 1) {
+                        var dx = e.touches[0].clientX - touchStartX;
+                        var dy = e.touches[0].clientY - touchStartY;
+                        if (Math.hypot(dx, dy) > 9) {
+                            isTouchDrag = true;
+                        }
+                    }
+                }, { passive: true });
+
+                dockEl.addEventListener('touchend', function (e) {
+                    if (!isTouchDrag) {
+                        if (e.cancelable) e.preventDefault();
+                        var touch = e.changedTouches && e.changedTouches[0];
+                        var clientX = touch ? touch.clientX : touchStartX;
+                        var clientY = touch ? touch.clientY : touchStartY;
+                        var target = document.elementFromPoint(clientX, clientY);
+                        var btn = (target && target.closest('[data-space-action]')) || (e.target && e.target.closest('[data-space-action]'));
+                        if (btn) {
+                            handleButtonClick(btn, e);
+                        }
+                    }
+                }, { passive: false });
+            }
+
+            if (homeView) {
+                var homeObserver = new MutationObserver(function () {
+                    if (!homeView.classList.contains('is-hidden')) {
+                        loadSpaceNavigation();
+                        if (bundleRequested) homeObserver.disconnect();
+                    }
+                });
+                homeObserver.observe(homeView, { attributes: true, attributeFilter: ['class'] });
+            }
+
+            loadSpaceNavigation();
+        })();
+    </script>
+</body>
+
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+===========================
+
+
+
+sw.js
+
+// Timebox service worker: fast shell, bounded image cache, fresh API data.
+var CACHE_PREFIX = 'timebox-';
+var SHELL_CACHE = CACHE_PREFIX + 'shell-v43';
+var STATIC_CACHE = CACHE_PREFIX + 'static-v43';
+var IMAGE_CACHE = CACHE_PREFIX + 'images-v2';
+var ASSET_CACHE = CACHE_PREFIX + 'assets-v2';
+var MAX_IMAGE_ENTRIES = 80;
+var MAX_ASSET_ENTRIES = 50;
+var MAX_STATIC_ENTRIES = 80;
+
+var SHELL_URLS = [
+    './',
+    './index.html'
+];
+
+var STATIC_URLS = [
+    './style.css?v=43',
+    './life.css?v=41',
+    './space-navigation.css?v=42',
+    './orbital-archive.css?v=41',
+    './theme.js?v=43',
+    './life.js?v=41'
+];
+
+self.addEventListener('install', function (event) {
+    event.waitUntil(
+        Promise.all([
+            caches.open(SHELL_CACHE).then(function (cache) { return cache.addAll(SHELL_URLS); }),
+            caches.open(STATIC_CACHE).then(function (cache) { return cache.addAll(STATIC_URLS); })
+        ])
+            .then(function () { return self.skipWaiting(); })
+    );
+});
+
+self.addEventListener('activate', function (event) {
+    var activeCaches = [SHELL_CACHE, STATIC_CACHE, IMAGE_CACHE, ASSET_CACHE];
+    event.waitUntil(
+        caches.keys().then(function (keys) {
+            return Promise.all(keys.map(function (key) {
+                if (key.indexOf(CACHE_PREFIX) === 0 && activeCaches.indexOf(key) === -1) {
+                    return caches.delete(key);
+                }
+                return Promise.resolve(false);
+            }));
+        }).then(function () { return self.clients.claim(); })
+    );
+});
+
+function canCache(response) {
+    return Boolean(response && (response.ok || response.type === 'opaque'));
+}
+
+function trimCache(cacheName, maxEntries) {
+    return caches.open(cacheName).then(function (cache) {
+        return cache.keys().then(function (keys) {
+            var overflow = keys.length - maxEntries;
+            if (overflow <= 0) return undefined;
+            return Promise.all(keys.slice(0, overflow).map(function (key) {
+                return cache.delete(key);
+            }));
+        });
+    });
+}
+
+function cacheFirst(request, cacheName, maxEntries) {
+    return caches.open(cacheName).then(function (cache) {
+        return cache.match(request).then(function (cached) {
+            if (cached) return cached;
+            return fetch(request).then(function (response) {
+                if (canCache(response)) {
+                    cache.put(request, response.clone()).then(function () {
+                        return trimCache(cacheName, maxEntries);
+                    }).catch(function () {});
+                }
+                return response;
+            });
+        });
+    });
+}
+
+function freshNetworkFirst(request) {
+    return fetch(request, { cache: 'no-store' }).then(function (response) {
+        if (!canCache(response)) return response;
+        return caches.open(SHELL_CACHE).then(function (cache) {
+            return cache.put(request, response.clone()).catch(function () {});
+        }).then(function () { return response; });
+    }).catch(function () {
+        return caches.open(SHELL_CACHE).then(function (cache) {
+            return cache.match(request);
+        });
+    });
+}
+
+function navigationNetworkFirst(request) {
+    var cacheUrl = new URL(request.url);
+    cacheUrl.search = '';
+    cacheUrl.hash = '';
+    return fetch(request, { cache: 'no-store' }).then(function (response) {
+        if (!canCache(response)) return response;
+        return caches.open(SHELL_CACHE).then(function (cache) {
+            return cache.put(cacheUrl.toString(), response.clone()).catch(function () {});
+        }).then(function () { return response; });
+    }).catch(function () {
+        return caches.open(SHELL_CACHE).then(function (cache) {
+            return cache.match(cacheUrl.toString()).then(function (cached) {
+                return cached || cache.match('./');
+            });
+        });
+    });
+}
+
+self.addEventListener('fetch', function (event) {
+    var request = event.request;
+    if (request.method !== 'GET') return;
+
+    var url;
+    try { url = new URL(request.url); } catch (error) { return; }
+    if (url.protocol !== 'http:' && url.protocol !== 'https:') return;
+
+    // Password, signatures and gallery metadata must always come from the Worker.
+    if (url.hostname === 'timebox.trghy.workers.dev') return;
+
+    // Cloudinary delivery URLs are versioned, so cache-first is safe and much faster.
+    if (url.hostname === 'res.cloudinary.com' && url.pathname.indexOf('/image/upload/') !== -1) {
+        event.respondWith(cacheFirst(request, IMAGE_CACHE, MAX_IMAGE_ENTRIES));
+        return;
+    }
+
+    if (url.hostname === 'cdnjs.cloudflare.com' ||
+        url.hostname === 'fonts.googleapis.com' ||
+        url.hostname === 'fonts.gstatic.com') {
+        event.respondWith(cacheFirst(request, ASSET_CACHE, MAX_ASSET_ENTRIES));
+        return;
+    }
+
+    if (request.mode === 'navigate' && url.origin === self.location.origin) {
+        event.respondWith(navigationNetworkFirst(request));
+        return;
+    }
+
+    if (url.origin === self.location.origin) {
+        var isVersionedAsset = url.searchParams.has('v');
+        var isSpaceAsset = url.pathname.indexOf('/images/space/') !== -1;
+        var isStaticDestination = ['style', 'script', 'image', 'font'].indexOf(request.destination) !== -1;
+
+        if (isVersionedAsset || isSpaceAsset || isStaticDestination) {
+            event.respondWith(cacheFirst(request, STATIC_CACHE, MAX_STATIC_ENTRIES));
+            return;
+        }
+
+        event.respondWith(freshNetworkFirst(request));
+    }
+});
+
+
+
+
+
+===============
+
+
+
+
+theme.js
+
+
+// theme.js – interactions for link panels, modals, galleries, and toasts.
+(function () {
+    /* ---- Service Worker Registration ---- */
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+            navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' })
+                .then(function (registration) { return registration.update(); })
+                .catch(function (error) {
+                    console.warn('[Timebox] Service worker update failed:', error);
+                });
+        });
+    }
+
+    /* ---- Shared dialog focus, Escape, and scroll lock ---- */
+    var managedDialogSelector = [
+        '.lightbox',
+        '.profile-modal',
+        '.gallery-overlay',
+        '.photo-lightbox',
+        '.join-modal',
+        '.key-modal',
+        '.upload-modal',
+        '.thoughts-confirm',
+        '.pin-action-modal'
+    ].join(', ');
+    var dialogCloseSelector = '.pin-action-modal__close, .thoughts-confirm__decline, .upload-modal__close, .key-modal__close, .join-modal__close, .gallery-panel__close, .photo-lightbox__close, .profile-modal__close, .lightbox__close';
+    var dialogOpenState = new WeakMap();
+    var dialogReturnFocus = new WeakMap();
+
+    function getOpenManagedDialogs() {
+        return Array.prototype.filter.call(document.querySelectorAll(managedDialogSelector), function (dialog) {
+            return dialog.classList.contains('is-open') && dialog.getAttribute('aria-hidden') !== 'true';
+        });
+    }
+
+    function getDialogFocusable(dialog) {
+        return Array.prototype.filter.call(dialog.querySelectorAll(
+            'button:not([disabled]), [href], input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        ), function (element) {
+            return !element.hidden && element.getAttribute('aria-hidden') !== 'true' && element.offsetParent !== null;
+        });
+    }
+
+    function prepareDialogClose(dialog) {
+        if (!dialog) return;
+        var active = document.activeElement;
+        if (active && dialog.contains(active) && typeof active.blur === 'function') active.blur();
+    }
+
+    function syncModalState() {
+        var dialogs = document.querySelectorAll(managedDialogSelector);
+        Array.prototype.forEach.call(dialogs, function (dialog) {
+            var isOpen = dialog.classList.contains('is-open') && dialog.getAttribute('aria-hidden') !== 'true';
+            var wasOpen = dialogOpenState.get(dialog) === true;
+            dialog.inert = !isOpen;
+
+            if (isOpen && !wasOpen) {
+                var active = document.activeElement;
+                if (active && active !== document.body && !dialog.contains(active)) {
+                    dialogReturnFocus.set(dialog, active);
+                }
+                dialogOpenState.set(dialog, true);
+                window.setTimeout(function () {
+                    if (!dialog.classList.contains('is-open') || dialog.contains(document.activeElement)) return;
+                    var initial = dialog.querySelector('[data-dialog-focus]') ||
+                        dialog.querySelector('input:not([disabled]):not([type="hidden"]), textarea:not([disabled])') ||
+                        getDialogFocusable(dialog)[0];
+                    if (initial) initial.focus({ preventScroll: true });
+                }, 0);
+            } else if (!isOpen && wasOpen) {
+                dialogOpenState.set(dialog, false);
+                var previous = dialogReturnFocus.get(dialog);
+                dialogReturnFocus.delete(dialog);
+                var remainingDialogs = getOpenManagedDialogs();
+                var nextDialog = remainingDialogs[remainingDialogs.length - 1];
+                if (previous && nextDialog && !dialogReturnFocus.has(nextDialog)) {
+                    dialogReturnFocus.set(nextDialog, previous);
+                }
+                window.setTimeout(function () {
+                    if (!previous || !previous.isConnected || previous.offsetParent === null) return;
+                    var parentDialog = previous.closest(managedDialogSelector);
+                    if (!getOpenManagedDialogs().length || (parentDialog && parentDialog.classList.contains('is-open'))) {
+                        previous.focus({ preventScroll: true });
+                    }
+                }, 0);
+            }
+        });
+
+        var hasOpenDialog = getOpenManagedDialogs().length > 0;
+        document.body.classList.toggle('is-modal-open', hasOpenDialog);
+        var shell = document.querySelector('.spa-shell');
+        if (shell) {
+            var openDialogs = getOpenManagedDialogs();
+            shell.inert = false;
+            Array.prototype.forEach.call(shell.children, function (child) {
+                var containsOpenDialog = openDialogs.some(function (dialog) {
+                    return child === dialog || child.contains(dialog);
+                });
+                child.inert = hasOpenDialog && !containsOpenDialog;
+            });
+        }
+    }
+
+    window.prepareTimeboxDialogClose = prepareDialogClose;
+    window.syncTimeboxModalState = syncModalState;
+    window.closeTimeboxDialogsForNavigation = function () {
+        var safety = 12;
+        var dialogs = getOpenManagedDialogs();
+        while (dialogs.length && safety > 0) {
+            var dialog = dialogs[dialogs.length - 1];
+            var closeButton = dialog.querySelector(dialogCloseSelector);
+            if (!closeButton || closeButton.disabled) return false;
+            closeButton.click();
+            var remaining = getOpenManagedDialogs();
+            if (remaining.length >= dialogs.length && remaining[remaining.length - 1] === dialog) return false;
+            dialogs = remaining;
+            safety -= 1;
+        }
+        syncModalState();
+        return getOpenManagedDialogs().length === 0;
+    };
+
+    var dialogObserver = new MutationObserver(function (mutations) {
+        var shouldSync = mutations.some(function (mutation) {
+            if (mutation.type === 'childList') {
+                var changedNodes = Array.prototype.concat.call(
+                    Array.prototype.slice.call(mutation.addedNodes),
+                    Array.prototype.slice.call(mutation.removedNodes)
+                );
+                return changedNodes.some(function (node) {
+                    return node.nodeType === 1 && (
+                        (node.matches && node.matches(managedDialogSelector)) ||
+                        (node.querySelector && node.querySelector(managedDialogSelector))
+                    );
+                });
+            }
+            return mutation.target.matches && mutation.target.matches(managedDialogSelector);
+        });
+        if (shouldSync) syncModalState();
+    });
+    dialogObserver.observe(document.body, {
+        subtree: true,
+        childList: true,
+        attributes: true,
+        attributeFilter: ['class', 'aria-hidden']
+    });
+
+    document.addEventListener('keydown', function (event) {
+        if (event.key !== 'Tab') return;
+        var dialogs = getOpenManagedDialogs();
+        var dialog = dialogs[dialogs.length - 1];
+        if (!dialog) return;
+        var focusable = getDialogFocusable(dialog);
+        if (!focusable.length) {
+            event.preventDefault();
+            return;
+        }
+        var first = focusable[0];
+        var last = focusable[focusable.length - 1];
+        if (event.shiftKey && document.activeElement === first) {
+            event.preventDefault();
+            last.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+            event.preventDefault();
+            first.focus();
+        }
+    }, true);
+
+    document.addEventListener('keydown', function (event) {
+        if (event.key !== 'Escape') return;
+        var dialogs = getOpenManagedDialogs();
+        var dialog = dialogs[dialogs.length - 1];
+        if (!dialog) return;
+        var closeButton = dialog.querySelector(dialogCloseSelector);
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        if (closeButton && !closeButton.disabled) closeButton.click();
+    }, true);
+
+    syncModalState();
+
+    /* ---- Page Transition Helpers (exposed globally) ---- */
+    function prefetchPage(url) {
+        if (!url || !document.createElement) return;
+        try {
+            var existing = document.querySelector('link[rel="prefetch"][href="' + url + '"]');
+            if (existing) return;
+            var link = document.createElement('link');
+            link.rel = 'prefetch';
+            link.href = url;
+            document.head.appendChild(link);
+        } catch (e) {}
+    }
+
+    function navigateWithTransition(url) {
+        if (!url) return;
+        try { sessionStorage.setItem('_nav_transition', '1'); } catch (e) {}
+        var mainCard = document.querySelector('.bio-card');
+        if (mainCard) {
+            mainCard.classList.add('is-exiting');
+        }
+        document.body.classList.add('is-page-transitioning');
+        setTimeout(function () {
+            window.location.href = url;
+        }, 150);
+    }
+
+    // Expose to global scope for inline use across pages
+    window.navigateWithTransition = navigateWithTransition;
+    window.prefetchPage = prefetchPage;
+
+    /* ---- Page Enter Animation ---- */
+    (function () {
+        var mainCard = document.querySelector('.bio-card');
+        if (!mainCard) return;
+        var fromInternalNav = false;
+        try { fromInternalNav = sessionStorage.getItem('_nav_transition') === '1'; } catch (e) {}
+        if (fromInternalNav) {
+            mainCard.classList.add('is-entering');
+            try { sessionStorage.removeItem('_nav_transition'); } catch (e) {}
+            mainCard.addEventListener('animationend', function () {
+                mainCard.classList.remove('is-entering');
+            }, { once: true });
+        }
+    })();
+
+    /* ---- Smooth back button on life/album pages ---- */
+    document.querySelectorAll('.life-back').forEach(function (backLink) {
+        backLink.addEventListener('click', function (e) {
+            var href = backLink.getAttribute('href');
+            if (!href || href === '#') return;
+            e.preventDefault();
+            if (backLink.hasAttribute('data-history-back')) {
+                var fallback = backLink.getAttribute('data-back-fallback') || href;
+                var referrer = '';
+                try { referrer = document.referrer ? new URL(document.referrer).origin : ''; } catch (err) {}
+                if (window.history.length > 1 && referrer === window.location.origin) {
+                    window.history.back();
+                    return;
+                }
+                navigateWithTransition(fallback);
+                return;
+            }
+            navigateWithTransition(href);
+        });
+    });
+
+    /* ---- Pointer-tracking ripple on .link-btn ---- */
+    var lastRippleTime = 0;
+    var rippleThrottle = 16; // ~60fps
+
+    document.querySelectorAll('.link-btn').forEach(function (btn) {
+        btn.addEventListener('mousemove', function (e) {
+            var now = Date.now();
+            if (now - lastRippleTime < rippleThrottle) return;
+            lastRippleTime = now;
+
+            var rect = btn.getBoundingClientRect();
+            var x = ((e.clientX - rect.left) / rect.width) * 100;
+            var y = ((e.clientY - rect.top) / rect.height) * 100;
+            btn.style.setProperty('--mx', x + '%');
+            btn.style.setProperty('--my', y + '%');
+        });
+    });
+
+    /* ---- Link group panels ---- */
+    var linkHub = document.getElementById('link-hub');
+    var linkPanels = Array.prototype.slice.call(document.querySelectorAll('.link-panel'));
+    var panelHistoryActive = false;
+    var qrHistoryActive = false;
+
+    function pushUiState(state) {
+        if (!window.history || !window.history.pushState) return false;
+        try {
+            window.history.pushState(state, '');
+            return true;
+        } catch (e) {
+            return false;
+        }
+    }
+
+    function hasOpenLinkPanel() {
+        return linkPanels.some(function (panel) {
+            return panel.classList.contains('is-open');
+        });
+    }
+
+    function closeLinkPanels() {
+        if (linkHub) linkHub.classList.remove('is-hidden');
+        linkPanels.forEach(function (panel) {
+            panel.classList.remove('is-open');
+            panel.setAttribute('aria-hidden', 'true');
+        });
+        document.querySelectorAll('[data-panel-target]').forEach(function (btn) {
+            btn.classList.remove('is-active');
+            btn.setAttribute('aria-expanded', 'false');
+        });
+        panelHistoryActive = false;
+    }
+
+    function openLinkPanel(panelId, skipHistory) {
+        var target = document.getElementById(panelId);
+        if (!target || !linkHub) return;
+
+        if (!skipHistory) {
+            panelHistoryActive = pushUiState({ bioPanel: panelId });
+        }
+
+        linkHub.classList.add('is-hidden');
+        linkPanels.forEach(function (panel) {
+            var isTarget = panel === target;
+            panel.classList.toggle('is-open', isTarget);
+            panel.setAttribute('aria-hidden', isTarget ? 'false' : 'true');
+        });
+
+        document.querySelectorAll('[data-panel-target]').forEach(function (btn) {
+            var isActive = btn.getAttribute('data-panel-target') === panelId;
+            btn.classList.toggle('is-active', isActive);
+            btn.setAttribute('aria-expanded', isActive ? 'true' : 'false');
+        });
+    }
+
+    document.querySelectorAll('[data-panel-target]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            openLinkPanel(btn.getAttribute('data-panel-target'));
+        });
+    });
+
+    var personalLink = document.getElementById('link-life');
+    if (personalLink) {
+        personalLink.addEventListener('click', function (e) {
+            e.preventDefault();
+            navigateWithTransition(personalLink.getAttribute('href'));
+        });
+        prefetchPage(personalLink.getAttribute('href'));
+    }
+
+    /* ---- Prefetch sub-pages on life.html ---- */
+    (function () {
+        if (!/\/life\.html$/i.test(window.location.pathname)) return;
+        var subPages = ['./moments.html', './campus.html', './cooking.html'];
+        // Prefetch after a short idle delay so it doesn't compete with initial load
+        var schedFn = window.requestIdleCallback || function (cb) { setTimeout(cb, 400); };
+        schedFn(function () {
+            subPages.forEach(function (url) { prefetchPage(url); });
+        });
+    })();
+
+    document.querySelectorAll('[data-panel-back]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            if (panelHistoryActive) {
+                window.history.back();
+            } else {
+                closeLinkPanels();
+            }
+        });
+    });
+
+    /* ---- QR Lightbox ---- */
+    var lightbox = document.getElementById('qr-lightbox');
+    var qrLightboxImg = document.getElementById('qr-lightbox-img');
+
+    function openLightbox(trigger, skipHistory) {
+        if (lightbox) {
+            var qrSrc = trigger ? trigger.getAttribute('data-qr-src') : '';
+            var qrAlt = trigger ? trigger.getAttribute('data-qr-alt') : '';
+            if (trigger && qrLightboxImg) {
+                qrLightboxImg.src = qrSrc || 'https://res.cloudinary.com/dtpw5htqs/image/upload/v1782284227/qr_zalo_huh7bk.webp';
+                qrLightboxImg.alt = qrAlt || 'Ma QR phong to';
+            }
+            if (!skipHistory) {
+                qrHistoryActive = pushUiState({
+                    qrLightbox: true,
+                    qrSrc: qrSrc || 'https://res.cloudinary.com/dtpw5htqs/image/upload/v1782284227/qr_zalo_huh7bk.webp',
+                    qrAlt: qrAlt || 'Ma QR phong to'
+                });
+            }
+            document.body.classList.add('is-modal-open');
+            lightbox.classList.add('is-open');
+            lightbox.setAttribute('aria-hidden', 'false');
+        }
+    }
+
+    function closeLightbox(skipHistory) {
+        if (lightbox && lightbox.classList.contains('is-open')) {
+            if (!skipHistory && qrHistoryActive) {
+                window.history.back();
+                return;
+            }
+            prepareDialogClose(lightbox);
+            lightbox.classList.remove('is-open');
+            lightbox.setAttribute('aria-hidden', 'true');
+            syncModalState();
+            qrHistoryActive = false;
+        }
+    }
+
+    document.querySelectorAll('[data-qr-src]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            openLightbox(btn);
+        });
+    });
+
+    if (lightbox) {
+        lightbox.querySelector('.lightbox__backdrop').addEventListener('click', function () {
+            closeLightbox();
+        });
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') closeLightbox();
+        });
+    }
+
+    window.addEventListener('popstate', function (e) {
+        if (e.state && e.state.qrLightbox) {
+            if (qrLightboxImg) {
+                qrLightboxImg.src = e.state.qrSrc || 'https://res.cloudinary.com/dtpw5htqs/image/upload/v1782284227/qr_zalo_huh7bk.webp';
+                qrLightboxImg.alt = e.state.qrAlt || 'Ma QR phong to';
+            }
+            qrHistoryActive = true;
+            openLightbox(null, true);
+            return;
+        }
+
+        if (qrHistoryActive) {
+            closeLightbox(true);
+            return;
+        }
+
+        if (e.state && e.state.bioPanel) {
+            openLinkPanel(e.state.bioPanel, true);
+            panelHistoryActive = true;
+            return;
+        }
+
+        if (panelHistoryActive || hasOpenLinkPanel()) {
+            closeLinkPanels();
+        }
+    });
+
+    document.addEventListener('keydown', function (e) {
+        if (lightbox && lightbox.classList.contains('is-open')) return;
+        if (e.key !== 'Escape' || !hasOpenLinkPanel()) return;
+        if (panelHistoryActive) {
+            window.history.back();
+        } else {
+            closeLinkPanels();
+        }
+    });
+
+    /* ---- Profile Info Card ---- */
+    var profileOpenBtn = document.getElementById('profile-info-open');
+    var profileCloseBtn = document.getElementById('profile-info-close');
+    var profileModal = document.getElementById('profile-info-modal');
+
+    function openProfileModal() {
+        if (profileModal) {
+            document.body.classList.add('is-modal-open');
+            profileModal.classList.add('is-open');
+            profileModal.setAttribute('aria-hidden', 'false');
+        }
+    }
+
+    function closeProfileModal() {
+        if (profileModal && profileModal.classList.contains('is-open')) {
+            prepareDialogClose(profileModal);
+            profileModal.classList.remove('is-open');
+            profileModal.setAttribute('aria-hidden', 'true');
+            syncModalState();
+        }
+    }
+
+    if (profileOpenBtn) {
+        profileOpenBtn.addEventListener('click', openProfileModal);
+    }
+
+    if (profileCloseBtn) {
+        profileCloseBtn.addEventListener('click', closeProfileModal);
+    }
+
+    if (profileModal) {
+        profileModal.querySelector('.profile-modal__backdrop').addEventListener('click', closeProfileModal);
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') closeProfileModal();
+        });
+    }
+
+    /* ---- Photo Gallery Lightbox ---- */
+    var photoLightbox = document.getElementById('photo-lightbox');
+    var photoLightboxImg = document.getElementById('photo-lightbox-img');
+    var photoLightboxStage = document.getElementById('photo-lightbox-stage');
+    var photoLightboxCaption = document.getElementById('photo-lightbox-caption');
+    var photoLightboxClose = document.getElementById('photo-lightbox-close');
+    var photoLightboxOrbitRects = photoLightbox
+        ? photoLightbox.querySelectorAll('.photo-lightbox__orbit rect')
+        : [];
+    var photoLightboxReleaseTimer = null;
+    var photoLightboxPinAction = null;
+    var photoLightboxZoom = { scale: 1, x: 0, y: 0 };
+    var photoLightboxTouch = null;
+    var PHOTO_LIGHTBOX_MAX_ZOOM = 4;
+    var PHOTO_LIGHTBOX_MIN_ZOOM = 1;
+    var PHOTO_LIGHTBOX_ZOOM_STEP = 0.15;
+
+    function clearPhotoLightboxFrame() {
+        if (!photoLightbox) return;
+        ['--lightbox-frame-width', '--lightbox-frame-height', '--lightbox-frame-radius'].forEach(function (name) {
+            photoLightbox.style.removeProperty(name);
+        });
+    }
+
+    function setPhotoLightboxFrame(width, height) {
+        if (!photoLightbox || !width || !height) return;
+        var shortestSide = Math.min(width, height);
+        var radius = Math.max(10, Math.min(20, Math.round(shortestSide * 0.055)));
+        var radiusX = (radius / width) * 100;
+        var radiusY = (radius / height) * 100;
+
+        photoLightbox.style.setProperty('--lightbox-frame-width', width + 'px');
+        photoLightbox.style.setProperty('--lightbox-frame-height', height + 'px');
+        photoLightbox.style.setProperty('--lightbox-frame-radius', radius + 'px');
+
+        Array.prototype.forEach.call(photoLightboxOrbitRects, function (rect) {
+            rect.setAttribute('rx', radiusX.toFixed(3));
+            rect.setAttribute('ry', radiusY.toFixed(3));
+        });
+    }
+
+    function clampPhotoLightboxZoomPosition(x, y, scale) {
+        if (!photoLightboxStage) return { x: 0, y: 0 };
+        var bounds = photoLightboxStage.getBoundingClientRect();
+        var maxX = Math.max(0, (bounds.width * (scale - 1)) / 2);
+        var maxY = Math.max(0, (bounds.height * (scale - 1)) / 2);
+        return {
+            x: Math.max(-maxX, Math.min(maxX, x)),
+            y: Math.max(-maxY, Math.min(maxY, y))
+        };
+    }
+
+    function applyPhotoLightboxZoom() {
+        if (!photoLightboxImg) return;
+        var position = clampPhotoLightboxZoomPosition(
+            photoLightboxZoom.x,
+            photoLightboxZoom.y,
+            photoLightboxZoom.scale
+        );
+        photoLightboxZoom.x = position.x;
+        photoLightboxZoom.y = position.y;
+        photoLightboxImg.style.transform = 'translate3d(' + position.x + 'px, ' + position.y + 'px, 0) scale(' + photoLightboxZoom.scale + ')';
+        photoLightboxImg.style.objectFit = photoLightboxZoom.scale > 1.01 ? 'contain' : 'cover';
+        if (photoLightbox) photoLightbox.classList.toggle('is-zoomed', photoLightboxZoom.scale > 1.01);
+        if (photoLightboxStage) {
+            photoLightboxStage.style.cursor = photoLightboxZoom.scale > 1.01 ? 'grab' : 'default';
+        }
+    }
+
+    function resetPhotoLightboxZoom() {
+        photoLightboxZoom.scale = 1;
+        photoLightboxZoom.x = 0;
+        photoLightboxZoom.y = 0;
+        photoLightboxTouch = null;
+        if (photoLightboxImg) photoLightboxImg.style.removeProperty('transform');
+        if (photoLightbox) photoLightbox.classList.remove('is-zoomed');
+    }
+
+    function getTouchDistance(first, second) {
+        var deltaX = second.clientX - first.clientX;
+        var deltaY = second.clientY - first.clientY;
+        return Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+    }
+
+    function getTouchMidpoint(first, second) {
+        return {
+            x: (first.clientX + second.clientX) / 2,
+            y: (first.clientY + second.clientY) / 2
+        };
+    }
+
+    function beginPhotoLightboxTouch(touches) {
+        if (!touches || !touches.length) return;
+        if (touches.length >= 2) {
+            photoLightboxTouch = {
+                mode: 'pinch',
+                distance: getTouchDistance(touches[0], touches[1]),
+                midpoint: getTouchMidpoint(touches[0], touches[1]),
+                scale: photoLightboxZoom.scale,
+                x: photoLightboxZoom.x,
+                y: photoLightboxZoom.y
+            };
+            return;
+        }
+        photoLightboxTouch = {
+            mode: 'pan',
+            x: touches[0].clientX,
+            y: touches[0].clientY,
+            offsetX: photoLightboxZoom.x,
+            offsetY: photoLightboxZoom.y
+        };
+    }
+
+    function movePhotoLightboxTouch(touches) {
+        if (!photoLightboxTouch || !touches || !touches.length || !photoLightboxStage) return;
+        if (touches.length >= 2) {
+            if (photoLightboxTouch.mode !== 'pinch') {
+                beginPhotoLightboxTouch(touches);
+                return;
+            }
+            var distance = getTouchDistance(touches[0], touches[1]);
+            var scale = Math.max(1, Math.min(PHOTO_LIGHTBOX_MAX_ZOOM,
+                photoLightboxTouch.scale * (distance / Math.max(1, photoLightboxTouch.distance))));
+            var midpoint = getTouchMidpoint(touches[0], touches[1]);
+            var bounds = photoLightboxStage.getBoundingClientRect();
+            var startX = photoLightboxTouch.midpoint.x - bounds.left - (bounds.width / 2);
+            var startY = photoLightboxTouch.midpoint.y - bounds.top - (bounds.height / 2);
+            var currentX = midpoint.x - bounds.left - (bounds.width / 2);
+            var currentY = midpoint.y - bounds.top - (bounds.height / 2);
+            photoLightboxZoom.scale = scale;
+            photoLightboxZoom.x = currentX - ((startX - photoLightboxTouch.x) / photoLightboxTouch.scale) * scale;
+            photoLightboxZoom.y = currentY - ((startY - photoLightboxTouch.y) / photoLightboxTouch.scale) * scale;
+            applyPhotoLightboxZoom();
+            return;
+        }
+        if (photoLightboxTouch.mode !== 'pan') {
+            beginPhotoLightboxTouch(touches);
+            return;
+        }
+        if (photoLightboxZoom.scale <= 1.01) return;
+        photoLightboxZoom.x = photoLightboxTouch.offsetX + touches[0].clientX - photoLightboxTouch.x;
+        photoLightboxZoom.y = photoLightboxTouch.offsetY + touches[0].clientY - photoLightboxTouch.y;
+        applyPhotoLightboxZoom();
+    }
+
+    function fitPhotoLightboxMedia(naturalWidth, naturalHeight) {
+        if (!naturalWidth || !naturalHeight) return;
+        var viewport = window.visualViewport;
+        var viewportWidth = viewport ? viewport.width : window.innerWidth;
+        var viewportHeight = viewport ? viewport.height : window.innerHeight;
+        var horizontalSpace = viewportWidth <= 640 ? 20 : 52;
+        var verticalSpace = viewportWidth <= 640 ? 132 : 122;
+        var maxWidth = Math.max(144, Math.min(1180, viewportWidth - horizontalSpace));
+        var maxHeight = Math.max(144, viewportHeight - verticalSpace);
+        var scale = Math.min(
+            maxWidth / naturalWidth,
+            maxHeight / naturalHeight
+        );
+        var width = Math.max(1, Math.round(naturalWidth * scale));
+        var height = Math.max(1, Math.round(naturalHeight * scale));
+
+        setPhotoLightboxFrame(width, height);
+        applyPhotoLightboxZoom();
+    }
+
+    function fitPhotoLightboxImage() {
+        if (!photoLightbox) return;
+        var stage = document.getElementById('photo-lightbox-stage') || photoLightbox.querySelector('.photo-lightbox__content');
+        var video = stage ? stage.querySelector('.photo-lightbox__video') : null;
+        if (video) {
+            fitPhotoLightboxMedia(video.videoWidth || 1280, video.videoHeight || 720);
+            return;
+        }
+        if (!photoLightboxImg || !photoLightboxImg.naturalWidth || !photoLightboxImg.naturalHeight) return;
+        fitPhotoLightboxMedia(photoLightboxImg.naturalWidth, photoLightboxImg.naturalHeight);
+    }
+
+    if (photoLightbox) {
+        var photoLightboxContent = photoLightbox.querySelector('.photo-lightbox__content');
+        if (photoLightboxContent) {
+            photoLightboxPinAction = document.createElement('button');
+            photoLightboxPinAction.type = 'button';
+            photoLightboxPinAction.className = 'photo-lightbox__pin-action';
+            photoLightboxPinAction.hidden = true;
+            photoLightboxContent.appendChild(photoLightboxPinAction);
+            photoLightboxPinAction.addEventListener('click', function () {
+                var gallery = photoLightbox._activeGallery;
+                var photo = photoLightbox._activePhoto;
+                if (!gallery || !photo) return;
+                openPinActionDialog(
+                    gallery,
+                    photo,
+                    isPhotoPinned(gallery, photo) ? 'unpin' : 'pin'
+                );
+            });
+        }
+    }
+
+    function openPhotoLightbox(card) {
+        if (!photoLightbox || !photoLightboxImg) return;
+        clearTimeout(photoLightboxReleaseTimer);
+        resetPhotoLightboxZoom();
+        var src = card.getAttribute('data-full');
+        var isVid = card.getAttribute('data-is-video') === 'true' || isVideoFile(src);
+        var title = card.getAttribute('data-title') || '';
+        var meta = card.getAttribute('data-meta') || '';
+        var img = card.querySelector('img');
+        var nextSrc = src || (img ? img.src : '');
+        var requestId = String(Date.now()) + Math.random();
+
+        var stage = document.getElementById('photo-lightbox-stage') || photoLightbox.querySelector('.photo-lightbox__content');
+        var existingVideo = stage ? stage.querySelector('.photo-lightbox__video') : null;
+        if (existingVideo) existingVideo.remove();
+
+        if (isVid) {
+            photoLightboxImg.style.display = 'none';
+            var video = document.createElement('video');
+            video.className = 'photo-lightbox__video';
+            video.src = nextSrc;
+            video.controls = true;
+            video.autoplay = true;
+            video.playsInline = true;
+            video.style.width = '100%';
+            video.style.height = '100%';
+            video.style.objectFit = 'contain';
+            video.style.borderRadius = 'inherit';
+
+            var applyVideoDimensions = function () {
+                var vWidth = video.videoWidth || 1280;
+                var vHeight = video.videoHeight || 720;
+                fitPhotoLightboxMedia(vWidth, vHeight);
+                photoLightbox.classList.remove('is-loading');
+            };
+
+            video.addEventListener('loadedmetadata', applyVideoDimensions);
+            video.addEventListener('loadeddata', applyVideoDimensions);
+            video.addEventListener('error', function () {
+                fitPhotoLightboxMedia(1280, 720);
+                photoLightbox.classList.remove('is-loading');
+            });
+
+            fitPhotoLightboxMedia(1280, 720);
+            if (stage) stage.appendChild(video);
+        } else {
+            photoLightboxImg.style.display = '';
+            photoLightboxImg.dataset.requestId = requestId;
+            photoLightbox.classList.add('is-loading');
+            photoLightboxImg.removeAttribute('srcset');
+            photoLightboxImg.removeAttribute('src');
+            clearPhotoLightboxFrame();
+            photoLightboxImg.alt = title || (img ? img.alt : '');
+        }
+
+        // Khóa scroll body
+        document.body.style.overflow = 'hidden';
+        document.body.style.touchAction = 'none';
+
+        if (!isVid) {
+            photoLightboxImg.onload = function () {
+                if (photoLightboxImg.dataset.requestId !== requestId) return;
+                fitPhotoLightboxImage();
+                photoLightbox.classList.remove('is-loading');
+            };
+            photoLightboxImg.onerror = function () {
+                if (photoLightboxImg.dataset.requestId !== requestId) return;
+                photoLightbox.classList.remove('is-loading');
+            };
+
+            photoLightboxImg.sizes = '(max-width: 1200px) 100vw, 1180px';
+            photoLightboxImg.srcset = card.getAttribute('data-full-srcset') || '';
+            photoLightboxImg.src = nextSrc;
+            if (photoLightboxImg.complete && photoLightboxImg.naturalWidth) {
+                fitPhotoLightboxImage();
+                photoLightbox.classList.remove('is-loading');
+            }
+        }
+
+        if (photoLightboxCaption) {
+            var caption = [title, meta].filter(Boolean).join(' - ');
+            photoLightboxCaption.textContent = caption;
+            photoLightboxCaption.hidden = !caption;
+        }
+        photoLightbox._activeGallery = card._gallery || null;
+        photoLightbox._activePhoto = card._photo || null;
+        var lightboxWorld = photoLightbox._activeGallery && photoLightbox._activeGallery.getAttribute('data-live-scope');
+        if (lightboxWorld) photoLightbox.setAttribute('data-world', lightboxWorld);
+        else photoLightbox.removeAttribute('data-world');
+        updatePhotoLightboxPinAction();
+        document.body.classList.add('is-modal-open');
+        photoLightbox.classList.add('is-open');
+        photoLightbox.setAttribute('aria-hidden', 'false');
+    }
+
+    function closePhotoLightbox() {
+        if (!photoLightbox || !photoLightbox.classList.contains('is-open')) return;
+        closeUnpinDialog();
+        resetPhotoLightboxZoom();
+        prepareDialogClose(photoLightbox);
+        photoLightbox.classList.remove('is-open', 'is-loading');
+        photoLightbox.setAttribute('aria-hidden', 'true');
+        syncModalState();
+        photoLightbox._activeGallery = null;
+        photoLightbox._activePhoto = null;
+        photoLightbox.removeAttribute('data-world');
+        if (photoLightboxPinAction) photoLightboxPinAction.hidden = true;
+        photoLightboxImg.dataset.requestId = '';
+
+        var stage = document.getElementById('photo-lightbox-stage') || photoLightbox.querySelector('.photo-lightbox__content');
+        var video = stage ? stage.querySelector('.photo-lightbox__video') : null;
+        if (video) {
+            try { video.pause(); } catch (e) {}
+            video.remove();
+        }
+        photoLightboxImg.style.display = '';
+
+        // Mở khóa scroll body
+        document.body.style.removeProperty('overflow');
+        document.body.style.removeProperty('touch-action');
+
+        photoLightboxReleaseTimer = setTimeout(function () {
+            photoLightboxImg.onload = null;
+            photoLightboxImg.onerror = null;
+            photoLightboxImg.removeAttribute('srcset');
+            photoLightboxImg.removeAttribute('src');
+            clearPhotoLightboxFrame();
+            if (photoLightboxCaption) photoLightboxCaption.textContent = '';
+        }, 220);
+    }
+
+    function isImageFile(path) {
+        return /\.(avif|gif|jpe?g|png|webp|heic|heif)$/i.test(path || '');
+    }
+
+    function isVideoFile(path) {
+        if (!path) return false;
+        var cleanPath = String(path).split('?')[0].toLowerCase();
+        return /\.(mp4|mov|webm|avi|mkv|3gp|ogv)$/i.test(cleanPath) ||
+            cleanPath.indexOf('/video/upload/') !== -1 ||
+            cleanPath.indexOf('/video/') !== -1;
+    }
+
+    function isMediaFile(path) {
+        return isImageFile(path) || isVideoFile(path);
+    }
+
+    function getCloudinaryVideoThumbnail(src) {
+        if (!src) return '';
+        if (src.indexOf('/video/upload/') !== -1) {
+            return src.replace('/video/upload/', '/video/upload/f_jpg,q_auto,w_720/').replace(/\.[^/.]+$/, '.jpg');
+        }
+        return src;
+    }
+
+    function normalizeGalleryPhotoUrl(url) {
+        if (!url) return '';
+        return decodeURIComponent(url.split('?')[0]).replace(/\/+$/, '');
+    }
+
+    function getCloudinaryPublicId(url) {
+        var marker = '/image/upload/';
+        var normalized = normalizeGalleryPhotoUrl(url);
+        var markerIndex = normalized.indexOf(marker);
+        if (markerIndex === -1) {
+            marker = '/video/upload/';
+            markerIndex = normalized.indexOf(marker);
+        }
+        if (markerIndex === -1) return '';
+        var parts = normalized.slice(markerIndex + marker.length).split('/');
+        var versionIndex = parts.findIndex(function (part) { return /^v\d+$/.test(part); });
+        if (versionIndex !== -1) parts = parts.slice(versionIndex + 1);
+        if (!parts.length) return '';
+        parts[parts.length - 1] = parts[parts.length - 1].replace(/\.[a-z0-9]+$/i, '');
+        return decodeURIComponent(parts.join('/'));
+    }
+
+    function isExplicitlyUnpinned(gallery, publicId) {
+        return Boolean(publicId && (gallery._unpinnedPublicIds || []).indexOf(publicId) !== -1);
+    }
+
+    function isExplicitlyPinned(gallery, publicId) {
+        return Boolean(publicId && (gallery._pinnedPublicIds || []).indexOf(publicId) !== -1);
+    }
+
+    function isPhotoPinned(gallery, photo) {
+        if (!gallery || !photo) return false;
+        var publicId = photo.publicId || getCloudinaryPublicId(photo.src);
+        if (isExplicitlyUnpinned(gallery, publicId)) return false;
+        if (photo.isPinnedUpload === true || isExplicitlyPinned(gallery, publicId)) return true;
+        return isPinnedPhotoCard(gallery, photo.src, photo.full || photo.src, publicId);
+    }
+
+    function updatePhotoLightboxPinAction() {
+        if (!photoLightboxPinAction || !photoLightbox) return;
+        var gallery = photoLightbox._activeGallery;
+        var photo = photoLightbox._activePhoto;
+        var publicId = photo && (photo.publicId || getCloudinaryPublicId(photo.src));
+        var scope = gallery && gallery.getAttribute('data-live-scope');
+        if (!gallery || !photo || !scope || !publicId) {
+            photoLightboxPinAction.hidden = true;
+            return;
+        }
+        photo.publicId = publicId;
+        photo.scope = scope;
+        var pinned = isPhotoPinned(gallery, photo);
+        photoLightboxPinAction.hidden = false;
+        photoLightboxPinAction.classList.toggle('is-pinned', pinned);
+        photoLightboxPinAction.innerHTML =
+            '<i class="fas fa-thumbtack" aria-hidden="true"></i>';
+        photoLightboxPinAction.setAttribute(
+            'aria-label',
+            pinned ? 'Mở tùy chọn bỏ ghim ảnh' : 'Mở tùy chọn ghim ảnh'
+        );
+    }
+
+    function getPinnedPhotoUrls(gallery) {
+        return (gallery.getAttribute('data-pinned-image') || '').split(',').map(function (url) {
+            return url.trim();
+        }).filter(Boolean);
+    }
+
+    function isPinnedPhotoCard(gallery, src, fullSrc, publicId) {
+        if (isExplicitlyUnpinned(gallery, publicId || getCloudinaryPublicId(src || fullSrc))) return false;
+        if (isExplicitlyPinned(gallery, publicId || getCloudinaryPublicId(src || fullSrc))) return true;
+        var pinnedUrls = getPinnedPhotoUrls(gallery).map(normalizeGalleryPhotoUrl);
+        if (!pinnedUrls.length) return false;
+
+        var candidates = [src, fullSrc].map(normalizeGalleryPhotoUrl).filter(Boolean);
+        return candidates.some(function (candidate) {
+            return pinnedUrls.indexOf(candidate) !== -1;
+        });
+    }
+
+    var GALLERY_PIN_API = 'https://timebox.trghy.workers.dev/gallery/pin';
+    var GALLERY_UNPIN_API = 'https://timebox.trghy.workers.dev/gallery/unpin';
+    var unpinDialog = null;
+
+    function fetchGalleryActionWithTimeout(url, options, timeoutMs) {
+        if (!window.AbortController) return fetch(url, options);
+        var controller = new AbortController();
+        var timer = setTimeout(function () { controller.abort(); }, timeoutMs);
+        return fetch(url, Object.assign({}, options, { signal: controller.signal })).finally(function () {
+            clearTimeout(timer);
+        });
+    }
+
+    function closeUnpinDialog() {
+        if (!unpinDialog || !unpinDialog.classList.contains('is-open')) return;
+        prepareDialogClose(unpinDialog);
+        unpinDialog.classList.remove('is-open');
+        unpinDialog.setAttribute('aria-hidden', 'true');
+        syncModalState();
+        unpinDialog._gallery = null;
+        unpinDialog._photo = null;
+    }
+
+    function ensureUnpinDialog() {
+        if (unpinDialog) return unpinDialog;
+        unpinDialog = document.createElement('div');
+        unpinDialog.className = 'pin-action-modal';
+        unpinDialog.setAttribute('aria-hidden', 'true');
+        unpinDialog.innerHTML =
+            '<div class="pin-action-modal__backdrop"></div>' +
+            '<div class="pin-action-modal__card" role="dialog" aria-modal="true" aria-label="Tùy chọn ảnh ghim">' +
+                '<button type="button" class="pin-action-modal__unpin"><i class="fas fa-thumbtack" aria-hidden="true"></i> Bỏ ghim</button>' +
+                '<button type="button" class="pin-action-modal__close">Đóng</button>' +
+                '<p class="pin-action-modal__status" aria-live="polite"></p>' +
+            '</div>';
+        document.body.appendChild(unpinDialog);
+
+        var closeButton = unpinDialog.querySelector('.pin-action-modal__close');
+        var unpinButton = unpinDialog.querySelector('.pin-action-modal__unpin');
+        unpinDialog.querySelector('.pin-action-modal__backdrop').addEventListener('click', closeUnpinDialog);
+        closeButton.addEventListener('click', closeUnpinDialog);
+        unpinButton.addEventListener('click', function () {
+            var gallery = unpinDialog._gallery;
+            var photo = unpinDialog._photo;
+            var status = unpinDialog.querySelector('.pin-action-modal__status');
+            var mode = unpinDialog._mode === 'pin' ? 'pin' : 'unpin';
+            if (!gallery || !photo || !photo.publicId || !photo.scope) return;
+            unpinButton.disabled = true;
+            closeButton.disabled = true;
+            status.textContent = mode === 'pin' ? 'Đang ghim ảnh...' : 'Đang bỏ ghim...';
+            fetchGalleryActionWithTimeout(mode === 'pin' ? GALLERY_PIN_API : GALLERY_UNPIN_API, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ scope: photo.scope, publicId: photo.publicId })
+            }, 30000).then(function (response) {
+                return response.json().catch(function () { return {}; }).then(function (data) {
+                    if (!response.ok || !data.ok) {
+                        throw new Error(data.message || (mode === 'pin' ? 'Không thể ghim ảnh' : 'Không thể bỏ ghim'));
+                    }
+                });
+            }).then(function () {
+                gallery._unpinnedPublicIds = gallery._unpinnedPublicIds || [];
+                gallery._pinnedPublicIds = gallery._pinnedPublicIds || [];
+                if (mode === 'pin') {
+                    gallery._unpinnedPublicIds = gallery._unpinnedPublicIds.filter(function (id) {
+                        return id !== photo.publicId;
+                    });
+                    if (gallery._pinnedPublicIds.indexOf(photo.publicId) === -1) {
+                        gallery._pinnedPublicIds.push(photo.publicId);
+                    }
+                    photo.isPinnedUpload = true;
+                } else {
+                    gallery._pinnedPublicIds = gallery._pinnedPublicIds.filter(function (id) {
+                        return id !== photo.publicId;
+                    });
+                    if (gallery._unpinnedPublicIds.indexOf(photo.publicId) === -1) {
+                        gallery._unpinnedPublicIds.push(photo.publicId);
+                    }
+                    photo.isPinnedUpload = false;
+                }
+                var pageToKeep = gallery._currentPage || 1;
+                closeUnpinDialog();
+                renderPhotoGallery(gallery, (gallery._photos || []).slice(), pageToKeep);
+                updatePhotoLightboxPinAction();
+                if (!photoLightbox || !photoLightbox.classList.contains('is-open')) {
+                    gallery.setAttribute('tabindex', '-1');
+                    window.requestAnimationFrame(function () {
+                        gallery.focus({ preventScroll: true });
+                    });
+                }
+                if (window.showTimeboxToast) {
+                    window.showTimeboxToast(mode === 'pin' ? 'Đã ghim ảnh' : 'Đã bỏ ghim ảnh');
+                }
+            }).catch(function (error) {
+                if (error && error.name === 'AbortError') {
+                    status.textContent = 'Kết nối quá lâu, vui lòng thử lại.';
+                    return;
+                }
+                status.textContent = error.message || (mode === 'pin' ? 'Không thể ghim ảnh' : 'Không thể bỏ ghim');
+            }).finally(function () {
+                unpinButton.disabled = false;
+                closeButton.disabled = false;
+            });
+        });
+        return unpinDialog;
+    }
+
+    function openPinActionDialog(gallery, photo, mode) {
+        var dialog = ensureUnpinDialog();
+        dialog._gallery = gallery;
+        dialog._photo = photo;
+        dialog._mode = mode === 'pin' ? 'pin' : 'unpin';
+        var actionButton = dialog.querySelector('.pin-action-modal__unpin');
+        actionButton.innerHTML = dialog._mode === 'pin'
+            ? '<i class="fas fa-thumbtack" aria-hidden="true"></i> Ghim ảnh'
+            : '<i class="fas fa-thumbtack" aria-hidden="true"></i> Bỏ ghim';
+        actionButton.classList.toggle('is-pin-mode', dialog._mode === 'pin');
+        dialog.querySelector('.pin-action-modal__status').textContent = '';
+        dialog.classList.add('is-open');
+        dialog.setAttribute('aria-hidden', 'false');
+        syncModalState();
+        actionButton.focus({ preventScroll: true });
+    }
+
+    function openUnpinDialog(gallery, photo) {
+        openPinActionDialog(gallery, photo, 'unpin');
+    }
+
+    function createPhotoCard(gallery, src, name, fullSrc, originalSrc, thumbSrcset, fullSrcset, isPriority, isPinnedUpload, photo) {
+        var card = document.createElement('div');
+        var openButton = document.createElement('button');
+        var img = document.createElement('img');
+        photo = photo || {};
+        var rawSrc = originalSrc || fullSrc || src || '';
+        var isVid = photo.isVideo === true || isVideoFile(rawSrc);
+        var publicId = (photo && photo.publicId) || getCloudinaryPublicId(rawSrc);
+        var scope = gallery.getAttribute('data-live-scope') || '';
+        photo.publicId = publicId;
+        photo.scope = scope;
+        photo.isVideo = isVid;
+        card._gallery = gallery;
+        card._photo = photo;
+
+        var isPinned = isPinnedUpload === true || isPinnedPhotoCard(
+            gallery,
+            rawSrc,
+            fullSrc || src,
+            publicId
+        );
+        if (isExplicitlyUnpinned(gallery, publicId)) isPinned = false;
+
+        card.className = 'photo-card';
+        if (isVid) card.classList.add('photo-card--video');
+        card.setAttribute('data-is-video', isVid ? 'true' : 'false');
+
+        openButton.type = 'button';
+        openButton.className = 'photo-card__open';
+        openButton.setAttribute('aria-label', 'Mở ' + (isVid ? 'video ' : 'ảnh ') + (name || 'kỷ niệm'));
+        card.style.setProperty('--card-delay', Math.min(gallery.children.length, 11) * 35 + 'ms');
+        card.setAttribute('data-full', fullSrc || src);
+        if (fullSrcset && !isVid) {
+            card.setAttribute('data-full-srcset', fullSrcset);
+        }
+        if (isPinned) {
+            card.classList.add('photo-card--pinned');
+        }
+
+        if (thumbSrcset && !isVid) {
+            img.srcset = thumbSrcset;
+            img.sizes = '(max-width: 899px) and (orientation: landscape) calc((100vw - 54px) / 4), (max-width: 639px) calc((100vw - 36px) / 3), (max-width: 699px) calc((100vw - 68px) / 3), (max-width: 899px) calc((100vw - 88px) / 4), 210px';
+        }
+        img.src = isVid ? getCloudinaryVideoThumbnail(src || rawSrc) : src;
+        img.alt = name || (isVid ? 'Video kỷ niệm' : 'Ảnh kỷ niệm');
+        img.width = 420;
+        img.height = 420;
+        img.loading = isPriority ? 'eager' : 'lazy';
+        img.decoding = 'async';
+        if (isPriority) {
+            img.fetchPriority = 'high';
+        }
+
+        img.onload = function () {
+            img.classList.add('is-loaded');
+            card.classList.add('is-loaded');
+        };
+        img.onerror = function () {
+            img.classList.add('is-loaded');
+            card.classList.add('is-loaded');
+        };
+        if (img.complete) {
+            img.classList.add('is-loaded');
+            card.classList.add('is-loaded');
+        }
+
+        openButton.appendChild(img);
+
+        if (isVid) {
+            var playBadge = document.createElement('div');
+            playBadge.className = 'photo-card__video-badge';
+            playBadge.innerHTML = '<i class="fas fa-play" aria-hidden="true"></i>';
+            openButton.appendChild(playBadge);
+        }
+
+        card.appendChild(openButton);
+        if (isPinned) {
+            var pinBadge = document.createElement('button');
+            pinBadge.type = 'button';
+            pinBadge.className = 'photo-card__pin';
+            pinBadge.innerHTML = '<i class="fas fa-thumbtack" aria-hidden="true"></i>';
+            pinBadge.setAttribute('aria-label', 'Tùy chọn ảnh ghim');
+            function activatePinMenu(event) {
+                event.preventDefault();
+                event.stopPropagation();
+                if (!scope || !publicId) return;
+                photo = photo || {};
+                photo.publicId = publicId;
+                photo.scope = scope;
+                openUnpinDialog(gallery, photo);
+            }
+            pinBadge.addEventListener('click', activatePinMenu);
+            card.appendChild(pinBadge);
+        }
+        openButton.addEventListener('click', function () {
+            openPhotoLightbox(card);
+        });
+
+        // 3D Spatial Holographic Card Tilt (Desktop only, GPU accelerated)
+        var isTouchDevice = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+        if (!isTouchDevice) {
+            var tiltRaf = 0;
+            card.addEventListener('mousemove', function (e) {
+                if (tiltRaf) return;
+                tiltRaf = requestAnimationFrame(function () {
+                    tiltRaf = 0;
+                    var rect = card.getBoundingClientRect();
+                    if (!rect.width || !rect.height) return;
+                    var x = (e.clientX - rect.left) / rect.width - 0.5;
+                    var y = (e.clientY - rect.top) / rect.height - 0.5;
+                    card.style.setProperty('--tilt-rx', (-y * 12).toFixed(2) + 'deg');
+                    card.style.setProperty('--tilt-ry', (x * 12).toFixed(2) + 'deg');
+                    card.style.setProperty('--glare-x', ((x + 0.5) * 100).toFixed(1) + '%');
+                    card.style.setProperty('--glare-y', ((y + 0.5) * 100).toFixed(1) + '%');
+                });
+            });
+            card.addEventListener('mouseleave', function () {
+                if (tiltRaf) cancelAnimationFrame(tiltRaf);
+                tiltRaf = 0;
+                card.style.removeProperty('--tilt-rx');
+                card.style.removeProperty('--tilt-ry');
+                card.style.removeProperty('--glare-x');
+                card.style.removeProperty('--glare-y');
+            });
+        }
+
+        gallery.appendChild(card);
+    }
+
+    function createPlaceholderPhotoCard(gallery, index) {
+        var card = document.createElement('div');
+        card.className = 'photo-card photo-card--placeholder';
+        card.setAttribute('aria-label', 'Khung anh dang cho cap nhat ' + index);
+        card.innerHTML =
+            '<div class="photo-placeholder">' +
+                '<i class="fas fa-image" aria-hidden="true"></i>' +
+                '<span>Dang cho anh</span>' +
+            '</div>';
+        gallery.appendChild(card);
+    }
+
+    function renderPlaceholderGallery(gallery, count) {
+        var total = Math.max(1, Number(count) || 9);
+        var oldPager = gallery.parentElement.querySelector('.photo-pager');
+        if (oldPager) oldPager.remove();
+        gallery.innerHTML = '';
+        for (var i = 1; i <= total; i += 1) {
+            createPlaceholderPhotoCard(gallery, i);
+        }
+    }
+
+    function getPhotoTime(photo) {
+        return photo.time || 0;
+    }
+
+    function sortPhotosNewestFirst(photos) {
+        return photos.sort(function (a, b) {
+            var timeDiff = getPhotoTime(b) - getPhotoTime(a);
+            if (timeDiff) return timeDiff;
+            return b.name.localeCompare(a.name, undefined, { numeric: true, sensitivity: 'base' });
+        });
+    }
+
+
+    function createPhotoPager(gallery, pageCount, currentPage, onPageChange) {
+        var oldPager = gallery.parentElement.querySelector('.photo-pager');
+        if (oldPager) oldPager.remove();
+        if (pageCount <= 1) return;
+
+        var pager = document.createElement('nav');
+        pager.className = 'photo-pager';
+        pager.setAttribute('aria-label', 'Chuyen trang anh');
+
+        var pages = [];
+        if (pageCount <= 7) {
+            for (var pageNumber = 1; pageNumber <= pageCount; pageNumber += 1) pages.push(pageNumber);
+        } else {
+            [1, currentPage - 1, currentPage, currentPage + 1, pageCount].forEach(function (pageNumber) {
+                if (pageNumber >= 1 && pageNumber <= pageCount && pages.indexOf(pageNumber) === -1) {
+                    pages.push(pageNumber);
+                }
+            });
+            pages.sort(function (a, b) { return a - b; });
+        }
+
+        pages.forEach(function (page, index) {
+            if (index > 0 && page - pages[index - 1] > 1) {
+                var ellipsis = document.createElement('span');
+                ellipsis.className = 'photo-pager__ellipsis';
+                ellipsis.textContent = '…';
+                ellipsis.setAttribute('aria-hidden', 'true');
+                pager.appendChild(ellipsis);
+            }
+            var btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'photo-pager__btn';
+            btn.textContent = page;
+            btn.setAttribute('aria-label', 'Trang ' + page + ' trên ' + pageCount);
+            if (page === currentPage) {
+                btn.classList.add('is-active');
+                btn.setAttribute('aria-current', 'page');
+            }
+            btn.addEventListener('click', function () {
+                if (page === currentPage) return;
+                onPageChange(page);
+            });
+            pager.appendChild(btn);
+        });
+
+        gallery.insertAdjacentElement('afterend', pager);
+    }
+
+    function getPerPage() {
+        return 12;
+    }
+
+    function renderPhotoGalleryPage(gallery, photos, page) {
+        gallery.classList.remove('is-changing');
+        var perPage = getPerPage();
+        var pageCount = Math.max(1, Math.ceil(photos.length / perPage));
+        var currentPage = Math.min(Math.max(page || 1, 1), pageCount);
+        var visiblePhotos = photos.slice((currentPage - 1) * perPage, currentPage * perPage);
+        var activeView = gallery.closest('.spa-view');
+        var countTarget = activeView && activeView.querySelector('[data-gallery-count]');
+
+        if (countTarget) {
+            countTarget.textContent = photos.length + (photos.length === 1 ? ' ký ức' : ' ký ức');
+        }
+        gallery.classList.toggle('is-empty', photos.length === 0);
+
+        gallery.innerHTML = '';
+        gallery._currentPage = currentPage;
+        visiblePhotos.forEach(function (photo, index) {
+            createPhotoCard(
+                gallery,
+                photo.thumb || photo.src,
+                photo.name,
+                photo.full || photo.src,
+                photo.src,
+                photo.thumbSrcset,
+                photo.fullSrcset,
+                index < 4,
+                photo.isPinnedUpload === true,
+                photo
+            );
+        });
+        createPhotoPager(gallery, pageCount, currentPage, function (nextPage) {
+            if (nextPage === currentPage) return;
+            clearTimeout(gallery._pageTimer);
+            gallery.classList.add('is-changing');
+            var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            gallery._pageTimer = setTimeout(function () {
+                gallery._pageTimer = null;
+                renderPhotoGalleryPage(gallery, photos, nextPage);
+                gallery.classList.remove('is-changing');
+                gallery.setAttribute('tabindex', '-1');
+                gallery.setAttribute('aria-label', 'Trang ảnh ' + nextPage + ' trên ' + pageCount);
+                window.requestAnimationFrame(function () {
+                    gallery.focus({ preventScroll: true });
+                    if (window.innerWidth <= 899) {
+                        gallery.scrollIntoView({
+                            behavior: reduceMotion ? 'auto' : 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            }, reduceMotion ? 0 : 140);
+        });
+    }
+
+    function renderPhotoGallery(gallery, photos, page) {
+        if (photoLightbox && photoLightbox.classList.contains('is-open') && photoLightbox._activeGallery === gallery) {
+            gallery.setAttribute('tabindex', '-1');
+            dialogReturnFocus.set(photoLightbox, gallery);
+        }
+        var sortedPhotos = applyPinnedPhotoOrder(gallery, sortPhotosNewestFirst(photos));
+        gallery._photos = sortedPhotos;
+        renderPhotoGalleryPage(gallery, sortedPhotos, page || 1);
+    }
+
+    function getGithubGalleryUrl(gallery, dir) {
+        var owner = gallery.getAttribute('data-github-owner');
+        var repo = gallery.getAttribute('data-github-repo');
+        var branch = gallery.getAttribute('data-github-branch') || 'main';
+        if (!owner || !repo) return '';
+        return 'https://api.github.com/repos/' + owner + '/' + repo +
+            '/contents/' + dir.replace(/\/$/, '') + '?ref=' + encodeURIComponent(branch);
+    }
+
+    function getLocalPhotosFromListing(html, dir) {
+        var doc = new DOMParser().parseFromString(html, 'text/html');
+        return Array.prototype.slice.call(doc.querySelectorAll('a[href]'))
+            .map(function (link) {
+                var href = link.getAttribute('href') || '';
+                var name = decodeURIComponent(href.split('/').pop() || '');
+                return {
+                    src: href.charAt(0) === '/' ? href : dir + href,
+                    name: name,
+                    time: Date.parse((link.parentElement && link.parentElement.querySelector('.date'))
+                        ? link.parentElement.querySelector('.date').textContent
+                        : '') || 0
+                };
+            })
+            .filter(function (photo) {
+                return isImageFile(photo.src);
+            });
+    }
+
+    function getGithubPhotos(items) {
+        return items
+            .filter(function (item) {
+                return item.type === 'file' && isImageFile(item.name);
+            })
+            .map(function (item) {
+                return {
+                    src: item.download_url,
+                    name: item.name,
+                    path: item.path,
+                    time: 0
+                };
+            });
+    }
+
+    function getCloudinaryVariant(src, transform) {
+        if (!src || src.indexOf('/image/upload/') === -1) return src;
+        return src.replace('/image/upload/', '/image/upload/' + transform + '/');
+    }
+
+    function getCloudinarySrcset(src, widths, quality) {
+        if (!src || src.indexOf('/image/upload/') === -1) return '';
+        return widths.map(function (width) {
+            return getCloudinaryVariant(src, 'f_auto,' + quality + ',c_limit,w_' + width) + ' ' + width + 'w';
+        }).join(', ');
+    }
+
+    function applyPinnedPhotoOrder(gallery, photos) {
+        var pinnedUrls = getPinnedPhotoUrls(gallery).filter(function (url) {
+            return !isExplicitlyUnpinned(gallery, getCloudinaryPublicId(url));
+        }).map(normalizeGalleryPhotoUrl);
+        if (!photos.length) return photos;
+
+        // Ảnh ghim đứng đầu; toàn bộ ảnh còn lại giữ đúng thứ tự thời gian.
+        var taggedPinnedPhotos = photos.filter(function (photo) {
+            var publicId = photo.publicId || getCloudinaryPublicId(photo.src);
+            return !isExplicitlyUnpinned(gallery, publicId) &&
+                (photo.isPinnedUpload === true || isExplicitlyPinned(gallery, publicId));
+        });
+        var normalPhotos = photos.filter(function (photo) {
+            return taggedPinnedPhotos.indexOf(photo) === -1;
+        });
+        if (!pinnedUrls.length) return taggedPinnedPhotos.concat(normalPhotos);
+
+        var pinnedPhotos = [];
+        var remainingPhotos = normalPhotos.slice();
+
+        pinnedUrls.forEach(function (pinnedUrl) {
+            var pinnedIndex = -1;
+
+            remainingPhotos.forEach(function (photo, index) {
+                if (pinnedIndex === -1 && normalizeGalleryPhotoUrl(photo.src) === pinnedUrl) {
+                    pinnedIndex = index;
+                }
+            });
+
+            if (pinnedIndex !== -1) {
+                pinnedPhotos.push(remainingPhotos.splice(pinnedIndex, 1)[0]);
+            }
+        });
+
+        return pinnedPhotos.concat(taggedPinnedPhotos, remainingPhotos);
+    }
+
+    function getCloudinaryGalleryPhotos(gallery) {
+        var imageList = [
+            gallery.getAttribute('data-gallery-prepend') || '',
+            gallery.getAttribute('data-gallery-cloudinary') || ''
+        ].filter(Boolean).join(',');
+        if (!imageList.trim()) return [];
+
+        var urls = imageList.split(',')
+            .map(function (url) {
+                return url.trim();
+            })
+            .filter(function (url) {
+                return url && isMediaFile(url);
+            });
+
+        return urls.map(function (url, index) {
+            var cleanUrl = url.split('?')[0];
+            var isVid = isVideoFile(cleanUrl);
+            var name = decodeURIComponent(cleanUrl.split('/').pop() || (isVid ? 'Video kỷ niệm' : 'Ảnh kỷ niệm'));
+            var versionMatch = cleanUrl.match(/\/v(\d+)\//);
+            var time = versionMatch ? parseInt(versionMatch[1], 10) : (urls.length - index);
+            return {
+                src: url,
+                thumb: isVid ? getCloudinaryVideoThumbnail(url) : getCloudinaryVariant(url, 'f_auto,q_90,c_limit,w_1080'),
+                thumbSrcset: isVid ? '' : getCloudinarySrcset(url, [540, 720, 1080, 1440], 'q_90'),
+                full: url,
+                fullSrcset: isVid ? '' : getCloudinarySrcset(url, [1440, 2160, 3200], 'q_95'),
+                name: name,
+                time: time,
+                isVideo: isVid
+            };
+        });
+    }
+    function getStaticGalleryPhotos(gallery, dir) {
+        var imageList = gallery.getAttribute('data-gallery-images') || '';
+        if (!imageList.trim()) return [];
+
+        return imageList.split(',')
+            .map(function (name) {
+                return name.trim();
+            })
+            .filter(function (name) {
+                return name && isMediaFile(name);
+            })
+            .map(function (name, index, files) {
+                var isVid = isVideoFile(name);
+                return {
+                    src: dir + name,
+                    name: name,
+                    time: files.length - index,
+                    isVideo: isVid
+                };
+            });
+    }
+    function addGithubPhotoTimes(gallery, photos) {
+        var owner = gallery.getAttribute('data-github-owner');
+        var repo = gallery.getAttribute('data-github-repo');
+        var branch = gallery.getAttribute('data-github-branch') || 'main';
+        if (!owner || !repo || !photos.length) return Promise.resolve(photos);
+
+        return Promise.all(photos.map(function (photo) {
+            var commitsUrl = 'https://api.github.com/repos/' + owner + '/' + repo +
+                '/commits?path=' + encodeURIComponent(photo.path) +
+                '&sha=' + encodeURIComponent(branch) + '&per_page=1';
+            return fetch(commitsUrl)
+                .then(function (response) {
+                    if (!response.ok) return photo;
+                    return response.json();
+                })
+                .then(function (commits) {
+                    if (commits && commits[0] && commits[0].commit && commits[0].commit.committer) {
+                        photo.time = Date.parse(commits[0].commit.committer.date) || 0;
+                    }
+                    return photo;
+                })
+                .catch(function () {
+                    return photo;
+                });
+        }));
+    }
+
+    var LIVE_GALLERY_API = 'https://timebox.trghy.workers.dev/gallery/images';
+
+    function getLiveGalleryPhotos(scope, gallery) {
+        return fetch(LIVE_GALLERY_API + '?scope=' + encodeURIComponent(scope), {
+            headers: { 'Accept': 'application/json' },
+            cache: 'no-store'
+        }).then(function (response) {
+            return response.json().catch(function () {
+                return { ok: false, message: 'Máy chủ trả dữ liệu không hợp lệ' };
+            }).then(function (data) {
+                if (!response.ok || !data.ok) {
+                    throw new Error(data.message || 'Không thể tải dữ liệu mới');
+                }
+                gallery._unpinnedPublicIds = Array.isArray(data.unpinnedPublicIds)
+                    ? data.unpinnedPublicIds
+                    : [];
+                gallery._pinnedPublicIds = Array.isArray(data.pinnedPublicIds)
+                    ? data.pinnedPublicIds
+                    : [];
+                return (data.images || []).map(function (image) {
+                    var src = image.src || '';
+                    var isVid = image.resourceType === 'video' || isVideoFile(src);
+                    var thumbUrl = isVid ? getCloudinaryVideoThumbnail(src) : getCloudinaryVariant(src, 'f_auto,q_90,c_limit,w_1080');
+                    return {
+                        src: src,
+                        thumb: thumbUrl,
+                        thumbSrcset: isVid ? '' : getCloudinarySrcset(src, [540, 720, 1080, 1440], 'q_90'),
+                        full: src,
+                        fullSrcset: isVid ? '' : getCloudinarySrcset(src, [1440, 2160, 3200], 'q_95'),
+                        name: image.publicId || (isVid ? 'Video mới' : 'Ảnh mới'),
+                        time: Date.parse(image.createdAt || '') || 0,
+                        isLive: true,
+                        publicId: image.publicId || '',
+                        isPinnedUpload: image.pinned === true,
+                        isVideo: isVid
+                    };
+                }).filter(function (photo) {
+                    return photo.src && isMediaFile(photo.src);
+                });
+            });
+        });
+    }
+
+    function mergeGalleryPhotos(livePhotos, oldPhotos) {
+        var seen = {};
+        return livePhotos.concat(oldPhotos).filter(function (photo) {
+            var key = normalizeGalleryPhotoUrl(photo.src);
+            if (!key || seen[key]) return false;
+            seen[key] = true;
+            return true;
+        });
+    }
+
+    function refreshLiveGallery(gallery) {
+        var scope = gallery.getAttribute('data-live-scope');
+        if (!scope) return Promise.resolve();
+        var oldPhotos = getCloudinaryGalleryPhotos(gallery);
+
+        return getLiveGalleryPhotos(scope, gallery).then(function (livePhotos) {
+            var mergedPhotos = mergeGalleryPhotos(livePhotos, oldPhotos);
+            gallery._lastGalleryRefresh = Date.now();
+            if (gallery._isSuspended) {
+                gallery._photos = applyPinnedPhotoOrder(gallery, sortPhotosNewestFirst(mergedPhotos));
+            } else {
+                renderPhotoGallery(gallery, mergedPhotos, gallery._currentPage || 1);
+            }
+        }).catch(function () {
+            if (!gallery._photos && oldPhotos.length) renderPhotoGallery(gallery, oldPhotos, gallery._currentPage || 1);
+            if (!gallery._photos) gallery._hasLoaded = false;
+        });
+    }
+
+    window.refreshTimeboxGallery = function (scope) {
+        var gallery = document.querySelector('.photo-gallery[data-live-scope="' + scope + '"]');
+        return gallery ? refreshLiveGallery(gallery) : Promise.resolve();
+    };
+
+    window.prependTimeboxGallery = function (scope, urls, pinned) {
+        var gallery = document.querySelector('.photo-gallery[data-live-scope="' + scope + '"]');
+        if (!gallery || !urls || !urls.length) return;
+        var now = Date.now();
+        var uploadedPhotos = urls.map(function (src, index) {
+            var isVid = isVideoFile(src);
+            return {
+                src: src,
+                thumb: isVid ? getCloudinaryVideoThumbnail(src) : getCloudinaryVariant(src, 'f_auto,q_90,c_limit,w_1080'),
+                thumbSrcset: isVid ? '' : getCloudinarySrcset(src, [540, 720, 1080, 1440], 'q_90'),
+                full: src,
+                fullSrcset: isVid ? '' : getCloudinarySrcset(src, [1440, 2160, 3200], 'q_95'),
+                name: decodeURIComponent((src.split('?')[0].split('/').pop() || (isVid ? 'Video mới' : 'Ảnh mới'))),
+                time: now - index,
+                isLive: true,
+                isPinnedUpload: pinned === true,
+                isVideo: isVid
+            };
+        });
+        var currentPhotos = gallery._photos || getCloudinaryGalleryPhotos(gallery);
+        renderPhotoGallery(gallery, mergeGalleryPhotos(uploadedPhotos, currentPhotos));
+    };
+
+    function loadPhotoGallery(gallery) {
+        gallery._hasLoaded = true;
+        gallery._isSuspended = false;
+        var dir = gallery.getAttribute('data-gallery-dir');
+        var cloudinaryPhotos = getCloudinaryGalleryPhotos(gallery);
+        if (gallery.hasAttribute('data-live-scope')) {
+            if (cloudinaryPhotos.length) renderPhotoGallery(gallery, cloudinaryPhotos);
+            refreshLiveGallery(gallery);
+            return;
+        }
+        if (cloudinaryPhotos.length) {
+            renderPhotoGallery(gallery, applyPinnedPhotoOrder(gallery, cloudinaryPhotos));
+            return;
+        }
+        if (!dir) return;
+
+        // Show loading state
+        var loadingDiv = document.createElement('div');
+        loadingDiv.className = 'gallery-loading';
+        loadingDiv.textContent = 'Đang tải ảnh...';
+        gallery.innerHTML = '';
+        gallery.appendChild(loadingDiv);
+
+        var staticPhotos = getStaticGalleryPhotos(gallery, dir);
+        if (staticPhotos.length) {
+            renderPhotoGallery(gallery, applyPinnedPhotoOrder(gallery, staticPhotos));
+            return;
+        }
+
+        var placeholderCount = gallery.getAttribute('data-gallery-placeholders');
+        if (placeholderCount) {
+            renderPlaceholderGallery(gallery, placeholderCount);
+            return;
+        }
+
+        fetch(dir)
+            .then(function (response) {
+                if (!response.ok) throw new Error('No local directory listing');
+                return response.text();
+            })
+            .then(function (html) {
+                var photos = getLocalPhotosFromListing(html, dir);
+                if (!photos.length) throw new Error('No local photos');
+                renderPhotoGallery(gallery, applyPinnedPhotoOrder(gallery, photos));
+            })
+            .catch(function () {
+                var githubUrl = getGithubGalleryUrl(gallery, dir);
+                if (!githubUrl) {
+                    var emptyDiv = document.createElement('div');
+                    emptyDiv.className = 'gallery-empty';
+                    emptyDiv.textContent = 'Chưa update. Hãy quay lại sau nhé!🌷';
+                    gallery.innerHTML = '';
+                    gallery.appendChild(emptyDiv);
+                    return;
+                }
+                fetch(githubUrl)
+                    .then(function (response) {
+                        if (!response.ok) throw new Error('No GitHub photos');
+                        return response.json();
+                    })
+                    .then(function (items) {
+                        return addGithubPhotoTimes(gallery, getGithubPhotos(items));
+                    })
+                    .then(function (photos) {
+                        if (!photos.length) throw new Error('No photos');
+                        renderPhotoGallery(gallery, applyPinnedPhotoOrder(gallery, photos));
+                    })
+                    .catch(function () {
+                        var emptyDiv = document.createElement('div');
+                        emptyDiv.className = 'gallery-empty';
+                        emptyDiv.textContent = 'Chưa update. Hãy quay lại sau nhé!🌷';
+                        gallery.innerHTML = '';
+                        gallery.appendChild(emptyDiv);
+                    });
+            });
+    }
+
+    var gallerySelector = '.photo-gallery[data-gallery-dir], .photo-gallery[data-gallery-cloudinary], .photo-gallery[data-live-scope]';
+
+    function ensurePhotoGalleryLoaded(gallery) {
+        if (!gallery) return;
+        gallery._isSuspended = false;
+        if (gallery._photos) {
+            renderPhotoGalleryPage(gallery, gallery._photos, gallery._currentPage || 1);
+            if (gallery.hasAttribute('data-live-scope') &&
+                Date.now() - (gallery._lastGalleryRefresh || 0) > 2 * 60 * 1000) {
+                refreshLiveGallery(gallery);
+            }
+            return;
+        }
+        if (!gallery._hasLoaded) loadPhotoGallery(gallery);
+    }
+
+    window.ensureTimeboxGallery = function (viewId) {
+        var view = document.getElementById('view-' + viewId);
+        var gallery = view ? view.querySelector(gallerySelector) : null;
+        ensurePhotoGalleryLoaded(gallery);
+    };
+
+    window.suspendTimeboxGallery = function (viewId) {
+        var view = document.getElementById('view-' + viewId);
+        var gallery = view ? view.querySelector(gallerySelector) : null;
+        if (!gallery) return;
+        clearTimeout(gallery._pageTimer);
+        gallery._pageTimer = null;
+        gallery.classList.remove('is-changing');
+        gallery._isSuspended = true;
+        gallery.innerHTML = '';
+        var pager = gallery.parentElement.querySelector('.photo-pager');
+        if (pager) pager.remove();
+    };
+
+    document.querySelectorAll(gallerySelector).forEach(function (gallery) {
+        var spaView = gallery.closest('.spa-view');
+        if (!spaView || !spaView.classList.contains('is-hidden')) {
+            ensurePhotoGalleryLoaded(gallery);
+        }
+    });
+
+    // CSS owns the responsive column count. Resize only refits an open lightbox.
+    var resizeTimer = null;
+    function queueLightboxFit() {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(function () {
+            if (photoLightbox && photoLightbox.classList.contains('is-open')) {
+                fitPhotoLightboxImage();
+            }
+        }, 120);
+    }
+    if (window.addEventListener) {
+        window.addEventListener('resize', queueLightboxFit, { passive: true });
+    }
+    if (window.visualViewport && window.visualViewport.addEventListener) {
+        window.visualViewport.addEventListener('resize', queueLightboxFit, { passive: true });
+    }
+
+    document.querySelectorAll('.photo-card').forEach(function (card) {
+        if (card.querySelector('.photo-card__open')) return;
+        card.addEventListener('click', function () {
+            openPhotoLightbox(card);
+        });
+    });
+
+    if (photoLightboxClose) {
+        photoLightboxClose.addEventListener('click', closePhotoLightbox);
+    }
+
+    if (photoLightbox) {
+        photoLightbox.querySelector('.photo-lightbox__backdrop').addEventListener('click', closePhotoLightbox);
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') closePhotoLightbox();
+        });
+    }
+
+    if (photoLightboxStage) {
+        photoLightboxStage.addEventListener('touchstart', function (event) {
+            event.preventDefault();
+            beginPhotoLightboxTouch(event.touches);
+        }, { passive: false });
+        photoLightboxStage.addEventListener('touchmove', function (event) {
+            event.preventDefault();
+            movePhotoLightboxTouch(event.touches);
+        }, { passive: false });
+        photoLightboxStage.addEventListener('touchend', function (event) {
+            event.preventDefault();
+            if (event.touches.length) {
+                beginPhotoLightboxTouch(event.touches);
+            } else {
+                photoLightboxTouch = null;
+            }
+        }, { passive: false });
+        photoLightboxStage.addEventListener('touchcancel', function () {
+            photoLightboxTouch = null;
+        }, { passive: true });
+
+        // iOS Safari emits these legacy gesture events in addition to touch events.
+        ['gesturestart', 'gesturechange', 'gestureend'].forEach(function (eventName) {
+            photoLightboxStage.addEventListener(eventName, function (event) {
+                event.preventDefault();
+            }, { passive: false });
+        });
+
+        // Desktop: Wheel scroll để zoom trong khung ảnh
+        photoLightboxStage.addEventListener('wheel', function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            
+            if (!photoLightboxImg) return;
+            
+            var delta = event.deltaY;
+            var zoomChange = delta > 0 ? -PHOTO_LIGHTBOX_ZOOM_STEP : PHOTO_LIGHTBOX_ZOOM_STEP;
+            var newScale = Math.max(PHOTO_LIGHTBOX_MIN_ZOOM, 
+                Math.min(PHOTO_LIGHTBOX_MAX_ZOOM, photoLightboxZoom.scale + zoomChange));
+            
+            // Lấy vị trí chuột trong khung ảnh
+            var bounds = photoLightboxStage.getBoundingClientRect();
+            var mouseX = event.clientX - bounds.left - (bounds.width / 2);
+            var mouseY = event.clientY - bounds.top - (bounds.height / 2);
+            
+            // Tính toán zoom origin tại vị trí chuột
+            var scaleRatio = newScale / photoLightboxZoom.scale;
+            photoLightboxZoom.x = mouseX - (mouseX - photoLightboxZoom.x) * scaleRatio;
+            photoLightboxZoom.y = mouseY - (mouseY - photoLightboxZoom.y) * scaleRatio;
+            photoLightboxZoom.scale = newScale;
+            
+            applyPhotoLightboxZoom();
+        }, { passive: false });
+
+        // Desktop: Click và drag để pan khi đã zoom
+        var isDragging = false;
+        var dragStart = { x: 0, y: 0 };
+        var dragOffset = { x: 0, y: 0 };
+
+        photoLightboxStage.addEventListener('mousedown', function (event) {
+            if (photoLightboxZoom.scale <= 1.01) return;
+            isDragging = true;
+            dragStart.x = event.clientX;
+            dragStart.y = event.clientY;
+            dragOffset.x = photoLightboxZoom.x;
+            dragOffset.y = photoLightboxZoom.y;
+            photoLightboxStage.style.cursor = 'grabbing';
+            event.preventDefault();
+        });
+
+        document.addEventListener('mousemove', function (event) {
+            if (!isDragging) return;
+            photoLightboxZoom.x = dragOffset.x + (event.clientX - dragStart.x);
+            photoLightboxZoom.y = dragOffset.y + (event.clientY - dragStart.y);
+            applyPhotoLightboxZoom();
+        });
+
+        document.addEventListener('mouseup', function () {
+            if (isDragging) {
+                isDragging = false;
+                photoLightboxStage.style.cursor = photoLightboxZoom.scale > 1.01 ? 'grab' : 'default';
+            }
+        });
+    }
+
+    /* ---- Copy Email to Clipboard ---- */
+    var emailBtn = document.getElementById('link-email');
+    var toast = document.getElementById('toast');
+    var toastTimer = null;
+
+    function showToast(msg) {
+        if (!toast) return;
+        toast.textContent = msg;
+        toast.classList.add('is-visible');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(function () {
+            toast.classList.remove('is-visible');
+        }, 2000);
+    }
+
+    window.showTimeboxToast = showToast;
+
+    if (emailBtn) {
+        emailBtn.addEventListener('click', function () {
+            var email = emailBtn.getAttribute('data-email');
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(email).then(function () {
+                    showToast('Đã copy email: ' + email);
+                });
+            } else {
+                // Fallback cho trình duyệt cũ
+                var tmp = document.createElement('textarea');
+                tmp.value = email;
+                tmp.style.position = 'fixed';
+                tmp.style.opacity = '0';
+                document.body.removeChild(tmp);
+                showToast('Đã copy email: ' + email);
+            }
+        });
+    }
+
+    /* ---- Mobile 3D Coverflow / Cylinder Carousel Controller for Quick Dock ---- */
+    function initCoverflowDock() {
+        var dock = document.querySelector('[data-coverflow-dock]');
+        if (!dock) return;
+        var buttons = dock.querySelectorAll('.space-dock-btn');
+        if (!buttons.length) return;
+
+        var isTicking = false;
+        function updateCoverflow() {
+            isTicking = false;
+            if (window.innerWidth > 768) {
+                for (var i = 0; i < buttons.length; i++) {
+                    buttons[i].style.removeProperty('transform');
+                    buttons[i].style.removeProperty('opacity');
+                    buttons[i].classList.remove('is-active-center');
+                }
+                return;
+            }
+
+            var dockWidth = dock.clientWidth;
+            if (!dockWidth) return;
+            var center = dock.scrollLeft + dockWidth / 2;
+
+            var closestBtn = null;
+            var closestDist = Infinity;
+
+            for (var i = 0; i < buttons.length; i++) {
+                var btn = buttons[i];
+                var btnCenter = btn.offsetLeft + btn.offsetWidth / 2;
+                var dist = btnCenter - center;
+                var absDist = Math.abs(dist);
+
+                if (absDist < closestDist) {
+                    closestDist = absDist;
+                    closestBtn = btn;
+                }
+
+                var norm = dist / (btn.offsetWidth * 0.95);
+                var clampNorm = Math.max(-2.2, Math.min(2.2, norm));
+
+                var rotateY = clampNorm * -24;
+                var scale = Math.max(0.76, 1 - Math.abs(clampNorm) * 0.14);
+                var opacity = Math.max(0.32, 1 - Math.abs(clampNorm) * 0.38);
+
+                btn.style.transform = 'scale(' + scale.toFixed(3) + ') rotateY(' + rotateY.toFixed(2) + 'deg) translateZ(0)';
+                btn.style.opacity = opacity.toFixed(3);
+            }
+
+            for (var j = 0; j < buttons.length; j++) {
+                if (buttons[j] === closestBtn) {
+                    buttons[j].classList.add('is-active-center');
+                } else {
+                    buttons[j].classList.remove('is-active-center');
+                }
+            }
+        }
+
+        function requestUpdate() {
+            if (isTicking) return;
+            isTicking = true;
+            requestAnimationFrame(updateCoverflow);
+        }
+
+        dock.addEventListener('scroll', requestUpdate, { passive: true });
+        window.addEventListener('resize', requestUpdate, { passive: true });
+        window.addEventListener('orientationchange', requestUpdate, { passive: true });
+
+        // Immediate run
+        updateCoverflow();
+    }
+
+    initCoverflowDock();
+})();

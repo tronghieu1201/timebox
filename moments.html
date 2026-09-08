@@ -114,39 +114,87 @@
                 });
             });
 
-            form.addEventListener('submit', function (e) {
-                e.preventDefault();
-                var keyValue = input.value.trim();
+            var autoVerifyTimer = null;
+            var authController = null;
+            var authRequestId = 0;
+
+            function isMobileDevice() {
+                var userAgentMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile/i.test(navigator.userAgent || '');
+                var isTouchScreen = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+                var isNarrowScreen = window.innerWidth <= 768;
+                return userAgentMobile || (isTouchScreen && isNarrowScreen);
+            }
+
+            function verifyPassword(keyValue, isExplicitSubmit) {
                 if (!keyValue) {
-                    error.textContent = 'Mở vô hiệu';
-                    input.focus();
+                    if (isExplicitSubmit) {
+                        error.textContent = 'Mở vô hiệu';
+                        if (input) input.focus();
+                    }
                     return;
                 }
+
+                var requestId = ++authRequestId;
+                if (authController) authController.abort();
+                authController = window.AbortController ? new AbortController() : null;
+
                 var submitBtn = form.querySelector('button[type="submit"]');
-                if (submitBtn) submitBtn.disabled = true;
+                if (isExplicitSubmit && submitBtn) submitBtn.disabled = true;
 
                 fetch(AUTH_API, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ password: keyValue, scope: 'friends' })
+                    body: JSON.stringify({ password: keyValue, scope: 'friends' }),
+                    signal: authController ? authController.signal : undefined
                 }).then(function (response) {
                     return response.json().catch(function () { return { ok: false }; });
                 }).then(function (result) {
+                    if (requestId !== authRequestId || !modal.classList.contains('is-open')) return;
                     if (result.ok && targetHref) {
                         rememberUnlockedPage(targetHref);
                         var href = targetHref;
                         closeModal();
                         window.location.href = href;
                     } else {
-                        error.textContent = targetErrorMsg;
-                        input.select();
+                        if (isExplicitSubmit) {
+                            error.textContent = targetErrorMsg || 'Xác nhận không thành công';
+                            if (input) input.select();
+                        }
                     }
                 }).catch(function () {
-                    error.textContent = 'Kh\u00f4ng th\u1ec3 k\u1ebft n\u1ed1i m\u00e1y ch\u1ee7';
-                    input.select();
+                    if (requestId !== authRequestId) return;
+                    if (isExplicitSubmit) {
+                        error.textContent = 'Không thể kết nối máy chủ';
+                        if (input) input.select();
+                    }
                 }).finally(function () {
-                    if (submitBtn) submitBtn.disabled = false;
+                    if (requestId === authRequestId) {
+                        authController = null;
+                        if (submitBtn) submitBtn.disabled = false;
+                    }
                 });
+            }
+
+            if (input) {
+                input.addEventListener('input', function () {
+                    if (error) error.textContent = '';
+                    clearTimeout(autoVerifyTimer);
+                    if (isMobileDevice()) {
+                        var val = input.value.trim();
+                        if (val.length >= 3) {
+                            autoVerifyTimer = setTimeout(function () {
+                                verifyPassword(val, false);
+                            }, 180);
+                        }
+                    }
+                });
+            }
+
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+                clearTimeout(autoVerifyTimer);
+                var keyValue = input.value.trim();
+                verifyPassword(keyValue, true);
             });
 
             closeBtn.addEventListener('click', closeModal);
