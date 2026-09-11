@@ -564,7 +564,18 @@
         photoLightboxZoom.x = 0;
         photoLightboxZoom.y = 0;
         photoLightboxTouch = null;
-        if (photoLightboxImg) photoLightboxImg.style.removeProperty('transform');
+        if (photoLightboxImg) {
+            photoLightboxImg.style.removeProperty('transform');
+            photoLightboxImg.style.removeProperty('transition');
+            photoLightboxImg.style.removeProperty('opacity');
+        }
+        var stage = document.getElementById('photo-lightbox-stage') || (photoLightbox && photoLightbox.querySelector('.photo-lightbox__content'));
+        var video = stage ? stage.querySelector('.photo-lightbox__video') : null;
+        if (video) {
+            video.style.removeProperty('transform');
+            video.style.removeProperty('transition');
+            video.style.removeProperty('opacity');
+        }
         if (photoLightbox) photoLightbox.classList.remove('is-zoomed');
     }
 
@@ -599,12 +610,20 @@
             x: touches[0].clientX,
             y: touches[0].clientY,
             offsetX: photoLightboxZoom.x,
-            offsetY: photoLightboxZoom.y
+            offsetY: photoLightboxZoom.y,
+            startX: touches[0].clientX,
+            startY: touches[0].clientY,
+            startTime: Date.now(),
+            currentX: touches[0].clientX,
+            currentY: touches[0].clientY,
+            deltaX: 0,
+            deltaY: 0
         };
     }
 
     function movePhotoLightboxTouch(touches) {
-        if (!photoLightboxTouch || !touches || !touches.length || !photoLightboxStage) return;
+        if (!photoLightboxTouch || !touches || !touches.length) return;
+        var stage = document.getElementById('photo-lightbox-stage') || (photoLightbox && photoLightbox.querySelector('.photo-lightbox__content'));
         if (touches.length >= 2) {
             if (photoLightboxTouch.mode !== 'pinch') {
                 beginPhotoLightboxTouch(touches);
@@ -614,7 +633,8 @@
             var scale = Math.max(1, Math.min(PHOTO_LIGHTBOX_MAX_ZOOM,
                 photoLightboxTouch.scale * (distance / Math.max(1, photoLightboxTouch.distance))));
             var midpoint = getTouchMidpoint(touches[0], touches[1]);
-            var bounds = photoLightboxStage.getBoundingClientRect();
+            if (!stage) return;
+            var bounds = stage.getBoundingClientRect();
             var startX = photoLightboxTouch.midpoint.x - bounds.left - (bounds.width / 2);
             var startY = photoLightboxTouch.midpoint.y - bounds.top - (bounds.height / 2);
             var currentX = midpoint.x - bounds.left - (bounds.width / 2);
@@ -629,10 +649,108 @@
             beginPhotoLightboxTouch(touches);
             return;
         }
-        if (photoLightboxZoom.scale <= 1.01) return;
-        photoLightboxZoom.x = photoLightboxTouch.offsetX + touches[0].clientX - photoLightboxTouch.x;
-        photoLightboxZoom.y = photoLightboxTouch.offsetY + touches[0].clientY - photoLightboxTouch.y;
-        applyPhotoLightboxZoom();
+
+        photoLightboxTouch.currentX = touches[0].clientX;
+        photoLightboxTouch.currentY = touches[0].clientY;
+        photoLightboxTouch.deltaX = touches[0].clientX - photoLightboxTouch.startX;
+        photoLightboxTouch.deltaY = touches[0].clientY - photoLightboxTouch.startY;
+
+        if (photoLightboxZoom.scale > 1.01) {
+            photoLightboxZoom.x = photoLightboxTouch.offsetX + photoLightboxTouch.deltaX;
+            photoLightboxZoom.y = photoLightboxTouch.offsetY + photoLightboxTouch.deltaY;
+            applyPhotoLightboxZoom();
+            return;
+        }
+
+        // Mobile web swipe visual drag feedback when scale <= 1.01
+        if (Math.abs(photoLightboxTouch.deltaX) > Math.abs(photoLightboxTouch.deltaY)) {
+            var mediaEl = (photoLightboxImg && photoLightboxImg.style.display !== 'none') ? photoLightboxImg : (stage ? stage.querySelector('.photo-lightbox__video') : null);
+            if (mediaEl) {
+                mediaEl.style.transition = 'none';
+                mediaEl.style.transform = 'translate3d(' + photoLightboxTouch.deltaX + 'px, 0, 0)';
+            }
+        }
+    }
+
+    function endPhotoLightboxTouch() {
+        if (!photoLightboxTouch) return;
+        if (photoLightboxTouch.mode === 'pan' && photoLightboxZoom.scale <= 1.01) {
+            var deltaX = photoLightboxTouch.deltaX;
+            var deltaY = photoLightboxTouch.deltaY;
+            var deltaTime = Date.now() - photoLightboxTouch.startTime;
+            var stage = document.getElementById('photo-lightbox-stage') || (photoLightbox && photoLightbox.querySelector('.photo-lightbox__content'));
+            var mediaEl = (photoLightboxImg && photoLightboxImg.style.display !== 'none') ? photoLightboxImg : (stage ? stage.querySelector('.photo-lightbox__video') : null);
+
+            if (Math.abs(deltaX) >= 40 && Math.abs(deltaX) > Math.abs(deltaY) * 1.1 && deltaTime < 600) {
+                if (mediaEl) {
+                    mediaEl.style.transition = 'transform 0.16s ease-out, opacity 0.16s ease-out';
+                    mediaEl.style.transform = 'translate3d(' + (deltaX > 0 ? '80px' : '-80px') + ', 0, 0)';
+                    mediaEl.style.opacity = '0.4';
+                }
+                setTimeout(function () {
+                    if (mediaEl) {
+                        mediaEl.style.removeProperty('transition');
+                        mediaEl.style.removeProperty('transform');
+                        mediaEl.style.removeProperty('opacity');
+                    }
+                    navigatePhotoLightbox(deltaX < 0 ? 1 : -1);
+                }, 140);
+            } else if (mediaEl && Math.abs(deltaX) > 0) {
+                mediaEl.style.transition = 'transform 0.2s ease-out';
+                mediaEl.style.transform = 'translate3d(0, 0, 0)';
+                setTimeout(function () {
+                    if (mediaEl) {
+                        mediaEl.style.removeProperty('transition');
+                        mediaEl.style.removeProperty('transform');
+                    }
+                }, 200);
+            }
+        }
+        photoLightboxTouch = null;
+    }
+
+    function getGalleryCards() {
+        if (!photoLightbox || !photoLightbox._activeCard) return [];
+        var activeCard = photoLightbox._activeCard;
+        var gallery = photoLightbox._activeGallery || 
+                      activeCard.closest('.photo-gallery, .gallery-grid, .photos-grid, .moments-grid, .bio-card, [data-gallery]') || 
+                      activeCard.parentElement;
+        var cards = [];
+        if (gallery) {
+            cards = Array.prototype.slice.call(gallery.querySelectorAll('.photo-card, [data-full]'));
+        }
+        if (!cards.length || cards.indexOf(activeCard) === -1) {
+            var activeView = activeCard.closest('.spa-view, .view-pane, main, body') || document;
+            cards = Array.prototype.slice.call(activeView.querySelectorAll('.photo-card, [data-full]'));
+        }
+        return cards.filter(function (card, index, self) {
+            return self.indexOf(card) === index;
+        });
+    }
+
+    function navigatePhotoLightbox(direction) {
+        if (!photoLightbox || !photoLightbox.classList.contains('is-open')) return;
+        var cards = getGalleryCards();
+        if (!cards.length) return;
+        var activeCard = photoLightbox._activeCard;
+        var currentIndex = activeCard ? cards.indexOf(activeCard) : -1;
+        if (currentIndex === -1 && activeCard) {
+            var activeFull = activeCard.getAttribute('data-full');
+            for (var i = 0; i < cards.length; i++) {
+                if (cards[i].getAttribute('data-full') === activeFull) {
+                    currentIndex = i;
+                    break;
+                }
+            }
+        }
+        if (currentIndex === -1) return;
+        var targetIndex = currentIndex + direction;
+        if (targetIndex >= 0 && targetIndex < cards.length) {
+            openPhotoLightbox(cards[targetIndex]);
+        } else if (cards.length > 1) {
+            var wrappedIndex = direction > 0 ? 0 : cards.length - 1;
+            openPhotoLightbox(cards[wrappedIndex]);
+        }
     }
 
     function fitPhotoLightboxMedia(naturalWidth, naturalHeight) {
@@ -772,7 +890,8 @@
             photoLightboxCaption.textContent = caption;
             photoLightboxCaption.hidden = !caption;
         }
-        photoLightbox._activeGallery = card._gallery || null;
+        photoLightbox._activeCard = card;
+        photoLightbox._activeGallery = card._gallery || card.closest('.photo-gallery, .gallery-grid, .photos-grid, .moments-grid, .bio-card, [data-gallery]') || (card.parentElement ? card.parentElement : null);
         photoLightbox._activePhoto = card._photo || null;
         var lightboxWorld = photoLightbox._activeGallery && photoLightbox._activeGallery.getAttribute('data-live-scope');
         if (lightboxWorld) photoLightbox.setAttribute('data-world', lightboxWorld);
@@ -791,6 +910,7 @@
         photoLightbox.classList.remove('is-open', 'is-loading');
         photoLightbox.setAttribute('aria-hidden', 'true');
         syncModalState();
+        photoLightbox._activeCard = null;
         photoLightbox._activeGallery = null;
         photoLightbox._activePhoto = null;
         photoLightbox.removeAttribute('data-world');
@@ -1753,40 +1873,46 @@
     if (photoLightbox) {
         photoLightbox.querySelector('.photo-lightbox__backdrop').addEventListener('click', closePhotoLightbox);
         document.addEventListener('keydown', function (e) {
+            if (!photoLightbox || !photoLightbox.classList.contains('is-open')) return;
             if (e.key === 'Escape') closePhotoLightbox();
+            else if (e.key === 'ArrowRight') navigatePhotoLightbox(1);
+            else if (e.key === 'ArrowLeft') navigatePhotoLightbox(-1);
         });
     }
 
-    if (photoLightboxStage) {
-        photoLightboxStage.addEventListener('touchstart', function (event) {
-            event.preventDefault();
+    var photoTouchStage = photoLightboxStage || (photoLightbox && photoLightbox.querySelector('.photo-lightbox__content')) || photoLightbox;
+    if (photoTouchStage) {
+        photoTouchStage.addEventListener('touchstart', function (event) {
+            if (event.target.closest('#photo-lightbox-close, .photo-lightbox__close, .photo-lightbox__pin-action')) return;
             beginPhotoLightboxTouch(event.touches);
         }, { passive: false });
-        photoLightboxStage.addEventListener('touchmove', function (event) {
-            event.preventDefault();
-            movePhotoLightboxTouch(event.touches);
+        photoTouchStage.addEventListener('touchmove', function (event) {
+            if (event.target.closest('#photo-lightbox-close, .photo-lightbox__close, .photo-lightbox__pin-action')) return;
+            if (photoLightboxTouch) {
+                movePhotoLightboxTouch(event.touches);
+            }
         }, { passive: false });
-        photoLightboxStage.addEventListener('touchend', function (event) {
-            event.preventDefault();
+        photoTouchStage.addEventListener('touchend', function (event) {
+            if (event.target.closest('#photo-lightbox-close, .photo-lightbox__close, .photo-lightbox__pin-action')) return;
             if (event.touches.length) {
                 beginPhotoLightboxTouch(event.touches);
             } else {
-                photoLightboxTouch = null;
+                endPhotoLightboxTouch();
             }
         }, { passive: false });
-        photoLightboxStage.addEventListener('touchcancel', function () {
-            photoLightboxTouch = null;
+        photoTouchStage.addEventListener('touchcancel', function () {
+            resetPhotoLightboxZoom();
         }, { passive: true });
 
         // iOS Safari emits these legacy gesture events in addition to touch events.
         ['gesturestart', 'gesturechange', 'gestureend'].forEach(function (eventName) {
-            photoLightboxStage.addEventListener(eventName, function (event) {
+            photoTouchStage.addEventListener(eventName, function (event) {
                 event.preventDefault();
             }, { passive: false });
         });
 
         // Desktop: Wheel scroll để zoom trong khung ảnh
-        photoLightboxStage.addEventListener('wheel', function (event) {
+        photoTouchStage.addEventListener('wheel', function (event) {
             event.preventDefault();
             event.stopPropagation();
             
