@@ -88,7 +88,7 @@
             images: []
         },
         thoughts: {
-            title: 'Lăng kính của Hiếu',
+            title: 'Lăng kính',
             images: []
         },
         connections: {
@@ -141,7 +141,7 @@
 
     function renderThoughtsQuotes() {
         titleEl.textContent = categories.thoughts.title;
-        titleEl.hidden = true;
+        titleEl.hidden = false;
         gridEl.innerHTML = '';
         gridEl.dataset.mode = 'thoughts';
         emptyEl.hidden = true;
@@ -154,14 +154,26 @@
             btn.type = 'button';
             btn.className = 'thoughts-number-btn';
             btn.setAttribute('data-index', String(index));
-            btn.setAttribute('aria-label', 'Mở chiếc hộp bí ẩn');
-            btn.setAttribute('title', 'Chiếc hộp bí ẩn');
+            btn.setAttribute('aria-label', 'Mở chiếc hộp bí ẩn ' + (index + 1));
+            btn.setAttribute('title', 'Chiếc hộp bí ẩn ' + (index + 1));
             btn.innerHTML = '<i class="fas fa-box" aria-hidden="true"></i>';
             btn.addEventListener('click', function () {
                 setThoughtQuote(index);
             });
             gridEl.appendChild(btn);
         });
+
+        // Mở sẵn 1 câu nói ngay khi vào
+        var initialIndex = 0;
+        try {
+            var saved = localStorage.getItem(THOUGHTS_STORAGE_KEY);
+            if (saved !== null && !isNaN(Number(saved))) {
+                initialIndex = Number(saved);
+            }
+        } catch (e) {
+            initialIndex = 0;
+        }
+        setThoughtQuote(initialIndex);
     }
 
     function openGallery(categoryKey) {
@@ -393,11 +405,11 @@
         thoughtsConfirmModal.setAttribute('aria-hidden', 'true');
         thoughtsConfirmModal.innerHTML =
             '<div class="thoughts-confirm__backdrop"></div>' +
-            '<article class="thoughts-confirm__card" role="dialog" aria-modal="true" aria-label="X&aacute;c nh&#7853;n L&#259;ng k&iacute;nh">' +
-                '<p class="dialog-heading__eyebrow">Quỹ đạo 02 · Lăng kính của Hiếu</p>' +
+            '<article class="thoughts-confirm__card" role="dialog" aria-modal="true" aria-label="Lăng kính">' +
+                '<h2 class="join-modal__title" style="margin-bottom: 6px;">Lăng kính</h2>' +
                 '<p class="thoughts-confirm__message">Có thể bạn đã nghe - đã thấy và có thể chưa đúng với bạn, nhưng đó là góc nhìn từng trải của mình.</p>' +
                 '<div class="thoughts-confirm__actions">' +
-                    '<button type="button" class="thoughts-confirm__accept"><i class="fas fa-eye" aria-hidden="true"></i> Ch&#7845;p nh&#7853;n</button>' +
+                    '<button type="button" class="thoughts-confirm__accept"><i class="fas fa-eye" aria-hidden="true"></i> Chấp nhận</button>' +
                     '<button type="button" class="thoughts-confirm__decline">Quay lại</button>' +
                 '</div>' +
             '</article>';
@@ -653,4 +665,7 @@
         }
     });
     window.addEventListener('pagehide', releaseMomentsPreviewUrls);
+    window.openLifeGallery = openGallery;
+    window.openThoughtsConfirm = openThoughtsConfirm;
+    window.openJoinModal = openJoinModal;
 })();

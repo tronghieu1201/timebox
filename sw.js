@@ -1,9 +1,9 @@
 // Timebox service worker: fast shell, bounded image cache, fresh API data.
 var CACHE_PREFIX = 'timebox-';
-var SHELL_CACHE = CACHE_PREFIX + 'shell-v45';
-var STATIC_CACHE = CACHE_PREFIX + 'static-v45';
-var IMAGE_CACHE = CACHE_PREFIX + 'images-v2';
-var ASSET_CACHE = CACHE_PREFIX + 'assets-v2';
+var SHELL_CACHE = CACHE_PREFIX + 'shell-v62';
+var STATIC_CACHE = CACHE_PREFIX + 'static-v62';
+var IMAGE_CACHE = CACHE_PREFIX + 'images-v62';
+var ASSET_CACHE = CACHE_PREFIX + 'assets-v62';
 var MAX_IMAGE_ENTRIES = 80;
 var MAX_ASSET_ENTRIES = 50;
 var MAX_STATIC_ENTRIES = 80;
@@ -14,12 +14,12 @@ var SHELL_URLS = [
 ];
 
 var STATIC_URLS = [
-    './style.css?v=45',
-    './life.css?v=45',
-    './space-navigation.css?v=45',
-    './orbital-archive.css?v=45',
-    './theme.js?v=45',
-    './life.js?v=45'
+    './style.css?v=62',
+    './life.css?v=62',
+    './space-navigation.css?v=62',
+    './orbital-archive.css?v=62',
+    './theme.js?v=62',
+    './life.js?v=62'
 ];
 
 self.addEventListener('install', function (event) {

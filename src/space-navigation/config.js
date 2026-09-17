@@ -11,7 +11,7 @@ export const NAV_ITEMS = Object.freeze([
   },
   {
     id: 'thoughts',
-    label: 'Lăng kính của Hiếu',
+    label: 'Lăng kính',
     description: 'Nhìn thế giới qua những suy nghĩ...',
     iconClass: 'fas fa-eye',
     color: '#8b5cf6',
@@ -31,7 +31,7 @@ export const NAV_ITEMS = Object.freeze([
   },
   {
     id: 'friends',
-    label: 'Tuổi trẻ năm 16',
+    label: 'Cốt',
     description: 'Một khoảnh khắc nhỏ cũng đủ biến một ngày bình thường thành kỷ niệm...',
     iconClass: 'fas fa-users',
     color: '#38bdf8',
@@ -51,7 +51,7 @@ export const NAV_ITEMS = Object.freeze([
   },
   {
     id: 'cooking',
-    label: 'Nấu ăn',
+    label: 'Cơm sinh viên',
     description: 'Không cần chứng minh bạn nấu nếu bạn đã rửa...',
     iconClass: 'fas fa-utensils',
     color: '#fb923c',
@@ -61,7 +61,7 @@ export const NAV_ITEMS = Object.freeze([
   },
   {
     id: 'upload',
-    label: 'Upload',
+    label: 'Đóng góp ký ức',
     description: 'Gửi thêm một tấm ảnh vào dòng ký ức...',
     iconClass: 'fas fa-upload',
     color: '#60a5fa',

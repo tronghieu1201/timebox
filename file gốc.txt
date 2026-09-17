@@ -9,8 +9,7 @@ index.html
     <meta name="theme-color" content="#010205">
     <meta name="color-scheme" content="dark">
     <title>Trọng Hiếu – Timebox</title>
-    <meta name="description"
-        content="Timebox – Nơi lưu giữ kỷ niệm của Trọng Hiếu. Gia đình, bạn bè, sinh viên và những khoảnh khắc đáng nhớ.">
+    <meta name="description"        content="Timebox – Nơi lưu giữ kỷ niệm của Trọng Hiếu. Gia đình, bạn bè, sinh viên và những khoảnh khắc đáng nhớ.">
     <link rel="canonical" href="https://tronghieu1201.github.io/timebox/">
     <link rel="icon" type="image/webp"
         href="https://res.cloudinary.com/dtpw5htqs/image/upload/v1782711381/43b58650-6952-47b7-9bac-94918d6b54a6_fcvxaq.webp">
