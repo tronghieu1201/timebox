@@ -10,6 +10,7 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
 }
 
 html {
@@ -18,6 +19,15 @@ html {
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
     background-color: #ded0bf;
+}
+
+[tabindex="-1"]:focus,
+[tabindex="-1"]:focus-visible,
+h1:focus,
+h2:focus,
+h3:focus {
+    outline: none !important;
+    box-shadow: none !important;
 }
 
 /* ---------- Nostalgic Memory Neumorphism Design Tokens ---------- */

@@ -124,6 +124,23 @@ body.timebox-cinematic .world-album::after {
     margin-bottom: 6px;
     text-align: center;
     width: 100%;
+    outline: none !important;
+    border: none !important;
+    -webkit-tap-highlight-color: transparent !important;
+}
+
+.life-title:focus,
+.life-title:focus-visible,
+.world-heading h1:focus,
+.world-heading h1:focus-visible,
+.world-album h1:focus,
+.world-album h1:focus-visible,
+[tabindex="-1"]:focus,
+[tabindex="-1"]:focus-visible {
+    outline: none !important;
+    box-shadow: none !important;
+    border: none !important;
+    -webkit-tap-highlight-color: transparent !important;
 }
 
 .world-heading__subtitle {

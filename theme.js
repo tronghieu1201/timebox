@@ -2026,76 +2026,17 @@
         });
     }
 
-    /* ---- Mobile 3D Coverflow / Cylinder Carousel Controller for Quick Dock ---- */
-    function initCoverflowDock() {
+    /* ---- Quick Dock Reset & Sync ---- */
+    function initQuickDock() {
         var dock = document.querySelector('[data-coverflow-dock]');
         if (!dock) return;
         var buttons = dock.querySelectorAll('.space-dock-btn');
-        if (!buttons.length) return;
-
-        var isTicking = false;
-        function updateCoverflow() {
-            isTicking = false;
-            if (window.innerWidth > 768) {
-                for (var i = 0; i < buttons.length; i++) {
-                    buttons[i].style.removeProperty('transform');
-                    buttons[i].style.removeProperty('opacity');
-                    buttons[i].classList.remove('is-active-center');
-                }
-                return;
-            }
-
-            var dockWidth = dock.clientWidth;
-            if (!dockWidth) return;
-            var center = dock.scrollLeft + dockWidth / 2;
-
-            var closestBtn = null;
-            var closestDist = Infinity;
-
-            for (var i = 0; i < buttons.length; i++) {
-                var btn = buttons[i];
-                var btnCenter = btn.offsetLeft + btn.offsetWidth / 2;
-                var dist = btnCenter - center;
-                var absDist = Math.abs(dist);
-
-                if (absDist < closestDist) {
-                    closestDist = absDist;
-                    closestBtn = btn;
-                }
-
-                var norm = dist / (btn.offsetWidth * 0.95);
-                var clampNorm = Math.max(-2.2, Math.min(2.2, norm));
-
-                var rotateY = clampNorm * -24;
-                var scale = Math.max(0.76, 1 - Math.abs(clampNorm) * 0.14);
-                var opacity = Math.max(0.32, 1 - Math.abs(clampNorm) * 0.38);
-
-                btn.style.transform = 'scale(' + scale.toFixed(3) + ') rotateY(' + rotateY.toFixed(2) + 'deg) translateZ(0)';
-                btn.style.opacity = opacity.toFixed(3);
-            }
-
-            for (var j = 0; j < buttons.length; j++) {
-                if (buttons[j] === closestBtn) {
-                    buttons[j].classList.add('is-active-center');
-                } else {
-                    buttons[j].classList.remove('is-active-center');
-                }
-            }
+        for (var i = 0; i < buttons.length; i++) {
+            buttons[i].style.removeProperty('transform');
+            buttons[i].style.removeProperty('opacity');
+            buttons[i].classList.remove('is-active-center');
         }
-
-        function requestUpdate() {
-            if (isTicking) return;
-            isTicking = true;
-            requestAnimationFrame(updateCoverflow);
-        }
-
-        dock.addEventListener('scroll', requestUpdate, { passive: true });
-        window.addEventListener('resize', requestUpdate, { passive: true });
-        window.addEventListener('orientationchange', requestUpdate, { passive: true });
-
-        // Immediate run
-        updateCoverflow();
     }
 
-    initCoverflowDock();
+    initQuickDock();
 })();

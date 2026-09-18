@@ -29,11 +29,11 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap"
         rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css?v=62">
-    <link rel="stylesheet" href="life.css?v=62">
-    <link rel="stylesheet" href="space-navigation.css?v=62">
-    <link rel="stylesheet" href="orbital-archive.css?v=62">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="style.css?v=64">
+    <link rel="stylesheet" href="life.css?v=64">
+    <link rel="stylesheet" href="space-navigation.css?v=64">
+    <link rel="stylesheet" href="orbital-archive.css?v=64">
 </head>
 
 <body class="timebox-cinematic space-nav-home-visible" data-space-view="home">
@@ -620,6 +620,7 @@
                     var focusTarget = views[id].querySelector('.life-title') || views[id].querySelector('h1');
                     if (focusTarget) {
                         focusTarget.setAttribute('tabindex', '-1');
+                        focusTarget.style.outline = 'none';
                         window.requestAnimationFrame(function () {
                             focusTarget.focus({ preventScroll: true });
                         });
@@ -1500,8 +1501,8 @@
             });
         })();
     </script>
-    <script src="theme.js?v=62"></script>
-    <script src="life.js?v=62"></script>
+    <script src="theme.js?v=64"></script>
+    <script src="life.js?v=64"></script>
 </body>
 
 </html>

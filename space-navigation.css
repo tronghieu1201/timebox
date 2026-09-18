@@ -414,6 +414,12 @@ body[data-space-view="home"] .spa-shell {
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
     overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.space-quick-dock::-webkit-scrollbar {
+    display: none;
 }
 
 .space-dock-track {
@@ -421,14 +427,19 @@ body[data-space-view="home"] .spa-shell {
     align-items: center;
     gap: 8px;
     justify-content: center;
+    flex-wrap: nowrap;
 }
 
 .space-dock-btn {
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
     width: 36px;
     height: 36px;
+    min-width: 36px;
+    min-height: 36px;
+    flex-shrink: 0;
+    aspect-ratio: 1 / 1;
     padding: 0;
     border: none;
     border-radius: 50%;
@@ -438,6 +449,7 @@ body[data-space-view="home"] .spa-shell {
     box-shadow: var(--neu-extruded-sm);
     cursor: pointer;
     transition: var(--transition-smooth);
+    opacity: 1 !important;
 }
 
 .space-dock-btn:hover {
@@ -613,18 +625,24 @@ body[data-space-view="home"] .spa-shell {
         margin: 14px auto 0;
         box-shadow: inset 3px 3px 6px rgba(120, 95, 75, 0.45),
                     inset -3px -3px 6px rgba(255, 252, 245, 0.9);
+        max-width: calc(100vw - 24px);
     }
 
     .space-dock-btn {
-        width: 30px;
-        height: 30px;
-        font-size: 12px;
+        width: 32px;
+        height: 32px;
+        min-width: 32px;
+        min-height: 32px;
+        flex-shrink: 0;
+        aspect-ratio: 1 / 1;
+        font-size: 13px;
         box-shadow: 3px 3px 6px rgba(135, 110, 88, 0.4),
                    -3px -3px 6px rgba(255, 252, 245, 0.9);
+        opacity: 1 !important;
     }
 
     .space-dock-track {
-        gap: 5px;
+        gap: 6px;
     }
 }
 
@@ -659,13 +677,17 @@ body[data-space-view="home"] .spa-shell {
     }
 
     .space-dock-btn {
-        width: 26px;
-        height: 26px;
-        font-size: 11px;
+        width: 28px;
+        height: 28px;
+        min-width: 28px;
+        min-height: 28px;
+        flex-shrink: 0;
+        aspect-ratio: 1 / 1;
+        font-size: 11.5px;
     }
 
     .space-dock-track {
-        gap: 3px;
+        gap: 4px;
     }
 }
 

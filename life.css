@@ -369,45 +369,84 @@
 
 @media (max-width: 480px) {
     .photo-gallery {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 10px;
-        max-width: 360px;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+        max-width: 100%;
+        margin-top: 14px;
     }
 
     .photo-card {
-        padding: 4px;
-        border-radius: 14px;
+        padding: 3px;
+        border-radius: 12px;
+        box-shadow: 3px 3px 7px rgba(135, 110, 88, 0.40),
+                   -3px -3px 7px rgba(255, 252, 245, 0.92);
     }
 
     .photo-card img,
     .photo-card video,
     .photo-card__open {
-        border-radius: 11px;
+        border-radius: 9px;
     }
 
     .photo-card__pin {
-        width: 24px;
-        height: 24px;
-        font-size: 10.5px;
-        top: 8px;
-        left: 8px;
+        width: 22px;
+        height: 22px;
+        font-size: 9.5px;
+        top: 6px;
+        left: 6px;
     }
 
     .photo-card__video-badge {
-        font-size: 9.5px;
-        padding: 2.5px 6px;
-        bottom: 8px;
-        right: 8px;
+        font-size: 8.5px;
+        padding: 2px 5px;
+        bottom: 6px;
+        right: 6px;
+    }
+
+    .photo-card:hover {
+        transform: translateY(-2px);
     }
 
     .photo-pager {
-        gap: 6px;
-        padding: 4px 10px;
+        gap: 5px;
+        padding: 4px 8px;
+        margin-top: 16px;
     }
 
     .photo-pager__btn {
-        width: 30px;
-        height: 30px;
-        font-size: 12px;
+        width: 28px;
+        height: 28px;
+        font-size: 11.5px;
+    }
+}
+
+@media (max-width: 360px) {
+    .photo-gallery {
+        gap: 6px;
+    }
+
+    .photo-card {
+        padding: 2.5px;
+        border-radius: 10px;
+    }
+
+    .photo-card img,
+    .photo-card video,
+    .photo-card__open {
+        border-radius: 8px;
+    }
+
+    .photo-card__pin {
+        width: 20px;
+        height: 20px;
+        font-size: 8.5px;
+        top: 5px;
+        left: 5px;
+    }
+
+    .photo-pager__btn {
+        width: 26px;
+        height: 26px;
+        font-size: 11px;
     }
 }
