@@ -243,6 +243,7 @@ body.timebox-cinematic .world-album::after {
 .key-modal__backdrop,
 .upload-modal__backdrop,
 .join-modal__backdrop,
+.profile-modal__backdrop,
 .photo-lightbox__backdrop,
 .thoughts-confirm__backdrop {
     position: fixed;
@@ -256,6 +257,7 @@ body.timebox-cinematic .world-album::after {
 .key-modal__card,
 .upload-modal__card,
 .join-modal__card,
+.profile-modal__card,
 .gallery-panel,
 .thoughts-confirm__card {
     position: relative;
@@ -274,6 +276,7 @@ body.timebox-cinematic .world-album::after {
 .orbital-dialog.is-open .key-modal__card,
 .orbital-dialog.is-open .upload-modal__card,
 .orbital-dialog.is-open .join-modal__card,
+.orbital-dialog.is-open .profile-modal__card,
 .orbital-dialog.is-open .gallery-panel,
 .orbital-dialog.is-open .thoughts-confirm__card {
     transform: scale(1);
@@ -349,6 +352,7 @@ body.timebox-cinematic .world-album::after {
 .key-modal__close,
 .upload-modal__close,
 .join-modal__close,
+.profile-modal__close,
 .gallery-panel__close {
     position: absolute;
     top: 18px;
@@ -371,6 +375,7 @@ body.timebox-cinematic .world-album::after {
 .key-modal__close:hover,
 .upload-modal__close:hover,
 .join-modal__close:hover,
+.profile-modal__close:hover,
 .gallery-panel__close:hover {
     color: var(--accent-amber);
     box-shadow: var(--neu-extruded-hover);
@@ -380,6 +385,7 @@ body.timebox-cinematic .world-album::after {
 .key-modal__close:active,
 .upload-modal__close:active,
 .join-modal__close:active,
+.profile-modal__close:active,
 .gallery-panel__close:active {
     box-shadow: var(--neu-inset);
 }
@@ -397,6 +403,7 @@ body.timebox-cinematic .world-album::after {
 .key-modal__title,
 .upload-modal__title,
 .join-modal__title,
+.profile-modal__title,
 .gallery-panel__title {
     font-size: 22px;
     font-weight: 800;
@@ -980,8 +987,47 @@ html.site-is-closed-mode #maintenance-lock-screen {
     .key-modal__card,
     .upload-modal__card,
     .join-modal__card,
+    .profile-modal__card,
     .gallery-panel {
         padding: 28px 18px;
         border-radius: var(--radius-lg);
     }
+}
+
+/* ---------- Profile Modal (Thông tin) ---------- */
+.profile-modal__card {
+    max-width: 400px;
+    padding: 28px 24px 24px;
+    text-align: left;
+}
+
+.profile-modal__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    padding-right: 36px;
+}
+
+.profile-modal__title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin: 0;
+    line-height: 1.2;
+}
+
+.profile-modal__info-box {
+    width: 100%;
+    padding: 16px 18px;
+    background: var(--canvas-bg);
+    border-radius: 18px;
+    box-shadow: var(--neu-inset);
+    color: var(--text-primary);
+    font-size: 15px;
+    font-weight: 600;
+    text-align: center;
+    letter-spacing: 0.01em;
+    line-height: 1.5;
+    user-select: text;
 }

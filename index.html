@@ -111,8 +111,12 @@
                         <img src="https://res.cloudinary.com/dtpw5htqs/image/upload/v1789624618/3D8924F9-2FD1-4578-B159-7E36568635E7_1_mkxl4m.jpg"
                             alt="Ảnh đại diện Trọng Hiếu 4" class="avatar-img avatar-img--4" width="120" height="120">
                     </div>
-                    <h1 class="neu-hub-title">TrgHy</h1>
-                    <p class="neu-hub-subtitle">Kho lưu giữ những kỷ niệm, khoảnh khắc & chặng đường đáng nhớ</p>
+                    <h1 class="neu-hub-title">
+                        <button type="button" class="neu-hub-title-btn" id="profile-info-open" aria-label="Xem thông tin">trghy</button>
+                    </h1>
+                    <p class="neu-hub-subtitle">
+                        <a href="https://tronghieu1201.github.io/bio_itme/" target="_blank" rel="noopener noreferrer" class="neu-hub-subtitle-link" aria-label="Trọng Hiếu – Bio">It's me</a>
+                    </p>
                 </header>
 
                 <section class="space-navigation" data-space-navigation aria-label="Danh mục kỷ niệm">
@@ -467,6 +471,23 @@
             </div>
             <div class="photo-lightbox__caption" id="photo-lightbox-caption"></div>
         </div>
+    </div>
+
+    <!-- ════ MODAL: PROFILE INFO (Thông tin) ════ -->
+    <div class="profile-modal orbital-dialog" id="profile-info-modal" role="dialog" aria-modal="true"
+        aria-labelledby="profile-info-title" aria-hidden="true">
+        <div class="profile-modal__backdrop"></div>
+        <article class="profile-modal__card">
+            <button type="button" class="profile-modal__close" id="profile-info-close" aria-label="Đóng">&times;</button>
+            <div class="profile-modal__header">
+                <h2 class="profile-modal__title" id="profile-info-title">Thông tin</h2>
+            </div>
+            <div class="profile-modal__content">
+                <div class="profile-modal__info-box">
+                    Cát Minh - Phù Cát - Bình Định
+                </div>
+            </div>
+        </article>
     </div>
 
     <!-- Key Modal (Password Unlock) -->
