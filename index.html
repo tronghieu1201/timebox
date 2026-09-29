@@ -508,6 +508,24 @@
         </article>
     </div>
 
+    <!-- Upload Password Modal -->
+    <div class="key-modal orbital-dialog" id="upload-key-modal" role="dialog" aria-modal="true"
+        aria-labelledby="upload-key-modal-title" aria-hidden="true">
+        <div class="key-modal__backdrop" id="upload-key-backdrop"></div>
+        <article class="key-modal__card">
+            <button type="button" class="key-modal__close" id="upload-key-close" aria-label="Đóng">&times;</button>
+            <h2 class="key-modal__title" id="upload-key-modal-title">Xác nhận upload</h2>
+            <p class="key-modal__note">Nhập mật khẩu tải ảnh/video</p>
+            <form class="key-form" id="upload-key-form">
+                <input type="password" id="upload-key-input" autocomplete="off" aria-label="Mật khẩu tải lên"
+                    placeholder="Mật khẩu tải lên">
+                <button type="submit" class="neu-btn--primary"><i class="fas fa-lock-open" aria-hidden="true"></i>
+                    Tiếp tục</button>
+                <p class="key-modal__error" id="upload-key-error" aria-live="polite"></p>
+            </form>
+        </article>
+    </div>
+
     <!-- Upload Modal -->
     <div class="upload-modal orbital-dialog" id="upload-modal" data-world="upload" role="dialog" aria-modal="true"
         aria-labelledby="upload-modal-title" aria-hidden="true">
@@ -863,7 +881,6 @@
 
             var GALLERY_API = 'https://timebox.trghy.workers.dev';
             var CLOUD_NAME = 'dtpw5htqs';
-            var UPLOAD_PRESET = 'Upload_img';
             var MAX_FILES = 10;
             var MAX_SIZE = 10 * 1024 * 1024; // 10MB cho ảnh
             var MAX_VIDEO_SIZE = 299 * 1024 * 1024; // 299MB cho video
@@ -872,9 +889,18 @@
             var uploading = false;
             var uploadController = null;
             var activeUploadScope = '';
-            var activeUploadPreset = UPLOAD_PRESET;
+            var activeUploadPassword = '';
+            var pendingUploadScope = '';
+            var uploadPasswordWaiters = [];
             var statusTimer = null;
             var previewUrls = [];
+            var uploadKeyModal = document.getElementById('upload-key-modal');
+            var uploadKeyBackdrop = document.getElementById('upload-key-backdrop');
+            var uploadKeyClose = document.getElementById('upload-key-close');
+            var uploadKeyForm = document.getElementById('upload-key-form');
+            var uploadKeySubmit = uploadKeyForm && uploadKeyForm.querySelector('button[type="submit"]');
+            var uploadKeyInput = document.getElementById('upload-key-input');
+            var uploadKeyError = document.getElementById('upload-key-error');
 
             function fetchWithTimeout(url, options, timeoutMs) {
                 if (!window.AbortController) return fetch(url, options);
@@ -900,12 +926,98 @@
                 previewUrls = [];
             }
 
-            function openModal(scope, uploadPreset) {
+            function clearUploadPassword() {
+                activeUploadPassword = '';
+                pendingUploadScope = '';
+                if (uploadKeyInput) uploadKeyInput.value = '';
+            }
+
+            function hideUploadPasswordModal() {
+                if (!uploadKeyModal) return;
+                uploadKeyModal.classList.remove('is-open');
+                uploadKeyModal.setAttribute('aria-hidden', 'true');
+                if (window.syncTimeboxModalState) window.syncTimeboxModalState();
+            }
+
+            function cancelUploadPassword() {
+                var waiters = uploadPasswordWaiters.splice(0);
+                waiters.forEach(function (waiter) {
+                    waiter.reject(new DOMException('Upload cancelled', 'AbortError'));
+                });
+                hideUploadPasswordModal();
+                clearUploadPassword();
+            }
+
+            function showUploadPasswordModal(scope) {
+                pendingUploadScope = scope || 'upload';
+                if (uploadKeyError) uploadKeyError.textContent = '';
+                if (uploadKeyInput) uploadKeyInput.value = '';
+                if (!uploadKeyModal) return;
+                document.body.classList.add('is-modal-open');
+                uploadKeyModal.classList.add('is-open');
+                uploadKeyModal.setAttribute('aria-hidden', 'false');
+                setTimeout(function () {
+                    if (uploadKeyInput) uploadKeyInput.focus();
+                }, 0);
+            }
+
+            function requestUpload(scope) {
+                showUploadPasswordModal(scope);
+            }
+
+            window.requestTimeboxUploadPassword = function () {
+                return new Promise(function (resolve, reject) {
+                    uploadPasswordWaiters.push({ resolve: resolve, reject: reject });
+                    showUploadPasswordModal('upload');
+                });
+            };
+            window.clearTimeboxUploadPassword = clearUploadPassword;
+
+            if (uploadKeyForm) uploadKeyForm.addEventListener('submit', function (event) {
+                event.preventDefault();
+                var password = String(uploadKeyInput && uploadKeyInput.value || '').trim();
+                if (!password) {
+                    if (uploadKeyError) uploadKeyError.textContent = 'Vui lòng nhập mật khẩu tải lên.';
+                    return;
+                }
+                activeUploadPassword = password;
+                var scope = pendingUploadScope || 'upload';
+                var waiters = uploadPasswordWaiters.splice(0);
+                hideUploadPasswordModal();
+                if (waiters.length) {
+                    waiters.forEach(function (waiter) { waiter.resolve(password); });
+                    clearUploadPassword();
+                } else {
+                    if (uploadKeySubmit) uploadKeySubmit.disabled = true;
+                    getUploadSignature(scope, false, 'image').then(function () {
+                        openModal(scope);
+                        pendingUploadScope = '';
+                    }).catch(function (error) {
+                        var message = error && error.code === 'RATE_LIMITED'
+                            ? 'Thử quá nhiều lần. Vui lòng đợi một lúc rồi thử lại.'
+                            : (error && error.code === 'UPLOAD_PASSWORD_INVALID'
+                            ? 'Mật khẩu tải lên không đúng.'
+                            : 'Không thể xác nhận upload lúc này.');
+                        if (uploadKeyError) uploadKeyError.textContent = message;
+                        clearUploadPassword();
+                        if (uploadKeyModal) {
+                            document.body.classList.add('is-modal-open');
+                            uploadKeyModal.classList.add('is-open');
+                            uploadKeyModal.setAttribute('aria-hidden', 'false');
+                        }
+                    }).finally(function () {
+                        if (uploadKeySubmit) uploadKeySubmit.disabled = false;
+                    });
+                }
+            });
+            if (uploadKeyClose) uploadKeyClose.addEventListener('click', cancelUploadPassword);
+            if (uploadKeyBackdrop) uploadKeyBackdrop.addEventListener('click', cancelUploadPassword);
+
+            function openModal(scope) {
                 activeUploadScope = scope || '';
-                activeUploadPreset = uploadPreset || UPLOAD_PRESET;
                 modal.setAttribute('data-world', activeUploadScope || 'upload');
                 setStatus('');
-                if (pinOptions) pinOptions.hidden = !activeUploadScope;
+                if (pinOptions) pinOptions.hidden = !activeUploadScope || activeUploadScope === 'upload';
                 Array.prototype.forEach.call(pinInputs, function (input) {
                     input.checked = input.value === 'normal';
                 });
@@ -1077,25 +1189,40 @@
 
             function isPinnedUpload() {
                 var checked = document.querySelector('input[name="upload-pin"]:checked');
-                return Boolean(activeUploadScope && checked && checked.value === 'pinned');
+                return Boolean(activeUploadScope && activeUploadScope !== 'upload' && checked && checked.value === 'pinned');
             }
 
             function getUploadSignature(scope, pinned, mediaType, signal) {
+                var allowedScopes = ['family', 'friends', 'keepsakes', 'cooking', 'campus', 'upload'];
+                if (allowedScopes.indexOf(scope) === -1 || ['image', 'video'].indexOf(mediaType) === -1) {
+                    return Promise.reject(new Error('Yêu cầu upload không hợp lệ'));
+                }
                 return fetchWithTimeout(GALLERY_API + '/gallery/upload-signature', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         scope: scope,
                         pinned: pinned === true,
-                        mediaType: mediaType || 'image'
+                        mediaType: mediaType || 'image',
+                        password: activeUploadPassword
                     }),
                     signal: signal
                 }, 30000).then(function (response) {
+                    if (response.status === 429) {
+                        var rateLimitError = new Error('Thử quá nhiều lần. Vui lòng đợi một lúc rồi thử lại.');
+                        rateLimitError.code = 'RATE_LIMITED';
+                        throw rateLimitError;
+                    }
                     return response.json().catch(function () {
-                        return { ok: false, message: 'Máy chủ trả dữ liệu không hợp lệ' };
+                        return { ok: false };
                     }).then(function (data) {
+                        if (response.status === 401) {
+                            var passwordError = new Error('Mật khẩu tải lên không đúng');
+                            passwordError.code = 'UPLOAD_PASSWORD_INVALID';
+                            throw passwordError;
+                        }
                         if (!response.ok || !data.ok) {
-                            throw new Error(data.message || 'Không thể cấp quyền upload');
+                            throw new Error('Không thể cấp quyền upload');
                         }
                         return data;
                     });
@@ -1106,40 +1233,24 @@
                 var file = item.file || item;
                 var mediaType = item.mediaType || (isSupportedVideoFile(file) ? 'video' : 'image');
                 var signed = signatures && signatures[mediaType];
+                if (!signed || !signed.apiKey || !signed.timestamp || !signed.signature || !signed.uploadUrl) {
+                    throw new Error('Không thể cấp quyền upload');
+                }
 
                 var fd = new FormData();
                 fd.append('file', file);
-                var uploadUrl;
-
-                if (signed) {
-                    fd.append('api_key', signed.apiKey);
-                    fd.append('timestamp', String(signed.timestamp));
-                    fd.append('signature', signed.signature);
-                    fd.append('asset_folder', signed.assetFolder);
-                    fd.append('tags', signed.tags);
-                    uploadUrl = signed.uploadUrl;
-                } else {
-                    fd.append('upload_preset', activeUploadPreset);
-                    if (mediaType === 'video') {
-                        var videoFolderMap = {
-                            'family': 'Upload video/video family',
-                            'keepsakes': 'Upload video/video middle school',
-                            'friends': 'Upload video/video Best frend',
-                            'campus': 'Upload video/video Student',
-                            'cooking': 'Upload video/video cooking'
-                        };
-                        var videoFolder = videoFolderMap[activeUploadScope] || 'video upload';
-                        fd.append('folder', videoFolder);
-                        fd.append('tags', videoFolder);
-                    }
-                    uploadUrl = 'https://api.cloudinary.com/v1_1/' + CLOUD_NAME + '/' + mediaType + '/upload';
-                }
+                fd.append('api_key', String(signed.apiKey));
+                fd.append('timestamp', String(signed.timestamp));
+                fd.append('signature', String(signed.signature));
+                if (signed.assetFolder) fd.append('asset_folder', String(signed.assetFolder));
+                if (signed.tags) fd.append('tags', String(signed.tags));
+                var uploadUrl = String(signed.uploadUrl);
 
                 return fetchWithTimeout(uploadUrl, {
                     method: 'POST', body: fd, signal: signal
                 }, 240000).then(function (r) { return r.json(); }).then(function (d) {
                     if (!d.secure_url) {
-                        throw new Error(d && d.error && d.error.message ? d.error.message : 'Upload thất bại');
+                        throw new Error('Upload thất bại');
                     }
                     return d.secure_url;
                 });
@@ -1170,22 +1281,30 @@
             /* open */
             window.addEventListener('timebox:navigate', function (event) {
                 var navigationId = event.detail && event.detail.id;
-                if (navigationId === 'upload') openModal('', 'Upload_img');
+                if (navigationId === 'upload') requestUpload('upload');
             });
-            if (familyDesktopBtn) familyDesktopBtn.addEventListener('click', function () { openModal('family'); });
-            if (familyMobileBtn) familyMobileBtn.addEventListener('click', function () { openModal('family'); });
-            if (keepsakesDesktopBtn) keepsakesDesktopBtn.addEventListener('click', function () { openModal('keepsakes'); });
-            if (keepsakesMobileBtn) keepsakesMobileBtn.addEventListener('click', function () { openModal('keepsakes'); });
-            if (friendsDesktopBtn) friendsDesktopBtn.addEventListener('click', function () { openModal('friends'); });
-            if (friendsMobileBtn) friendsMobileBtn.addEventListener('click', function () { openModal('friends'); });
-            if (cookingDesktopBtn) cookingDesktopBtn.addEventListener('click', function () { openModal('cooking'); });
-            if (cookingMobileBtn) cookingMobileBtn.addEventListener('click', function () { openModal('cooking'); });
-            if (campusDesktopBtn) campusDesktopBtn.addEventListener('click', function () { openModal('campus'); });
-            if (campusMobileBtn) campusMobileBtn.addEventListener('click', function () { openModal('campus'); });
+            if (familyDesktopBtn) familyDesktopBtn.addEventListener('click', function () { requestUpload('family'); });
+            if (familyMobileBtn) familyMobileBtn.addEventListener('click', function () { requestUpload('family'); });
+            if (keepsakesDesktopBtn) keepsakesDesktopBtn.addEventListener('click', function () { requestUpload('keepsakes'); });
+            if (keepsakesMobileBtn) keepsakesMobileBtn.addEventListener('click', function () { requestUpload('keepsakes'); });
+            if (friendsDesktopBtn) friendsDesktopBtn.addEventListener('click', function () { requestUpload('friends'); });
+            if (friendsMobileBtn) friendsMobileBtn.addEventListener('click', function () { requestUpload('friends'); });
+            if (cookingDesktopBtn) cookingDesktopBtn.addEventListener('click', function () { requestUpload('cooking'); });
+            if (cookingMobileBtn) cookingMobileBtn.addEventListener('click', function () { requestUpload('cooking'); });
+            if (campusDesktopBtn) campusDesktopBtn.addEventListener('click', function () { requestUpload('campus'); });
+            if (campusMobileBtn) campusMobileBtn.addEventListener('click', function () { requestUpload('campus'); });
             closeBtn.addEventListener('click', closeModal);
             backdrop.addEventListener('click', closeModal);
-            document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeModal(); });
-            window.addEventListener('pagehide', releasePreviewUrls);
+            document.addEventListener('keydown', function (e) {
+                if (e.key !== 'Escape') return;
+                if (uploadKeyModal && uploadKeyModal.classList.contains('is-open')) cancelUploadPassword();
+                else closeModal();
+            });
+            window.addEventListener('pagehide', function () {
+                releasePreviewUrls();
+                cancelUploadPassword();
+                clearUploadPassword();
+            });
 
             /* pick files */
             if (dropzoneImage) dropzoneImage.addEventListener('click', function () { fileInputImage.click(); });
@@ -1215,6 +1334,10 @@
             /* send */
             sendBtn.addEventListener('click', function () {
                 if (!selected.length || uploading) return;
+                if (!activeUploadScope) {
+                    setStatus('Hãy mở album đích trước khi gửi ảnh.');
+                    return;
+                }
                 var items = selected.slice();
                 var uploadScope = activeUploadScope;
                 var pinUpload = isPinnedUpload();
@@ -1278,9 +1401,14 @@
                 }).catch(function (error) {
                     selected = items;
                     renderPreview();
-                    var uploadError = error && error.name === 'AbortError'
+                    var uploadError = error && error.code === 'RATE_LIMITED'
+                        ? 'Thử quá nhiều lần. Vui lòng đợi một lúc rồi thử lại.'
+                        : (error && error.code === 'UPLOAD_PASSWORD_INVALID'
+                        ? 'Mật khẩu tải lên không đúng.'
+                        : (error && error.name === 'AbortError'
                         ? 'Kết nối quá lâu, vui lòng thử lại.'
-                        : (error.message || 'Gửi thất bại, thử lại nhé!');
+                        : 'Gửi thất bại, thử lại nhé!'));
+                    if (error && error.code === 'UPLOAD_PASSWORD_INVALID') clearUploadPassword();
                     setStatus(uploadError, 4000);
                 }).finally(function () {
                     clearTimeout(batchTimer);
@@ -1288,6 +1416,7 @@
                     uploading = false;
                     sendBtn.disabled = false;
                     closeBtn.disabled = false;
+                    if (!modal.classList.contains('is-open')) clearUploadPassword();
                 });
             });
         })();
@@ -1316,13 +1445,10 @@
                 try { sessionStorage.setItem(getUnlockStorageKey(url), '1'); } catch (e) { }
             }
 
-            var autoVerifyTimer = null;
-
             function openModal(card) {
                 authRequestId += 1;
                 if (authController) authController.abort();
                 authController = null;
-                clearTimeout(autoVerifyTimer);
                 targetHref = card ? card.getAttribute('data-locked-href') || '' : '';
                 targetErrorMsg = 'Mở vô hiệu';
                 if (input) input.setAttribute('placeholder', defaultPlaceholder);
@@ -1351,7 +1477,6 @@
                 authRequestId += 1;
                 if (authController) authController.abort();
                 authController = null;
-                clearTimeout(autoVerifyTimer);
                 if (input) input.blur();
                 if (window.prepareTimeboxDialogClose) window.prepareTimeboxDialogClose(modal);
                 modal.classList.remove('is-open');
@@ -1382,9 +1507,9 @@
                 if (authController) authController.abort();
                 authController = window.AbortController ? new AbortController() : null;
                 var action = modal._targetAction || '';
-                var scope = (action === 'friends' || action === 'campus' || /friends|campus/i.test(targetHref))
-                    ? 'friends'
-                    : 'family';
+                var scope = (action === 'family' || action === 'friends' || action === 'campus')
+                    ? action
+                    : (/friends/i.test(targetHref) ? 'friends' : 'family');
 
                 var submitBtn = form.querySelector('button[type="submit"]');
                 if (isExplicitSubmit && submitBtn) submitBtn.disabled = true;
@@ -1395,9 +1520,16 @@
                     body: JSON.stringify({ password: keyValue, scope: scope }),
                     signal: authController ? authController.signal : undefined
                 }).then(function (response) {
-                    return response.json().catch(function () { return { ok: false }; });
+                    return response.json().catch(function () { return { ok: false }; }).then(function (result) {
+                        return { ok: result.ok === true, status: response.status };
+                    });
                 }).then(function (result) {
                     if (requestId !== authRequestId || !modal.classList.contains('is-open')) return;
+                    if (result.status === 429) {
+                        error.textContent = 'Thử quá nhiều lần. Vui lòng đợi một lúc rồi thử lại.';
+                        if (input) input.select();
+                        return;
+                    }
                     if (result.ok) {
                         if (input) input.blur();
                         var unlockedHref = targetHref;
@@ -1437,31 +1569,14 @@
                 });
             }
 
-            function isMobileDevice() {
-                var userAgentMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile/i.test(navigator.userAgent || '');
-                var isTouchScreen = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
-                var isNarrowScreen = window.innerWidth <= 768;
-                return userAgentMobile || (isTouchScreen && isNarrowScreen);
-            }
-
             if (input) {
                 input.addEventListener('input', function () {
                     if (error) error.textContent = '';
-                    clearTimeout(autoVerifyTimer);
-                    if (isMobileDevice()) {
-                        var val = input.value.trim();
-                        if (val.length >= 3) {
-                            autoVerifyTimer = setTimeout(function () {
-                                verifyPassword(val, false);
-                            }, 180);
-                        }
-                    }
                 });
             }
 
             form.addEventListener('submit', function (e) {
                 e.preventDefault();
-                clearTimeout(autoVerifyTimer);
                 var keyValue = input.value.trim();
                 verifyPassword(keyValue, true);
             });

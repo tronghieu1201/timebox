@@ -4,6 +4,7 @@ import { transform } from 'esbuild';
 const html = await readFile('index.html', 'utf8');
 const lifeScript = await readFile('life.js', 'utf8');
 const serviceWorker = await readFile('sw.js', 'utf8');
+const workerScript = await readFile('worker/index.js', 'utf8');
 const themeScript = await readFile('theme.js', 'utf8');
 const baseStyles = await readFile('style.css', 'utf8');
 const lifeStyles = await readFile('life.css', 'utf8');
@@ -24,7 +25,8 @@ await Promise.all([
   ...inlineScripts,
   themeScript,
   lifeScript,
-  serviceWorker
+  serviceWorker,
+  workerScript
 ].map((source) => transform(source, { loader: 'js', logLevel: 'silent' })));
 
 if (duplicateHtmlIds.length) {

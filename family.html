@@ -87,8 +87,8 @@
     </script>
     <script>
         (function () {
+            var GALLERY_API = 'https://timebox.trghy.workers.dev';
             var CLOUD_NAME = 'dtpw5htqs';
-            var UPLOAD_PRESET = 'Upload_img';
             var MAX_FILES = 10;
             var MAX_SIZE_MB = 10;
             var MAX_SIZE = MAX_SIZE_MB * 1024 * 1024;
@@ -220,19 +220,56 @@
                 renderPreview();
             }
 
-            function uploadOne(file) {
+            function requestUploadPassword() {
+                var password = window.prompt('Nhập mật khẩu tải lên');
+                if (password) return Promise.resolve(password);
+                var cancelled = new Error('Upload cancelled');
+                cancelled.name = 'AbortError';
+                return Promise.reject(cancelled);
+            }
+
+            function getUploadSignature(password) {
+                return fetch(GALLERY_API + '/gallery/upload-signature', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ scope: 'family', pinned: false, mediaType: 'image', password: password })
+                }).then(function (response) {
+                    if (response.status === 429) {
+                        var rateLimitError = new Error('Thử quá nhiều lần. Vui lòng đợi một lúc rồi thử lại.');
+                        rateLimitError.code = 'RATE_LIMITED';
+                        throw rateLimitError;
+                    }
+                    return response.json().catch(function () { return { ok: false }; }).then(function (data) {
+                        if (response.status === 401) {
+                            var passwordError = new Error('Mật khẩu tải lên không đúng');
+                            passwordError.code = 'UPLOAD_PASSWORD_INVALID';
+                            throw passwordError;
+                        }
+                        if (!response.ok || !data.ok || !data.apiKey || !data.timestamp || !data.signature || !data.uploadUrl) {
+                            throw new Error('Không thể cấp quyền upload');
+                        }
+                        return data;
+                    });
+                });
+            }
+
+            function uploadOne(file, signed) {
                 var fd = new FormData();
                 fd.append('file', file);
-                fd.append('upload_preset', UPLOAD_PRESET);
-                return fetch('https://api.cloudinary.com/v1_1/' + CLOUD_NAME + '/image/upload', {
+                fd.append('api_key', String(signed.apiKey));
+                fd.append('timestamp', String(signed.timestamp));
+                fd.append('signature', String(signed.signature));
+                if (signed.assetFolder) fd.append('asset_folder', String(signed.assetFolder));
+                if (signed.tags) fd.append('tags', String(signed.tags));
+                return fetch(String(signed.uploadUrl), {
                     method: 'POST', body: fd
                 }).then(function (r) { return r.json(); }).then(function (d) {
-                    if (!d.secure_url) throw new Error('Upload failed');
+                    if (!d.secure_url) throw new Error('Upload thất bại');
                     return d.secure_url;
                 });
             }
 
-            function uploadFilesWithLimit(files) {
+            function uploadFilesWithLimit(files, signed) {
                 var results = new Array(files.length);
                 var nextIndex = 0;
 
@@ -240,7 +277,7 @@
                     var index = nextIndex;
                     nextIndex += 1;
                     if (index >= files.length) return Promise.resolve();
-                    return uploadOne(files[index]).then(function (value) {
+                    return uploadOne(files[index], signed).then(function (value) {
                         results[index] = { status: 'fulfilled', value: value };
                     }).catch(function (reason) {
                         results[index] = { status: 'rejected', reason: reason };
@@ -264,7 +301,11 @@
                 closeBtn.disabled = true;
                 setStatus('Đang gửi ' + toUpload.length + ' ảnh...');
 
-                uploadFilesWithLimit(toUpload).then(function (results) {
+                requestUploadPassword().then(function (password) {
+                    return getUploadSignature(password);
+                }).then(function (signed) {
+                    return uploadFilesWithLimit(toUpload, signed);
+                }).then(function (results) {
                     var ok = results.filter(function (r) { return r.status === 'fulfilled'; }).length;
                     var fail = results.length - ok;
                     selectedFiles = [];
@@ -278,6 +319,17 @@
                         renderPreview();
                         setStatus('Gửi thất bại, thử lại nhé!', 3000);
                     }
+                }).catch(function (error) {
+                    selectedFiles = toUpload;
+                    renderPreview();
+                    var message = error && error.code === 'RATE_LIMITED'
+                        ? 'Thử quá nhiều lần. Vui lòng đợi một lúc rồi thử lại.'
+                        : (error && error.code === 'UPLOAD_PASSWORD_INVALID'
+                        ? 'Mật khẩu tải lên không đúng.'
+                        : (error && error.name === 'AbortError'
+                        ? 'Đã hủy upload.'
+                        : 'Gửi thất bại, thử lại nhé!'));
+                    setStatus(message, 3000);
                 }).finally(function () {
                     isUploading = false;
                     sendBtn.disabled = false;

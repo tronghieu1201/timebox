@@ -1061,6 +1061,17 @@
         });
     }
 
+    function requestGalleryActionPassword() {
+        if (typeof window.requestTimeboxUploadPassword === 'function') {
+            return window.requestTimeboxUploadPassword();
+        }
+        var password = window.prompt('Nhập mật khẩu tải lên');
+        if (password) return Promise.resolve(password);
+        var cancelled = new Error('Upload cancelled');
+        cancelled.name = 'AbortError';
+        return Promise.reject(cancelled);
+    }
+
     function closeUnpinDialog() {
         if (!unpinDialog || !unpinDialog.classList.contains('is-open')) return;
         prepareDialogClose(unpinDialog);
@@ -1098,14 +1109,18 @@
             unpinButton.disabled = true;
             closeButton.disabled = true;
             status.textContent = mode === 'pin' ? 'Đang ghim ảnh...' : 'Đang bỏ ghim...';
-            fetchGalleryActionWithTimeout(mode === 'pin' ? GALLERY_PIN_API : GALLERY_UNPIN_API, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ scope: photo.scope, publicId: photo.publicId })
-            }, 30000).then(function (response) {
+            requestGalleryActionPassword().then(function (password) {
+                return fetchGalleryActionWithTimeout(mode === 'pin' ? GALLERY_PIN_API : GALLERY_UNPIN_API, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ scope: photo.scope, publicId: photo.publicId, password: password })
+                }, 30000);
+            }).then(function (response) {
                 return response.json().catch(function () { return {}; }).then(function (data) {
                     if (!response.ok || !data.ok) {
-                        throw new Error(data.message || (mode === 'pin' ? 'Không thể ghim ảnh' : 'Không thể bỏ ghim'));
+                        var error = new Error(data.message || (mode === 'pin' ? 'Không thể ghim ảnh' : 'Không thể bỏ ghim'));
+                        error.status = response.status;
+                        throw error;
                     }
                 });
             }).then(function () {
@@ -1142,12 +1157,22 @@
                     window.showTimeboxToast(mode === 'pin' ? 'Đã ghim ảnh' : 'Đã bỏ ghim ảnh');
                 }
             }).catch(function (error) {
+                if (window.clearTimeboxUploadPassword) window.clearTimeboxUploadPassword();
                 if (error && error.name === 'AbortError') {
                     status.textContent = 'Kết nối quá lâu, vui lòng thử lại.';
                     return;
                 }
-                status.textContent = error.message || (mode === 'pin' ? 'Không thể ghim ảnh' : 'Không thể bỏ ghim');
+                if (error && error.status === 429) {
+                    status.textContent = 'Thử quá nhiều lần. Vui lòng đợi một lúc rồi thử lại.';
+                    return;
+                }
+                if (error && error.status === 401) {
+                    status.textContent = 'Mật khẩu tải lên không đúng.';
+                    return;
+                }
+                status.textContent = mode === 'pin' ? 'Không thể ghim ảnh' : 'Không thể bỏ ghim';
             }).finally(function () {
+                if (window.clearTimeboxUploadPassword) window.clearTimeboxUploadPassword();
                 unpinButton.disabled = false;
                 closeButton.disabled = false;
             });

@@ -30,8 +30,8 @@
     var thoughtsConfirmModal = null;
     var thoughtsConfirmCloseTimer = null;
     var JOIN_STORAGE_KEY = 'life-join-submissions';
+    var MOMENTS_UPLOAD_API = 'https://timebox.trghy.workers.dev';
     var MOMENTS_UPLOAD_CLOUD_NAME = 'dtpw5htqs';
-    var MOMENTS_UPLOAD_PRESET = 'Upload_img';
     var MOMENTS_MAX_FILES = 10;
     var MOMENTS_MAX_SIZE_MB = 10;
     var MOMENTS_MAX_SIZE = MOMENTS_MAX_SIZE_MB * 1024 * 1024;
@@ -310,24 +310,70 @@
         });
     }
 
-    function uploadMomentToCloudinary(file, signal) {
+    function requestMomentUploadPassword() {
+        if (typeof window.requestTimeboxUploadPassword === 'function') {
+            return window.requestTimeboxUploadPassword();
+        }
+        var password = window.prompt('Nhập mật khẩu tải lên');
+        if (password) return Promise.resolve(password);
+        var cancelled = new Error('Upload cancelled');
+        cancelled.name = 'AbortError';
+        return Promise.reject(cancelled);
+    }
+
+    function getMomentUploadSignature(password, signal) {
+        return fetchMomentWithTimeout(MOMENTS_UPLOAD_API + '/gallery/upload-signature', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                scope: 'upload',
+                pinned: false,
+                mediaType: 'image',
+                password: password
+            }),
+            signal: signal
+        }, 30000).then(function (response) {
+            if (response.status === 429) {
+                var rateLimitError = new Error('Thử quá nhiều lần. Vui lòng đợi một lúc rồi thử lại.');
+                rateLimitError.code = 'RATE_LIMITED';
+                throw rateLimitError;
+            }
+            return response.json().catch(function () { return { ok: false }; }).then(function (data) {
+                if (response.status === 401) {
+                    var passwordError = new Error('Mật khẩu tải lên không đúng');
+                    passwordError.code = 'UPLOAD_PASSWORD_INVALID';
+                    throw passwordError;
+                }
+                if (!response.ok || !data.ok || !data.apiKey || !data.timestamp || !data.signature || !data.uploadUrl) {
+                    throw new Error('Không thể cấp quyền upload');
+                }
+                return data;
+            });
+        });
+    }
+
+    function uploadMomentToCloudinary(file, signed, signal) {
         var formData = new FormData();
         formData.append('file', file);
-        formData.append('upload_preset', MOMENTS_UPLOAD_PRESET);
+        formData.append('api_key', String(signed.apiKey));
+        formData.append('timestamp', String(signed.timestamp));
+        formData.append('signature', String(signed.signature));
+        if (signed.assetFolder) formData.append('asset_folder', String(signed.assetFolder));
+        if (signed.tags) formData.append('tags', String(signed.tags));
 
-        return fetchMomentWithTimeout('https://api.cloudinary.com/v1_1/' + MOMENTS_UPLOAD_CLOUD_NAME + '/image/upload', {
+        return fetchMomentWithTimeout(String(signed.uploadUrl), {
             method: 'POST',
             body: formData,
             signal: signal
         }, 90000).then(function (response) {
             return response.json();
         }).then(function (data) {
-            if (!data.secure_url) throw new Error('Upload failed');
+            if (!data.secure_url) throw new Error('Upload thất bại');
             return data.secure_url;
         });
     }
 
-    function uploadMomentsWithLimit(files, signal) {
+    function uploadMomentsWithLimit(files, signed, signal) {
         var results = new Array(files.length);
         var nextIndex = 0;
 
@@ -336,7 +382,7 @@
             nextIndex += 1;
             if (index >= files.length) return Promise.resolve();
 
-            return uploadMomentToCloudinary(files[index], signal).then(function (value) {
+            return uploadMomentToCloudinary(files[index], signed, signal).then(function (value) {
                 results[index] = { status: 'fulfilled', value: value };
             }).catch(function (reason) {
                 results[index] = { status: 'rejected', reason: reason };
@@ -557,7 +603,12 @@
 
             setMomentsStatus('Đang gửi ' + filesToUpload.length + ' ảnh...');
 
-            uploadMomentsWithLimit(filesToUpload, momentsUploadController ? momentsUploadController.signal : undefined).then(function (results) {
+            var uploadSignal = momentsUploadController ? momentsUploadController.signal : undefined;
+            requestMomentUploadPassword().then(function (password) {
+                return getMomentUploadSignature(password, uploadSignal);
+            }).then(function (signed) {
+                return uploadMomentsWithLimit(filesToUpload, signed, uploadSignal);
+            }).then(function (results) {
                 var succeeded = results.filter(function (r) { return r.status === 'fulfilled'; }).length;
                 var failed = results.length - succeeded;
 
@@ -581,8 +632,16 @@
                 selectedMomentsFiles = filesToUpload;
                 if (momentsUploadWidget) momentsUploadWidget.hidden = false;
                 renderMomentsPreview();
-                setMomentsStatus('Có lỗi khi gửi ảnh, thử lại nhé!', 3000);
+                var message = error && error.code === 'RATE_LIMITED'
+                    ? 'Thử quá nhiều lần. Vui lòng đợi một lúc rồi thử lại.'
+                    : (error && error.code === 'UPLOAD_PASSWORD_INVALID'
+                    ? 'Mật khẩu tải lên không đúng.'
+                    : (error && error.name === 'AbortError'
+                    ? 'Đã hủy upload.'
+                    : 'Có lỗi khi gửi ảnh, thử lại nhé!'));
+                setMomentsStatus(message, 3000);
             }).finally(function () {
+                if (window.clearTimeboxUploadPassword) window.clearTimeboxUploadPassword();
                 clearTimeout(batchTimer);
                 momentsUploadController = null;
                 momentsUploading = false;
