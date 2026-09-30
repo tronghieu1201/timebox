@@ -7,6 +7,8 @@ Required Worker secrets:
 - `FAMILY_PASSWORD`
 - `FRIENDS_PASSWORD`
 - `UPLOAD_PASSWORD`
+- `ADMIN_USERNAME`
+- `ADMIN_PASSWORD`
 - `CLOUDINARY_API_SECRET`
 
 Required non-secret variables:
@@ -18,7 +20,9 @@ Required KV binding:
 
 - `VERIFY_RATE_LIMIT_KV`
 
-The same KV binding stores short-lived failure counters for `/verify`, `/gallery/upload-signature`, `/gallery/pin`, and `/gallery/unpin`. The key uses Cloudflare's `CF-Connecting-IP` value and does not include scope, so changing scope cannot bypass the limit.
+The same KV binding stores short-lived counters for `/verify`, admin login, and protected upload mutations. The key uses Cloudflare's `CF-Connecting-IP` value and does not include scope, so changing scope cannot bypass the limit. Every new upload signature requires either `UPLOAD_PASSWORD` or a valid admin session token; the `upload` contribution scope cannot request a pinned upload.
+
+The hidden admin form uses `/admin/verify`, which accepts only `username` and `password` and compares both values against the `ADMIN_USERNAME` and `ADMIN_PASSWORD` Worker secrets. It has its own IP-based rate-limit bucket and returns only a short-lived, HMAC-signed admin session token. The token is required for gallery pin/unpin/delete actions and can replace the upload password for admin uploads. The existing `/verify` route remains the section-password route and still accepts only `password` and a whitelisted `scope`.
 
 For compatibility with the current site, the whitelisted `campus` verify scope intentionally uses `FRIENDS_PASSWORD`; it is not a client-controlled environment-variable lookup. A separate `CAMPUS_PASSWORD` can be introduced later by changing the explicit Worker map and creating that secret.
 

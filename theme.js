@@ -27,9 +27,10 @@
         '.key-modal',
         '.upload-modal',
         '.thoughts-confirm',
-        '.pin-action-modal'
+        '.pin-action-modal',
+        '.cooking-notice'
     ].join(', ');
-    var dialogCloseSelector = '.pin-action-modal__close, .thoughts-confirm__decline, .upload-modal__close, .key-modal__close, .join-modal__close, .gallery-panel__close, .photo-lightbox__close, .profile-modal__close, .lightbox__close';
+    var dialogCloseSelector = '.pin-action-modal__close, .thoughts-confirm__decline, .upload-modal__close, .key-modal__close, .join-modal__close, .gallery-panel__close, .photo-lightbox__close, .profile-modal__close, .lightbox__close, .cooking-notice__close';
     var dialogOpenState = new WeakMap();
     var dialogReturnFocus = new WeakMap();
 
@@ -501,6 +502,7 @@
         : [];
     var photoLightboxReleaseTimer = null;
     var photoLightboxPinAction = null;
+    var photoLightboxDeleteAction = null;
     var photoLightboxZoom = { scale: 1, x: 0, y: 0 };
     var photoLightboxTouch = null;
     var PHOTO_LIGHTBOX_MAX_ZOOM = 4;
@@ -807,6 +809,20 @@
                     isPhotoPinned(gallery, photo) ? 'unpin' : 'pin'
                 );
             });
+
+            photoLightboxDeleteAction = document.createElement('button');
+            photoLightboxDeleteAction.type = 'button';
+            photoLightboxDeleteAction.className = 'photo-lightbox__delete-action';
+            photoLightboxDeleteAction.hidden = true;
+            photoLightboxDeleteAction.innerHTML = '<i class="fas fa-trash" aria-hidden="true"></i>';
+            photoLightboxDeleteAction.addEventListener('click', function (e) {
+                if (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+                deletePhotoFromCloudinary(photoLightbox._activeGallery, photoLightbox._activePhoto);
+            });
+            photoLightboxContent.appendChild(photoLightboxDeleteAction);
         }
     }
 
@@ -903,6 +919,7 @@
         if (lightboxWorld) photoLightbox.setAttribute('data-world', lightboxWorld);
         else photoLightbox.removeAttribute('data-world');
         updatePhotoLightboxPinAction();
+        updatePhotoLightboxDeleteAction();
         document.body.classList.add('is-modal-open');
         photoLightbox.classList.add('is-open');
         photoLightbox.setAttribute('aria-hidden', 'false');
@@ -921,6 +938,7 @@
         photoLightbox._activePhoto = null;
         photoLightbox.removeAttribute('data-world');
         if (photoLightboxPinAction) photoLightboxPinAction.hidden = true;
+        if (photoLightboxDeleteAction) photoLightboxDeleteAction.hidden = true;
         photoLightboxImg.dataset.requestId = '';
 
         var stage = document.getElementById('photo-lightbox-stage') || photoLightbox.querySelector('.photo-lightbox__content');
@@ -1009,6 +1027,11 @@
 
     function updatePhotoLightboxPinAction() {
         if (!photoLightboxPinAction || !photoLightbox) return;
+        var isAdmin = window._isTimeboxAdmin && window._isTimeboxAdmin();
+        if (!isAdmin) {
+            photoLightboxPinAction.hidden = true;
+            return;
+        }
         var gallery = photoLightbox._activeGallery;
         var photo = photoLightbox._activePhoto;
         var publicId = photo && (photo.publicId || getCloudinaryPublicId(photo.src));
@@ -1028,6 +1051,20 @@
             'aria-label',
             pinned ? 'Mở tùy chọn bỏ ghim ảnh' : 'Mở tùy chọn ghim ảnh'
         );
+    }
+
+    function updatePhotoLightboxDeleteAction() {
+        if (!photoLightboxDeleteAction || !photoLightbox) return;
+        var gallery = photoLightbox._activeGallery;
+        var photo = photoLightbox._activePhoto;
+        var publicId = photo && (photo.publicId || getCloudinaryPublicId(photo.src));
+        var scope = gallery && gallery.getAttribute('data-live-scope');
+        var isAdmin = window._isTimeboxAdmin && window._isTimeboxAdmin();
+        photoLightboxDeleteAction.hidden = !(isAdmin && gallery && photo && scope && publicId);
+        if (photoLightboxDeleteAction.hidden) return;
+        photo.publicId = publicId;
+        photo.scope = scope;
+        photoLightboxDeleteAction.setAttribute('aria-label', 'Xóa ảnh');
     }
 
     function getPinnedPhotoUrls(gallery) {
@@ -1050,7 +1087,9 @@
 
     var GALLERY_PIN_API = 'https://timebox.trghy.workers.dev/gallery/pin';
     var GALLERY_UNPIN_API = 'https://timebox.trghy.workers.dev/gallery/unpin';
+    var GALLERY_DELETE_API = 'https://timebox.trghy.workers.dev/gallery/delete';
     var unpinDialog = null;
+    var deleteConfirmDialog = null;
 
     function fetchGalleryActionWithTimeout(url, options, timeoutMs) {
         if (!window.AbortController) return fetch(url, options);
@@ -1062,6 +1101,9 @@
     }
 
     function requestGalleryActionPassword() {
+        if (window._isTimeboxAdmin && window._isTimeboxAdmin()) {
+            return Promise.resolve('');
+        }
         if (typeof window.requestTimeboxUploadPassword === 'function') {
             return window.requestTimeboxUploadPassword();
         }
@@ -1110,10 +1152,15 @@
             closeButton.disabled = true;
             status.textContent = mode === 'pin' ? 'Đang ghim ảnh...' : 'Đang bỏ ghim...';
             requestGalleryActionPassword().then(function (password) {
+                var adminHeaders = window._getTimeboxAdminHeaders
+                    ? window._getTimeboxAdminHeaders()
+                    : {};
+                var actionBody = { scope: photo.scope, publicId: photo.publicId };
+                if (password) actionBody.password = password;
                 return fetchGalleryActionWithTimeout(mode === 'pin' ? GALLERY_PIN_API : GALLERY_UNPIN_API, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ scope: photo.scope, publicId: photo.publicId, password: password })
+                    headers: Object.assign({ 'Content-Type': 'application/json' }, adminHeaders),
+                    body: JSON.stringify(actionBody)
                 }, 30000);
             }).then(function (response) {
                 return response.json().catch(function () { return {}; }).then(function (data) {
@@ -1180,7 +1227,120 @@
         return unpinDialog;
     }
 
+    function closeDeleteConfirmDialog() {
+        if (!deleteConfirmDialog || !deleteConfirmDialog.classList.contains('is-open')) return;
+        prepareDialogClose(deleteConfirmDialog);
+        deleteConfirmDialog.classList.remove('is-open');
+        deleteConfirmDialog.setAttribute('aria-hidden', 'true');
+        syncModalState();
+        deleteConfirmDialog._gallery = null;
+        deleteConfirmDialog._photo = null;
+    }
+
+    function ensureDeleteConfirmDialog() {
+        if (deleteConfirmDialog) return deleteConfirmDialog;
+        deleteConfirmDialog = document.createElement('div');
+        deleteConfirmDialog.className = 'pin-action-modal';
+        deleteConfirmDialog.setAttribute('aria-hidden', 'true');
+        deleteConfirmDialog.innerHTML =
+            '<div class="pin-action-modal__backdrop"></div>' +
+            '<div class="pin-action-modal__card" role="dialog" aria-modal="true" aria-label="Xác nhận xóa ảnh">' +
+                '<h2 class="pin-action-modal__title">Xóa ảnh?</h2>' +
+                '<p class="pin-action-modal__message">Ảnh sẽ bị xóa khỏi Cloudinary.</p>' +
+                '<button type="button" class="pin-action-modal__unpin pin-action-modal__delete-confirm"><i class="fas fa-trash" aria-hidden="true"></i> Xóa ảnh</button>' +
+                '<button type="button" class="pin-action-modal__close">Hủy</button>' +
+                '<p class="pin-action-modal__status" aria-live="polite"></p>' +
+            '</div>';
+        document.body.appendChild(deleteConfirmDialog);
+
+        var confirmButton = deleteConfirmDialog.querySelector('.pin-action-modal__delete-confirm');
+        var closeButton = deleteConfirmDialog.querySelector('.pin-action-modal__close');
+        deleteConfirmDialog.querySelector('.pin-action-modal__backdrop').addEventListener('click', closeDeleteConfirmDialog);
+        closeButton.addEventListener('click', closeDeleteConfirmDialog);
+        confirmButton.addEventListener('click', function () {
+            var gallery = deleteConfirmDialog._gallery;
+            var photo = deleteConfirmDialog._photo;
+            if (!gallery || !photo) return;
+            deletePhotoFromCloudinary(gallery, photo, true);
+        });
+        return deleteConfirmDialog;
+    }
+
+    function deletePhotoFromCloudinary(gallery, photo, confirmed) {
+        if (!gallery || !photo || !photo.publicId || !photo.scope) return;
+        if (!(window._isTimeboxAdmin && window._isTimeboxAdmin())) return;
+        if (!confirmed) {
+            var confirmation = ensureDeleteConfirmDialog();
+            confirmation._gallery = gallery;
+            confirmation._photo = photo;
+            confirmation.querySelector('.pin-action-modal__status').textContent = '';
+            confirmation.classList.add('is-open');
+            confirmation.setAttribute('aria-hidden', 'false');
+            syncModalState();
+            confirmation.querySelector('.pin-action-modal__delete-confirm').focus({ preventScroll: true });
+            return;
+        }
+
+        var adminHeaders = window._getTimeboxAdminHeaders
+            ? window._getTimeboxAdminHeaders()
+            : {};
+        var resourceType = photo.isVideo === true ? 'video' : 'image';
+        var confirmationDialog = ensureDeleteConfirmDialog();
+        var confirmButton = confirmationDialog.querySelector('.pin-action-modal__delete-confirm');
+        var closeButton = confirmationDialog.querySelector('.pin-action-modal__close');
+        var status = confirmationDialog.querySelector('.pin-action-modal__status');
+        if (confirmButton) confirmButton.disabled = true;
+        if (closeButton) closeButton.disabled = true;
+        if (status) status.textContent = 'Đang xóa ảnh...';
+
+        fetchGalleryActionWithTimeout(GALLERY_DELETE_API, {
+            method: 'POST',
+            headers: Object.assign({ 'Content-Type': 'application/json' }, adminHeaders),
+            body: JSON.stringify({
+                scope: photo.scope,
+                publicId: photo.publicId,
+                resourceType: resourceType
+            })
+        }, 30000).then(function (response) {
+            return response.json().catch(function () { return {}; }).then(function (data) {
+                if (!response.ok || !data.ok) {
+                    var error = new Error(data.message || 'Không thể xóa ảnh');
+                    error.status = response.status;
+                    throw error;
+                }
+            });
+        }).then(function () {
+            var deletedId = photo.publicId;
+            gallery._photos = (gallery._photos || []).filter(function (item) {
+                return (item.publicId || getCloudinaryPublicId(item.src)) !== deletedId;
+            });
+            gallery._pinnedPublicIds = (gallery._pinnedPublicIds || []).filter(function (id) {
+                return id !== deletedId;
+            });
+            gallery._unpinnedPublicIds = (gallery._unpinnedPublicIds || []).filter(function (id) {
+                return id !== deletedId;
+            });
+            closeDeleteConfirmDialog();
+            closePhotoLightbox();
+            renderPhotoGallery(gallery, gallery._photos.slice(), gallery._currentPage || 1);
+            if (window.showTimeboxToast) window.showTimeboxToast('Đã xóa ảnh');
+        }).catch(function (error) {
+            if (error && error.status === 401) {
+                closeDeleteConfirmDialog();
+                if (window._clearTimeboxAdminSession) window._clearTimeboxAdminSession();
+                updatePhotoLightboxDeleteAction();
+                if (window.showTimeboxToast) window.showTimeboxToast('Phiên quản trị đã hết hạn');
+                return;
+            }
+            if (status) status.textContent = 'Không thể xóa ảnh. Vui lòng thử lại.';
+        }).finally(function () {
+            if (confirmButton) confirmButton.disabled = false;
+            if (closeButton) closeButton.disabled = false;
+        });
+    }
+
     function openPinActionDialog(gallery, photo, mode) {
+        if (!(window._isTimeboxAdmin && window._isTimeboxAdmin())) return;
         var dialog = ensureUnpinDialog();
         dialog._gallery = gallery;
         dialog._photo = photo;
@@ -1236,6 +1396,7 @@
         if (fullSrcset && !isVid) {
             card.setAttribute('data-full-srcset', fullSrcset);
         }
+        var canManagePins = window._isTimeboxAdmin && window._isTimeboxAdmin();
         if (isPinned) {
             card.classList.add('photo-card--pinned');
         }
@@ -1278,21 +1439,28 @@
 
         card.appendChild(openButton);
         if (isPinned) {
-            var pinBadge = document.createElement('button');
+            var pinBadge = document.createElement(canManagePins ? 'button' : 'span');
             pinBadge.type = 'button';
             pinBadge.className = 'photo-card__pin';
             pinBadge.innerHTML = '<i class="fas fa-thumbtack" aria-hidden="true"></i>';
-            pinBadge.setAttribute('aria-label', 'Tùy chọn ảnh ghim');
-            function activatePinMenu(event) {
-                event.preventDefault();
-                event.stopPropagation();
-                if (!scope || !publicId) return;
-                photo = photo || {};
-                photo.publicId = publicId;
-                photo.scope = scope;
-                openUnpinDialog(gallery, photo);
+            if (canManagePins) {
+                pinBadge.setAttribute('aria-label', 'Tùy chọn ảnh ghim');
+                function activatePinMenu(event) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    if (!scope || !publicId) return;
+                    photo = photo || {};
+                    photo.publicId = publicId;
+                    photo.scope = scope;
+                    openUnpinDialog(gallery, photo);
+                }
+                pinBadge.addEventListener('click', activatePinMenu);
+            } else {
+                pinBadge.classList.add('photo-card__pin--indicator');
+                pinBadge.setAttribute('role', 'img');
+                pinBadge.setAttribute('aria-label', 'Ảnh đã được admin ghim');
+                pinBadge.setAttribute('title', 'Ảnh đã được admin ghim');
             }
-            pinBadge.addEventListener('click', activatePinMenu);
             card.appendChild(pinBadge);
         }
         openButton.addEventListener('click', function () {
@@ -1907,7 +2075,7 @@
 
     if (photoLightbox) {
         photoLightbox.addEventListener('click', function (e) {
-            if (e.target.closest('#photo-lightbox-stage, .photo-lightbox__stage, #photo-lightbox-caption, .photo-lightbox__caption, #photo-lightbox-close, .photo-lightbox__close, .photo-lightbox__pin-action, .pin-action-modal')) {
+            if (e.target.closest('#photo-lightbox-stage, .photo-lightbox__stage, #photo-lightbox-caption, .photo-lightbox__caption, #photo-lightbox-close, .photo-lightbox__close, .photo-lightbox__pin-action, .photo-lightbox__delete-action, .pin-action-modal')) {
                 return;
             }
             closePhotoLightbox();
@@ -1930,17 +2098,17 @@
     var photoTouchStage = photoLightboxStage || (photoLightbox && photoLightbox.querySelector('.photo-lightbox__content')) || photoLightbox;
     if (photoTouchStage) {
         photoTouchStage.addEventListener('touchstart', function (event) {
-            if (event.target.closest('#photo-lightbox-close, .photo-lightbox__close, .photo-lightbox__pin-action')) return;
+            if (event.target.closest('#photo-lightbox-close, .photo-lightbox__close, .photo-lightbox__pin-action, .photo-lightbox__delete-action')) return;
             beginPhotoLightboxTouch(event.touches);
         }, { passive: false });
         photoTouchStage.addEventListener('touchmove', function (event) {
-            if (event.target.closest('#photo-lightbox-close, .photo-lightbox__close, .photo-lightbox__pin-action')) return;
+            if (event.target.closest('#photo-lightbox-close, .photo-lightbox__close, .photo-lightbox__pin-action, .photo-lightbox__delete-action')) return;
             if (photoLightboxTouch) {
                 movePhotoLightboxTouch(event.touches);
             }
         }, { passive: false });
         photoTouchStage.addEventListener('touchend', function (event) {
-            if (event.target.closest('#photo-lightbox-close, .photo-lightbox__close, .photo-lightbox__pin-action')) return;
+            if (event.target.closest('#photo-lightbox-close, .photo-lightbox__close, .photo-lightbox__pin-action, .photo-lightbox__delete-action')) return;
             if (event.touches.length) {
                 beginPhotoLightboxTouch(event.touches);
             } else {

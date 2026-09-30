@@ -1,5 +1,8 @@
 // life.js – Gallery logic for "Góc cá nhân" page
 (function () {
+    if (window.__timeboxLifeInitialized) return;
+    window.__timeboxLifeInitialized = true;
+
     var overlay = document.getElementById('gallery-overlay');
     var titleEl = document.getElementById('gallery-title');
     var gridEl = document.getElementById('gallery-grid');
@@ -163,17 +166,11 @@
             gridEl.appendChild(btn);
         });
 
-        // Mở sẵn 1 câu nói ngay khi vào
-        var initialIndex = 0;
         try {
-            var saved = localStorage.getItem(THOUGHTS_STORAGE_KEY);
-            if (saved !== null && !isNaN(Number(saved))) {
-                initialIndex = Number(saved);
-            }
+            localStorage.removeItem(THOUGHTS_STORAGE_KEY);
         } catch (e) {
-            initialIndex = 0;
+            // Ignore storage failures; the user can still open any box.
         }
-        setThoughtQuote(initialIndex);
     }
 
     function openGallery(categoryKey) {

@@ -31,9 +31,9 @@
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
     <link rel="stylesheet" href="style.css?v=64">
-    <link rel="stylesheet" href="life.css?v=64">
-    <link rel="stylesheet" href="space-navigation.css?v=64">
-    <link rel="stylesheet" href="orbital-archive.css?v=64">
+    <link rel="stylesheet" href="life.css?v=65">
+    <link rel="stylesheet" href="space-navigation.css?v=65">
+    <link rel="stylesheet" href="orbital-archive.css?v=66">
 </head>
 
 <body class="timebox-cinematic space-nav-home-visible" data-space-view="home">
@@ -115,7 +115,11 @@
                         <button type="button" class="neu-hub-title-btn" id="profile-info-open" aria-label="Xem thông tin">trghy</button>
                     </h1>
                     <p class="neu-hub-subtitle">
-                        <a href="https://tronghieu1201.github.io/bio_itme/" target="_blank" rel="noopener noreferrer" class="neu-hub-subtitle-link" aria-label="Trọng Hiếu – Bio">It's me</a>
+                        <a href="https://tronghieu1201.github.io/bio_itme/" target="_blank" rel="noopener noreferrer" class="neu-hub-subtitle-link" aria-label="Trọng Hiếu – Bio">Ờ Bao Mi</a>
+                        <button type="button" class="admin-logout-button" id="admin-logout" hidden
+                            aria-label="Đăng xuất" title="Đăng xuất">
+                            <i class="fas fa-right-from-bracket" aria-hidden="true"></i>
+                        </button>
                     </p>
                 </header>
 
@@ -187,14 +191,14 @@
                             </div>
                         </button>
 
-                        <!-- 7. Đóng góp ký ức -->
+                        <!-- 7. Test -->
                         <button type="button" class="neu-card-item space-navigation__fallback-btn"
                             data-space-action="upload">
                             <div class="neu-card-icon">
                                 <i class="fas fa-cloud-arrow-up" aria-hidden="true"></i>
                             </div>
                             <div class="neu-card-content">
-                                <h2 class="neu-card-title">Đóng góp ký ức</h2>
+                                <h2 class="neu-card-title">Test</h2>
                             </div>
                         </button>
 
@@ -229,8 +233,8 @@
                                     aria-hidden="true"></i></button>
                             <button type="button" class="space-dock-btn" data-space-action="cooking" aria-label="Cơm sinh viên"
                                 title="Cơm sinh viên"><i class="fas fa-utensils" aria-hidden="true"></i></button>
-                            <button type="button" class="space-dock-btn" data-space-action="upload" aria-label="Đóng góp ký ức"
-                                title="Đóng góp ký ức"><i class="fas fa-cloud-arrow-up" aria-hidden="true"></i></button>
+                            <button type="button" class="space-dock-btn" data-space-action="upload" aria-label="Test"
+                                title="Test"><i class="fas fa-cloud-arrow-up" aria-hidden="true"></i></button>
                             <button type="button" class="space-dock-btn" data-space-action="feedback"
                                 aria-label="Feedback" title="Feedback"><i class="fas fa-comment-dots"
                                     aria-hidden="true"></i></button>
@@ -480,13 +484,34 @@
         <article class="profile-modal__card">
             <button type="button" class="profile-modal__close" id="profile-info-close" aria-label="Đóng">&times;</button>
             <div class="profile-modal__header">
-                <h2 class="profile-modal__title" id="profile-info-title">Thông tin</h2>
+                <button type="button" class="profile-modal__title profile-modal__notice-trigger"
+                    id="profile-notice-login">Thông báo</button>
             </div>
             <div class="profile-modal__content">
                 <div class="profile-modal__info-box">
                     Cát Minh - Phù Cát - Bình Định
                 </div>
             </div>
+        </article>
+    </div>
+
+    <!-- Hidden Login Modal -->
+    <div class="key-modal orbital-dialog" id="notice-login-modal" role="dialog" aria-modal="true"
+        aria-labelledby="notice-login-title" aria-hidden="true">
+        <div class="key-modal__backdrop" id="notice-login-backdrop"></div>
+        <article class="key-modal__card">
+            <button type="button" class="key-modal__close" id="notice-login-close" aria-label="Đóng">&times;</button>
+            <h2 class="key-modal__title" id="notice-login-title">Đăng nhập</h2>
+            <p class="key-modal__note">Nhập tên đăng nhập và mật khẩu</p>
+            <form class="key-form" id="notice-login-form">
+                <input type="text" id="notice-login-username" autocomplete="username" aria-label="Tên đăng nhập"
+                    placeholder="Tên đăng nhập">
+                <input type="password" id="notice-login-password" autocomplete="current-password"
+                    aria-label="Mật khẩu" placeholder="Mật khẩu">
+                <button type="submit" class="neu-btn--primary"><i class="fas fa-right-to-bracket"
+                        aria-hidden="true"></i> Đăng nhập</button>
+                <p class="key-modal__error" id="notice-login-error" aria-live="polite"></p>
+            </form>
         </article>
     </div>
 
@@ -584,8 +609,22 @@
     <!-- Toast notification -->
     <div class="toast" id="toast" aria-live="polite"></div>
 
-    <script src="theme.js?v=50"></script>
-    <script src="life.js?v=50"></script>
+    <!-- Cooking notice -->
+    <div class="cooking-notice orbital-dialog" id="cooking-notice" role="dialog" aria-modal="true"
+        aria-labelledby="cooking-notice-title" aria-describedby="cooking-notice-message" aria-hidden="true">
+        <div class="cooking-notice__backdrop"></div>
+        <article class="cooking-notice__card">
+            <h2 class="cooking-notice__title" id="cooking-notice-title">Thông báo</h2>
+            <p class="cooking-notice__message" id="cooking-notice-message">Hiện tại đang ở quê nên tạm kết thúc seri cơm sinh viên</p>
+            <div class="cooking-notice__actions">
+                <button type="button" class="cooking-notice__button cooking-notice__close" data-dialog-focus>Ok</button>
+                <button type="button" class="cooking-notice__button cooking-notice__button--secondary cooking-notice__close">Đóng</button>
+            </div>
+        </article>
+    </div>
+
+    <script src="theme.js?v=65"></script>
+    <script src="life.js?v=67"></script>
     <script>
         (function () {
             var views = {
@@ -596,6 +635,27 @@
                 cooking: document.getElementById('view-cooking'),
                 campus: document.getElementById('view-campus')
             };
+            var cookingNotice = document.getElementById('cooking-notice');
+            var cookingNoticeButtons = cookingNotice ? cookingNotice.querySelectorAll('.cooking-notice__close') : [];
+
+            function closeCookingNotice() {
+                if (!cookingNotice) return;
+                if (window.prepareTimeboxDialogClose) window.prepareTimeboxDialogClose(cookingNotice);
+                cookingNotice.classList.remove('is-open');
+                cookingNotice.setAttribute('aria-hidden', 'true');
+                if (window.syncTimeboxModalState) window.syncTimeboxModalState();
+            }
+
+            window.openTimeboxCookingNotice = function () {
+                if (!cookingNotice) return;
+                cookingNotice.classList.add('is-open');
+                cookingNotice.setAttribute('aria-hidden', 'false');
+                if (window.syncTimeboxModalState) window.syncTimeboxModalState();
+            };
+
+            Array.prototype.forEach.call(cookingNoticeButtons, function (button) {
+                button.addEventListener('click', closeCookingNotice);
+            });
             var titles = {
                 home: 'Trọng Hiếu - Timebox',
                 family: 'Gia đình - Trọng Hiếu',
@@ -718,6 +778,89 @@
             var FRIENDS_UNLOCK_MS = 7 * 60 * 1000;
             var CAMPUS_UNLOCK_KEY = 'timebox-campus-unlocked-until';
             var CAMPUS_UNLOCK_MS = 7 * 60 * 1000;
+            var ADMIN_SESSION_KEY = 'timebox-admin-session-token';
+            var ADMIN_SESSION_EXPIRES_KEY = 'timebox-admin-session-expires-at';
+            var ADMIN_SESSION_TTL_MS = 7 * 60 * 1000;
+            var profileSubtitle = document.querySelector('.neu-hub-subtitle-link');
+            var adminLogoutButton = document.getElementById('admin-logout');
+            var defaultProfileSubtitle = profileSubtitle ? profileSubtitle.textContent : '';
+
+            function clearAdminSession() {
+                try {
+                    sessionStorage.removeItem(ADMIN_SESSION_KEY);
+                    sessionStorage.removeItem(ADMIN_SESSION_EXPIRES_KEY);
+                } catch (e) { }
+                if (profileSubtitle) {
+                    profileSubtitle.textContent = defaultProfileSubtitle;
+                    profileSubtitle.setAttribute('aria-label', 'Trọng Hiếu – Bio');
+                }
+                if (adminLogoutButton) {
+                    adminLogoutButton.hidden = true;
+                    adminLogoutButton.setAttribute('aria-hidden', 'true');
+                }
+                document.body.classList.remove('is-admin');
+            }
+
+            function getAdminSessionToken() {
+                var token = '';
+                var expiresAt = 0;
+                try {
+                    token = sessionStorage.getItem(ADMIN_SESSION_KEY) || '';
+                    expiresAt = Number(sessionStorage.getItem(ADMIN_SESSION_EXPIRES_KEY) || 0);
+                } catch (e) {
+                    return '';
+                }
+                if (!token || !expiresAt || expiresAt <= Date.now()) {
+                    clearAdminSession();
+                    return '';
+                }
+                return token;
+            }
+
+            function applyAdminMode() {
+                var active = Boolean(getAdminSessionToken());
+                document.body.classList.toggle('is-admin', active);
+                if (profileSubtitle) {
+                    profileSubtitle.textContent = active ? 'ADMIN' : defaultProfileSubtitle;
+                    profileSubtitle.setAttribute('aria-label', active ? 'ADMIN' : 'Trọng Hiếu – Bio');
+                }
+                if (adminLogoutButton) {
+                    adminLogoutButton.hidden = !active;
+                    adminLogoutButton.setAttribute('aria-hidden', active ? 'false' : 'true');
+                }
+                return active;
+            }
+
+            function rememberAdminSession(token, expiresAt) {
+                if (!token) return false;
+                var safeExpiresAt = Number(expiresAt) || (Date.now() + ADMIN_SESSION_TTL_MS);
+                try {
+                    sessionStorage.setItem(ADMIN_SESSION_KEY, String(token));
+                    sessionStorage.setItem(ADMIN_SESSION_EXPIRES_KEY, String(safeExpiresAt));
+                } catch (e) {
+                    return false;
+                }
+                applyAdminMode();
+                return true;
+            }
+
+            window._isTimeboxAdmin = function () {
+                return applyAdminMode();
+            };
+            window._getTimeboxAdminHeaders = function () {
+                var token = getAdminSessionToken();
+                return token ? { Authorization: 'Bearer ' + token } : {};
+            };
+            window._clearTimeboxAdminSession = clearAdminSession;
+            applyAdminMode();
+
+            if (adminLogoutButton) adminLogoutButton.addEventListener('click', function () {
+                clearAdminSession();
+                clearFamilyUnlock();
+                clearFriendsUnlock();
+                clearCampusUnlock();
+                goToParent();
+            });
 
             function hasFamilyUnlock() {
                 try {
@@ -813,18 +956,107 @@
                 }, 220);
             }
 
+            var profileNoticeLogin = document.getElementById('profile-notice-login');
+            var noticeLoginModal = document.getElementById('notice-login-modal');
+            var noticeLoginForm = document.getElementById('notice-login-form');
+            var noticeLoginUsername = document.getElementById('notice-login-username');
+            var noticeLoginPassword = document.getElementById('notice-login-password');
+            var noticeLoginError = document.getElementById('notice-login-error');
+            var noticeLoginClose = document.getElementById('notice-login-close');
+            var noticeLoginBackdrop = document.getElementById('notice-login-backdrop');
+            var noticeLoginSubmit = noticeLoginForm && noticeLoginForm.querySelector('button[type="submit"]');
+
+            function closeNoticeLoginModal() {
+                if (!noticeLoginModal || !noticeLoginModal.classList.contains('is-open')) return;
+                if (window.prepareTimeboxDialogClose) window.prepareTimeboxDialogClose(noticeLoginModal);
+                noticeLoginModal.classList.remove('is-open');
+                noticeLoginModal.setAttribute('aria-hidden', 'true');
+                if (noticeLoginUsername) noticeLoginUsername.value = '';
+                if (noticeLoginPassword) noticeLoginPassword.value = '';
+                if (noticeLoginError) noticeLoginError.textContent = '';
+                if (window.syncTimeboxModalState) window.syncTimeboxModalState();
+            }
+
+            function openNoticeLoginModal() {
+                var profileClose = document.getElementById('profile-info-close');
+                if (profileClose) profileClose.click();
+                if (!noticeLoginModal) return;
+                if (noticeLoginError) noticeLoginError.textContent = '';
+                if (noticeLoginUsername) noticeLoginUsername.value = '';
+                if (noticeLoginPassword) noticeLoginPassword.value = '';
+                noticeLoginModal.classList.add('is-open');
+                noticeLoginModal.setAttribute('aria-hidden', 'false');
+                if (window.syncTimeboxModalState) window.syncTimeboxModalState();
+                setTimeout(function () {
+                    if (noticeLoginUsername) noticeLoginUsername.focus();
+                }, 0);
+            }
+
+            if (profileNoticeLogin) profileNoticeLogin.addEventListener('click', openNoticeLoginModal);
+            if (noticeLoginClose) noticeLoginClose.addEventListener('click', closeNoticeLoginModal);
+            if (noticeLoginBackdrop) noticeLoginBackdrop.addEventListener('click', closeNoticeLoginModal);
+
+            if (noticeLoginForm) noticeLoginForm.addEventListener('submit', function (event) {
+                event.preventDefault();
+                var username = String(noticeLoginUsername && noticeLoginUsername.value || '').trim();
+                var password = String(noticeLoginPassword && noticeLoginPassword.value || '').trim();
+                if (!username || !password) {
+                    if (noticeLoginError) noticeLoginError.textContent = 'Vui lòng nhập đủ thông tin.';
+                    return;
+                }
+                if (noticeLoginSubmit) noticeLoginSubmit.disabled = true;
+                fetch('https://timebox.trghy.workers.dev/admin/verify', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: username, password: password })
+                }).then(function (response) {
+                    return response.json().catch(function () { return { ok: false }; }).then(function (result) {
+                        return {
+                            ok: result.ok === true,
+                            status: response.status,
+                            token: result.token || '',
+                            expiresAt: result.expiresAt || 0
+                        };
+                    });
+                }).then(function (result) {
+                    if (result.status === 429) {
+                        if (noticeLoginError) noticeLoginError.textContent = 'Thử quá nhiều lần. Vui lòng đợi một lúc rồi thử lại.';
+                        return;
+                    }
+                    if (!result.ok) {
+                        if (noticeLoginError) noticeLoginError.textContent = 'Tên đăng nhập hoặc mật khẩu không đúng.';
+                        return;
+                    }
+                    if (!result.token || !rememberAdminSession(result.token, result.expiresAt)) {
+                        if (noticeLoginError) noticeLoginError.textContent = 'Không thể tạo phiên quản trị.';
+                        return;
+                    }
+                    closeNoticeLoginModal();
+                }).catch(function () {
+                    if (noticeLoginError) noticeLoginError.textContent = 'Không thể đăng nhập lúc này.';
+                }).finally(function () {
+                    if (noticeLoginSubmit) noticeLoginSubmit.disabled = false;
+                });
+            });
+
             window.addEventListener('timebox:navigate', function (event) {
                 var navigationId = event.detail && event.detail.id;
+                if (window._isTimeboxAdmin && window._isTimeboxAdmin() &&
+                    ['family', 'friends', 'keepsakes', 'cooking', 'campus'].indexOf(navigationId) !== -1) {
+                    goForward(navigationId);
+                    return;
+                }
                 if (navigationId === 'family') {
                     openKeyModalForView('Mở vô hiệu', 'family');
                 } else if (navigationId === 'friends') {
-                    openKeyModalForView('Mở vô hiệu', 'friends');
+                    goForward('friends');
                 } else if (navigationId === 'campus') {
-                    openKeyModalForView('Mở vô hiệu', 'campus');
+                    goForward('campus');
                 } else if (navigationId === 'keepsakes') {
                     goForward('keepsakes');
                 } else if (navigationId === 'cooking') {
                     goForward('cooking');
+                    window.openTimeboxCookingNotice();
                 }
             });
 
@@ -832,23 +1064,18 @@
             window._spaGoForward = goForward;
 
             var requestedView = getViewFromUrl();
-            var protectedInitialView = (requestedView === 'family' || requestedView === 'friends' || requestedView === 'campus')
+            var protectedInitialView = requestedView === 'family'
                 ? requestedView
                 : '';
-            var familyAlreadyUnlocked = requestedView === 'family' && hasFamilyUnlock();
-            var friendsAlreadyUnlocked = requestedView === 'friends' && hasFriendsUnlock();
-            var campusAlreadyUnlocked = requestedView === 'campus' && hasCampusUnlock();
-            var initialView = familyAlreadyUnlocked || friendsAlreadyUnlocked || campusAlreadyUnlocked
+            var familyAlreadyUnlocked = requestedView === 'family' &&
+                (hasFamilyUnlock() || (window._isTimeboxAdmin && window._isTimeboxAdmin()));
+            var initialView = familyAlreadyUnlocked
                 ? requestedView
                 : (protectedInitialView ? 'home' : requestedView);
             history.replaceState({ spaView: initialView, spaDepth: currentDepth }, '', getViewUrl(initialView));
             setView(initialView, 'forward');
             if (!familyAlreadyUnlocked && protectedInitialView === 'family') {
                 setTimeout(function () { openKeyModalForView('Mở vô hiệu', 'family'); }, 0);
-            } else if (!friendsAlreadyUnlocked && protectedInitialView === 'friends') {
-                setTimeout(function () { openKeyModalForView('Mở vô hiệu', 'friends'); }, 0);
-            } else if (!campusAlreadyUnlocked && protectedInitialView === 'campus') {
-                setTimeout(function () { openKeyModalForView('Mở vô hiệu', 'campus'); }, 0);
             }
         })();
     </script>
@@ -962,6 +1189,11 @@
             }
 
             function requestUpload(scope) {
+                if (window._isTimeboxAdmin && window._isTimeboxAdmin()) {
+                    clearUploadPassword();
+                    openModal(scope || 'upload');
+                    return;
+                }
                 showUploadPasswordModal(scope);
             }
 
@@ -983,13 +1215,14 @@
                 activeUploadPassword = password;
                 var scope = pendingUploadScope || 'upload';
                 var waiters = uploadPasswordWaiters.splice(0);
-                hideUploadPasswordModal();
                 if (waiters.length) {
+                    hideUploadPasswordModal();
                     waiters.forEach(function (waiter) { waiter.resolve(password); });
                     clearUploadPassword();
                 } else {
                     if (uploadKeySubmit) uploadKeySubmit.disabled = true;
                     getUploadSignature(scope, false, 'image').then(function () {
+                        hideUploadPasswordModal();
                         openModal(scope);
                         pendingUploadScope = '';
                     }).catch(function (error) {
@@ -1000,11 +1233,6 @@
                             : 'Không thể xác nhận upload lúc này.');
                         if (uploadKeyError) uploadKeyError.textContent = message;
                         clearUploadPassword();
-                        if (uploadKeyModal) {
-                            document.body.classList.add('is-modal-open');
-                            uploadKeyModal.classList.add('is-open');
-                            uploadKeyModal.setAttribute('aria-hidden', 'false');
-                        }
                     }).finally(function () {
                         if (uploadKeySubmit) uploadKeySubmit.disabled = false;
                     });
@@ -1197,15 +1425,21 @@
                 if (allowedScopes.indexOf(scope) === -1 || ['image', 'video'].indexOf(mediaType) === -1) {
                     return Promise.reject(new Error('Yêu cầu upload không hợp lệ'));
                 }
+                var requestBody = {
+                    scope: scope,
+                    pinned: pinned === true,
+                    mediaType: mediaType || 'image'
+                };
+                var adminHeaders = window._getTimeboxAdminHeaders
+                    ? window._getTimeboxAdminHeaders()
+                    : {};
+                if (!adminHeaders.Authorization) {
+                    requestBody.password = activeUploadPassword;
+                }
                 return fetchWithTimeout(GALLERY_API + '/gallery/upload-signature', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        scope: scope,
-                        pinned: pinned === true,
-                        mediaType: mediaType || 'image',
-                        password: activeUploadPassword
-                    }),
+                    headers: Object.assign({ 'Content-Type': 'application/json' }, adminHeaders),
+                    body: JSON.stringify(requestBody),
                     signal: signal
                 }, 30000).then(function (response) {
                     if (response.status === 429) {
@@ -1637,8 +1871,8 @@
             });
         })();
     </script>
-    <script src="theme.js?v=64"></script>
-    <script src="life.js?v=64"></script>
+    <script src="theme.js?v=65"></script>
+    <script src="life.js?v=67"></script>
 </body>
 
 </html>

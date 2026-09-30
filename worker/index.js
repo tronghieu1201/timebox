@@ -55,6 +55,7 @@ const MAX_JSON_BODY_BYTES = 8192;
 const RATE_LIMIT_WINDOW_SECONDS = 60;
 const RATE_LIMIT_MAX_FAILURES = 5;
 const RATE_LIMIT_COOLDOWN_SECONDS = 60;
+const ADMIN_SESSION_TTL_SECONDS = 7 * 60;
 
 export default {
   async fetch(request, env) {
@@ -83,6 +84,10 @@ export default {
         return verifyPassword(request, env, corsHeaders);
       }
 
+      if (request.method === "POST" && url.pathname === "/admin/verify") {
+        return verifyAdmin(request, env, corsHeaders);
+      }
+
       if (request.method === "POST" && url.pathname === "/gallery/upload-signature") {
         return createUploadSignature(request, env, corsHeaders);
       }
@@ -95,15 +100,21 @@ export default {
         return pinGalleryImage(request, env, corsHeaders);
       }
 
+      if (request.method === "POST" && url.pathname === "/gallery/delete") {
+        return deleteGalleryImage(request, env, corsHeaders);
+      }
+
       if (request.method === "GET" && url.pathname === "/gallery/images") {
         return listGalleryImages(url, env, corsHeaders);
       }
 
       const knownRoute = [
         "/verify",
+        "/admin/verify",
         "/gallery/upload-signature",
         "/gallery/unpin",
         "/gallery/pin",
+        "/gallery/delete",
         "/gallery/images",
       ].includes(url.pathname);
       return json(
@@ -152,6 +163,116 @@ async function verifyPassword(request, env, headers) {
   return json({ ok: false }, 401, headers);
 }
 
+async function verifyAdmin(request, env, headers) {
+  const body = await readJson(request);
+  if (!body || !hasOnlyKeys(body, ["username", "password"])) {
+    return json({ ok: false, message: "Invalid request" }, 400, headers);
+  }
+
+  const username = cleanUsername(body.username);
+  const password = cleanPassword(body.password);
+  if (!username || !password) {
+    return json({ ok: false, message: "Invalid request" }, 400, headers);
+  }
+
+  const rate = await checkRateLimit(request, env, "admin-verify");
+  if (rate.error) return json({ ok: false, message: "Internal server error" }, 500, headers);
+  if (rate.limited) return rateLimited(headers, rate.retryAfter);
+
+  if (!env.ADMIN_USERNAME || !env.ADMIN_PASSWORD) {
+    console.error("Missing Worker secrets: ADMIN_USERNAME or ADMIN_PASSWORD");
+    return json({ ok: false, message: "Internal server error" }, 500, headers);
+  }
+
+  const ok = constantTimeEqual(username, String(env.ADMIN_USERNAME)) &&
+    constantTimeEqual(password, String(env.ADMIN_PASSWORD));
+  if (ok) {
+    await clearRateLimit(request, env, "admin-verify");
+    const now = Math.floor(Date.now() / 1000);
+    const token = await createAdminSessionToken(env, now);
+    return json({ ok: true, token, expiresAt: (now + ADMIN_SESSION_TTL_SECONDS) * 1000 }, 200, headers);
+  }
+
+  const failure = await recordRateLimitFailure(request, env, "admin-verify");
+  if (failure.error) return json({ ok: false, message: "Internal server error" }, 500, headers);
+  return json({ ok: false }, 401, headers);
+}
+
+async function requireAdminOrUploadPassword(request, value, env, headers) {
+  if (request.headers.get("Authorization")) {
+    const admin = await requireAdminSession(request, env);
+    if (admin.error) return json({ ok: false, message: "Internal server error" }, 500, headers);
+    if (admin.ok) return null;
+  }
+  return requireUploadPassword(request, value, env, headers);
+}
+
+async function requireAdminSession(request, env) {
+  const authorization = request.headers.get("Authorization") || "";
+  const match = /^Bearer\s+([A-Za-z0-9_-]+\.[A-Za-z0-9_-]+)$/.exec(authorization);
+  if (!match) return { ok: false, error: false };
+  if (!env.ADMIN_PASSWORD) {
+    console.error("Missing Worker secret: ADMIN_PASSWORD");
+    return { ok: false, error: true };
+  }
+
+  const parts = match[1].split(".");
+  const encodedPayload = parts[0];
+  const providedSignature = parts[1];
+  const expectedSignature = await signAdminPayload(encodedPayload, String(env.ADMIN_PASSWORD));
+  if (!constantTimeEqual(providedSignature, expectedSignature)) {
+    return { ok: false, error: false };
+  }
+
+  try {
+    const payload = JSON.parse(base64UrlDecode(encodedPayload));
+    const now = Math.floor(Date.now() / 1000);
+    if (!payload || payload.sub !== "admin" || Number(payload.exp) <= now) {
+      return { ok: false, error: false };
+    }
+    return { ok: true, error: false };
+  } catch {
+    return { ok: false, error: false };
+  }
+}
+
+async function createAdminSessionToken(env, now) {
+  const payload = base64UrlEncode(JSON.stringify({
+    sub: "admin",
+    iat: now,
+    exp: now + ADMIN_SESSION_TTL_SECONDS,
+  }));
+  const signature = await signAdminPayload(payload, String(env.ADMIN_PASSWORD));
+  return payload + "." + signature;
+}
+
+async function signAdminPayload(payload, secret) {
+  const encoder = new TextEncoder();
+  const key = await crypto.subtle.importKey(
+    "raw",
+    encoder.encode(secret),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"]
+  );
+  const signature = await crypto.subtle.sign("HMAC", key, encoder.encode(payload));
+  return base64UrlEncode(new Uint8Array(signature));
+}
+
+function base64UrlEncode(value) {
+  const bytes = typeof value === "string" ? new TextEncoder().encode(value) : value;
+  let binary = "";
+  bytes.forEach((byte) => { binary += String.fromCharCode(byte); });
+  return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
+}
+
+function base64UrlDecode(value) {
+  const padded = value.replace(/-/g, "+").replace(/_/g, "/");
+  const binary = atob(padded + "=".repeat((4 - (padded.length % 4)) % 4));
+  const bytes = Uint8Array.from(binary, (character) => character.charCodeAt(0));
+  return new TextDecoder().decode(bytes);
+}
+
 async function createUploadSignature(request, env, headers) {
   const body = await readJson(request);
   if (!body || !hasOnlyKeys(body, ["scope", "mediaType", "pinned", "password"])) {
@@ -161,11 +282,12 @@ async function createUploadSignature(request, env, headers) {
   const scope = typeof body.scope === "string" ? body.scope : "";
   const config = GALLERY_SCOPES[scope];
   const mediaType = body.mediaType;
-  if (!config || (mediaType !== "image" && mediaType !== "video") || typeof body.pinned !== "boolean") {
+  if (!config || (mediaType !== "image" && mediaType !== "video") || typeof body.pinned !== "boolean" ||
+      (scope === "upload" && body.pinned !== false)) {
     return json({ ok: false, message: "Invalid upload request" }, 400, headers);
   }
 
-  const authResponse = await requireUploadPassword(request, body.password, env, headers);
+  const authResponse = await requireAdminOrUploadPassword(request, body.password, env, headers);
   if (authResponse) return authResponse;
 
   const missingCloudinary = getMissingCloudinaryConfig(env);
@@ -236,8 +358,9 @@ async function unpinGalleryImage(request, env, headers) {
   const config = GALLERY_SCOPES[scope];
   if (!config || !publicId) return json({ ok: false, message: "Invalid unpin request" }, 400, headers);
 
-  const authResponse = await requireUploadPassword(request, body.password, env, headers);
-  if (authResponse) return authResponse;
+  const admin = await requireAdminSession(request, env);
+  if (admin.error) return json({ ok: false, message: "Internal server error" }, 500, headers);
+  if (!admin.ok) return json({ ok: false, message: "Unauthorized" }, 401, headers);
   if (getMissingCloudinaryConfig(env).length) {
     console.error("Missing Cloudinary Worker configuration");
     return json({ ok: false, message: "Internal server error" }, 500, headers);
@@ -262,8 +385,9 @@ async function pinGalleryImage(request, env, headers) {
   const config = GALLERY_SCOPES[scope];
   if (!config || !publicId) return json({ ok: false, message: "Invalid pin request" }, 400, headers);
 
-  const authResponse = await requireUploadPassword(request, body.password, env, headers);
-  if (authResponse) return authResponse;
+  const admin = await requireAdminSession(request, env);
+  if (admin.error) return json({ ok: false, message: "Internal server error" }, 500, headers);
+  if (!admin.ok) return json({ ok: false, message: "Unauthorized" }, 401, headers);
   if (getMissingCloudinaryConfig(env).length) {
     console.error("Missing Cloudinary Worker configuration");
     return json({ ok: false, message: "Internal server error" }, 500, headers);
@@ -273,6 +397,37 @@ async function pinGalleryImage(request, env, headers) {
   if (!clearUnpinResult.ok) return json({ ok: false, message: "Unable to update image state" }, 502, headers);
   const pinResult = await updateCloudinaryTag(env, "add", config.pinTag, publicId);
   if (!pinResult.ok) return json({ ok: false, message: "Unable to pin image" }, 502, headers);
+
+  await deleteGalleryCache(scope);
+  return json({ ok: true, scope, publicId }, 200, headers);
+}
+
+async function deleteGalleryImage(request, env, headers) {
+  const body = await readJson(request);
+  if (!body || !hasOnlyKeys(body, ["scope", "publicId", "resourceType"])) {
+    return json({ ok: false, message: "Invalid request" }, 400, headers);
+  }
+
+  const scope = typeof body.scope === "string" ? body.scope : "";
+  const publicId = cleanPublicId(body.publicId);
+  const resourceType = body.resourceType;
+  if (!GALLERY_SCOPES[scope] || !publicId || (resourceType !== "image" && resourceType !== "video")) {
+    return json({ ok: false, message: "Invalid delete request" }, 400, headers);
+  }
+
+  const admin = await requireAdminSession(request, env);
+  if (admin.error) return json({ ok: false, message: "Internal server error" }, 500, headers);
+  if (!admin.ok) return json({ ok: false, message: "Unauthorized" }, 401, headers);
+
+  if (getMissingCloudinaryConfig(env).length) {
+    console.error("Missing Cloudinary Worker configuration");
+    return json({ ok: false, message: "Internal server error" }, 500, headers);
+  }
+
+  const result = await destroyCloudinaryResource(env, resourceType, publicId);
+  if (!result.ok) {
+    return json({ ok: false, message: "Unable to delete image" }, 502, headers);
+  }
 
   await deleteGalleryCache(scope);
   return json({ ok: true, scope, publicId }, 200, headers);
@@ -429,6 +584,31 @@ async function updateCloudinaryTag(env, command, tag, publicId) {
   return { ok: response.ok };
 }
 
+async function destroyCloudinaryResource(env, resourceType, publicId) {
+  const timestamp = Math.floor(Date.now() / 1000);
+  const signedParams = "invalidate=true&public_id=" + publicId +
+    "&timestamp=" + timestamp + "&type=upload";
+  const signature = await sha1Hex(signedParams + env.CLOUDINARY_API_SECRET);
+  const endpoint = "https://api.cloudinary.com/v1_1/" +
+    encodeURIComponent(env.CLOUDINARY_CLOUD_NAME) + "/" +
+    resourceType + "/destroy";
+  const form = new URLSearchParams();
+  form.set("public_id", publicId);
+  form.set("timestamp", String(timestamp));
+  form.set("type", "upload");
+  form.set("invalidate", "true");
+  form.set("signature", signature);
+  form.set("api_key", env.CLOUDINARY_API_KEY);
+
+  const response = await fetch(endpoint, {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: form.toString(),
+  });
+  const data = await response.json().catch(() => ({}));
+  return { ok: response.ok && data.result !== "error" };
+}
+
 function cloudinaryAuthorization(env) {
   return `Basic ${btoa(`${env.CLOUDINARY_API_KEY}:${env.CLOUDINARY_API_SECRET}`)}`;
 }
@@ -436,7 +616,7 @@ function cloudinaryAuthorization(env) {
 function makeCorsHeaders(origin, allowed) {
   const headers = {
     "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
     "Cache-Control": "no-store",
     Vary: "Origin",
   };
@@ -471,6 +651,12 @@ function cleanPassword(value) {
   if (typeof value !== "string") return "";
   const password = value.trim();
   return password && password.length <= 200 ? password : "";
+}
+
+function cleanUsername(value) {
+  if (typeof value !== "string") return "";
+  const username = value.trim();
+  return username && username.length <= 200 ? username : "";
 }
 
 function cleanPublicId(value) {

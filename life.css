@@ -96,6 +96,16 @@
     box-shadow: var(--neu-extruded-hover);
 }
 
+.photo-card__pin--indicator {
+    cursor: default;
+    pointer-events: none;
+}
+
+.photo-card__pin--indicator:hover {
+    transform: none;
+    box-shadow: var(--neu-extruded-sm);
+}
+
 /* Video Badge */
 .photo-card__video-badge {
     position: absolute;
